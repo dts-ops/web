@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="vi" class="no-js">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ARCHIVE</title>
+    <link rel="shortcut icon" href="/mn/assets/img/rose.png">
+    <link rel="stylesheet" href="https://use.typekit.net/eqx3jwb.css">
+    <link rel="stylesheet" type="text/css" href="/mn/assets/style.css">
+    <link rel="stylesheet" type="text/css" href="./assets/style.css">
+    <script>
+        document.documentElement.className = "js";
+
+        var supportsCssVars = function supportsCssVars() {
+            var e,
+                t = document.createElement("style");
+            return t.innerHTML = "root: { --tmp-var: bold; }", document.head.appendChild(t), e = !!(window.CSS && window.CSS.supports && window.CSS.supports("font-weight", "var(--tmp-var)")), t.parentNode.removeChild(t), e;
+        };
+
+        supportsCssVars() || alert("Please view this demo in a modern browser that supports CSS Variables.");
+
+    </script>
+</head>
+
+<body class="demo-1 loading">
+    <main>
+
+        <div class="messages">Vui lòng xem trên máy tính để nhìn thấy hiệu ứng.</div>
+        <div class="frame">
+        </div>
+        <div class="content">
+            <div class="grid">
+                <div class="grid__item pos-2">
+                    <div class="grid__item-img" style="background-image:url('/mn/assets/img/img1.png');" class="hover"></div>
+                </div>
+                <div class="grid__item pos-3">
+                    <div class="grid__item-img" style="background-image:url('/mn/assets/img/img3.jpg');" class="hover"></div>
+                </div>
+                <div class="grid__item pos-4">
+                    <div class="grid__item-img" style="background-image:url('/mn/assets/img/img7.png');" class="hover"></div>
+                </div>
+                <div class="grid__item pos-1">
+                    <div class="grid__item-img" style="background-image:url('/mn/assets/img/img2.jpg');" class="hover"></div>
+                </div>
+                <div class="grid__item pos-5">
+                    <div class="grid__item-img" style="background-image:url('/mn/assets/img/img5.jpg');" class="hover"></div>
+                </div>
+                <div class="grid__item pos-6">
+                    <div class="grid__item-img" style="background-image:url('/mn/assets/img/img6.jpg');" class="hover"></div>
+                </div>
+                <div class="grid__item pos-7">
+                    <div class="grid__item-img" style="background-image:url('/mn/assets/img/img4.jpg');" class="hover"></div>
+                </div>
+                <div class="grid__item pos-8">
+                    <div class="grid__item-img" style="background-image:url('/mn/assets/img/img8.pn');" class="hover"></div>
+                </div>
+                <div class="grid__item pos-9">
+                    <div class="grid__item-img" style="background-image:url('/mn/assets/img/img9.jpg');" class="hover"></div>
+                </div>
+                <div class="grid__item pos-10">
+                    <div class="grid__item-img" style="background-image:url('/mn/assets/img/img10.png');" class="hover"></div>
+                </div>
+            </div>
+            
+            <div class="canvas-container" style="background-color: #4040406b;">
+                <h2>SELECT ONE VIDEO TO PLAY</h2>
+                <select id="videoList">
+                    <option value="./assets/video/n_v1.mov">n_v1</option>
+                    <option value="./assets/video/n_v2.mov">n_v2</option>
+                    <option value="./assets/video/n_v3.mov">n_v3</option>
+                    <option value="./assets/video/n_v4.mp4">n_v4</option>
+                    <option value="./assets/video/n_v5.mp4">n_v5</option>
+                </select>
+                <button id="playBtn">PLAY</button>
+
+                <video id="videoPlayer" controls>
+                    <source id="videoSource" src="" type="video/mp4">
+                    Trình duyệt không hỗ trợ video.
+                </video>
+            </div>
+
+            <script>
+                document.getElementById("playBtn").addEventListener("click", function() {
+                    let videoSelect = document.getElementById("videoList");
+                    let selectedVideo = videoSelect.value;
+
+                    let videoPlayer = document.getElementById("videoPlayer");
+                    let videoSource = document.getElementById("videoSource");
+
+                    videoSource.src = selectedVideo;
+                    videoPlayer.load(); // Load lại video mới
+                    videoPlayer.play(); // Tự động phát
+                });
+
+            </script>
+        </div>
+    </main>
+    <svg class="cursor" width="80" height="80" viewBox="0 0 80 80">
+        <circle class="cursor__inner" cx="40" cy="40" r="20"></circle>
+    </svg>
+    <script src="/mn/assets/script.js"></script>
+</body>
+
+</html>
