@@ -6443,3 +6443,68 @@ PARTICLES.forEach(P => {
 		--size: ${RANDOM(40, 90) / 100};
 	`)
 })
+
+function submit() {
+    let selected = document.getElementById("choose_box").value;
+    if (selected == "none") {
+        alert("Chương trình sẽ sớm được ra mắt");
+    } else if (selected == 'valentine-14-2-2025') {
+        window.location.href = "https://dts-mn.vercel.app/valentine%20(14-2-2025)/";
+    } else if (selected == 'archive') {
+        window.location.href = "https://dts-mn.vercel.app/archive/";
+    }
+}
+
+// Nhấn phím Enter để chọn
+document.addEventListener("keydown", function (event) {
+    if (event.key === "Enter") {
+        submit();
+    }
+});
+
+document.documentElement.className = "js";
+
+var supportsCssVars = function supportsCssVars() {
+    var e,
+        t = document.createElement("style");
+    return window.CSS && window.CSS.supports && window.CSS.supports("--tmp-var", "bold");
+};
+
+supportsCssVars() || alert("Please view this website in a modern browser that supports CSS Variables.");
+function playMusic() {
+    let audio = document.getElementById("music"); // Đổi ID đúng với toggle
+    let overlay = document.getElementById("overlay");
+
+    if (audio) {
+        audio.muted = false;
+        audio.play();
+    }
+
+    if (overlay) {
+        overlay.style.display = "none"; // Ẩn overlay nếu có
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    const toggleSwitch = document.querySelector("#switch input");
+    const music = document.getElementById("music");
+
+    toggleSwitch.addEventListener("change", function () {
+        if (music) {
+            if (this.checked) {
+                playMusic();
+            } else {
+                music.pause();
+            }
+        }
+    });
+});
+
+
+function close_box() {
+    document.getElementById('setting-container').style.display = "none";
+}
+
+function open_box() {
+    document.getElementById('setting-container').style.display = "flex";
+}

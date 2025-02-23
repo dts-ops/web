@@ -8,17 +8,6 @@
     <link rel="shortcut icon" href="/assets/img/rose.png">
     <link rel="stylesheet" href="https://use.typekit.net/eqx3jwb.css">
     <link rel="stylesheet" type="text/css" href="/assets/style.css">
-    <script>
-        document.documentElement.className = "js";
-
-        var supportsCssVars = function supportsCssVars() {
-            var e,
-                t = document.createElement("style");
-            return window.CSS && window.CSS.supports && window.CSS.supports("--tmp-var", "bold");
-        };
-
-        supportsCssVars() || alert("Please view this website in a modern browser that supports CSS Variables.");
-    </script>
     <style>
         .overlay {
             position: fixed;
@@ -53,8 +42,6 @@
 
 <body class="demo-1 loading">
     <main>
-
-
         <div class="overlay" id="overlay">
             <div class="dialog">
                 <h2>🎉 WELCOME 🎉</h2>
@@ -63,19 +50,6 @@
             </div>
         </div>
         <audio id="audio" src="/assets/music/music.mp3" preload="auto" muted loop></audio>
-
-        <script>
-            function playMusic() {
-                let audio = document.getElementById("audio");
-                let overlay = document.getElementById("overlay");
-
-                audio.muted = false; // Bật âm thanh
-                audio.play();
-
-                overlay.style.display = "none"; // Ẩn dialog
-            }
-        </script>
-
         <div id="stopwatch"></div>
 
         <script>
@@ -154,6 +128,56 @@
                 </div>
             </div>
             <div class="container">
+                <!-- Cấu hình cài đặt -->
+                <button class="setting-button" onclick="open_box()"></button>
+                <div id="setting-container">
+                    <audio id="music" loop>
+                        <source src="./assets/music/music.mp3" type="audio/mpeg">
+                        Trình duyệt của bạn không hỗ trợ audio.
+                    </audio>
+                    <button class="setting-button" onclick="open_box()"></button>
+                    <div class="close-button-setting" onclick="close_box()"></div>
+                    <h2>Setting</h2>
+                    <div class="box-sp">
+                        <p>Music: </p>
+                        <label id="switch">
+                            <input class="switch__input" type="checkbox" role="switch" checked>
+                            <span class="switch__base-outer"></span>
+                            <span class="switch__base-inner"></span>
+                            <svg class="switch__base-neon" viewBox="0 0 40 24" width="40px" height="24px">
+                                <defs>
+                                    <filter id="switch-glow">
+                                        <feGaussianBlur result="coloredBlur" stddeviation="1"></feGaussianBlur>
+                                        <feMerge>
+                                            <feMergeNode in="coloredBlur"></feMergeNode>
+                                            <feMergeNode in="SourceGraphic"></feMergeNode>
+                                        </feMerge>
+                                    </filter>
+                                    <linearGradient id="switch-gradient1" x1="0" y1="0" x2="1" y2="0">
+                                        <stop offset="0%" stop-color="hsl(var(--on-hue1),90%,70%)" />
+                                        <stop offset="100%" stop-color="hsl(var(--on-hue2),90%,70%)" />
+                                    </linearGradient>
+                                    <linearGradient id="switch-gradient2" x1="0.7" y1="0" x2="0.3" y2="1">
+                                        <stop offset="25%" stop-color="hsla(var(--on-hue1),90%,70%,0)" />
+                                        <stop offset="50%" stop-color="hsla(var(--on-hue1),90%,70%,0.3)" />
+                                        <stop offset="100%" stop-color="hsla(var(--on-hue2),90%,70%,0.3)" />
+                                    </linearGradient>
+                                </defs>
+                                <path fill="none" filter="url(#switch-glow)" stroke="url(#switch-gradient1)" stroke-width="1" stroke-dasharray="0 104.26 0" stroke-dashoffset="0.01" stroke-linecap="round" d="m.5,12C.5,5.649,5.649.5,12,.5h16c6.351,0,11.5,5.149,11.5,11.5s-5.149,11.5-11.5,11.5H12C5.649,23.5.5,18.351.5,12Z" />
+                            </svg>
+                            <span class="switch__knob-shadow"></span>
+                            <span class="switch__knob-container">
+                                <span class="switch__knob">
+                                    <svg class="switch__knob-neon" viewBox="0 0 48 48" width="48px" height="48px">
+                                        <circle fill="none" stroke="url(#switch-gradient2)" stroke-dasharray="0 90.32 0 54.19" stroke-linecap="round" stroke-width="1" r="23" cx="24" cy="24" transform="rotate(-112.5,24,24)" />
+                                    </svg>
+                                </span>
+                            </span>
+                            <span class="switch__led"></span>
+                            <span class="switch__text">Power</span>
+                        </label>
+                    </div>
+                </div>
                 <h2>Chọn dii</h2>
                 <select id="choose_box">
                     <option value="archive">Archive</option>
@@ -231,25 +255,6 @@
                     </span>
                 </div>
             </div>
-            <script>
-                function submit() {
-                    let selected = document.getElementById("choose_box").value;
-                    if (selected == "none") {
-                        alert("Chương trình sẽ sớm được ra mắt");
-                    } else if (selected == 'valentine-14-2-2025') {
-                        window.location.href = "https://dts-mn.vercel.app/valentine%20(14-2-2025)/";
-                    } else if (selected == 'archive') {
-                        window.location.href = "https://dts-mn.vercel.app/archive/";
-                    }
-                }
-
-                // Nhấn phím Enter để chọn
-                document.addEventListener("keydown", function(event) {
-                    if (event.key === "Enter") {
-                        submit();
-                    }
-                });
-            </script>
         </div>
     </main>
     <svg class="cursor" width="80" height="80" viewBox="0 0 80 80">
