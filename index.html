@@ -49,9 +49,8 @@
                 <button onclick="playMusic()">OK</button>
             </div>
         </div>
-        <audio id="audio" src="/assets/music/music.mp3" preload="auto" muted loop></audio>
+        <audio id="music" src="/assets/music/music.mp3" preload="auto" muted loop></audio>
         <div id="stopwatch"></div>
-
         <script>
             const START_TIME = new Date(2025, 1, 14, 5, 39, 21, 366).getTime(); // (Năm, Tháng, Ngày, Giờ, Phút, Giây, Mili giây)
 
@@ -129,13 +128,8 @@
             </div>
             <div class="container">
                 <!-- Cấu hình cài đặt -->
-                <button class="setting-button" onclick="open_box()"></button>
+                <button class="open-setting-button" onclick="open_box()"></button>
                 <div id="setting-container">
-                    <audio id="music" loop>
-                        <source src="./assets/music/music.mp3" type="audio/mpeg">
-                        Trình duyệt của bạn không hỗ trợ audio.
-                    </audio>
-                    <button class="setting-button" onclick="open_box()"></button>
                     <div class="close-button-setting" onclick="close_box()"></div>
                     <h2>Setting</h2>
                     <div class="box-sp">
@@ -184,8 +178,6 @@
                     <option value="valentine-14-2-2025">Valentine (14/2/2025)</option>
                     <option value="none">Chưa ra mắt</option>
                 </select>
-                <br>
-
                 <div class="sparkle-button">
 
                     <button onclick="submit()" class="but">
