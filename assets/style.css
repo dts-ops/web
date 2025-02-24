@@ -423,7 +423,7 @@ a:focus {
     font-weight: 500;
     border: 0;
     cursor: pointer;
-    padding: 0.8em 4em;
+    padding: 0.65em 3em;
     display: flex;
     align-items: center;
     width: 100%;
