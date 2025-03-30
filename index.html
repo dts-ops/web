@@ -57,7 +57,7 @@
         <audio id="music" src="/assets/music/music.mp3" preload="auto" muted loop></audio>
         <div id="stopwatch"></div>
         <script>
-            const START_TIME = new Date(2025, 1, 14, 5, 39, 21, 366).getTime(); // (Năm, Tháng, Ngày, Giờ, Phút, Giây, Mili giây)
+            const START_TIME = new Date(2025, 2, 30, 16,43, 0, 0).getTime(); // (Năm, Tháng, Ngày, Giờ, Phút, Giây, Mili giây)
 
             function updateDisplay() {
                 let now = Date.now();
@@ -82,8 +82,7 @@
                     hours.toString().padStart(2, '0') + " giờ",
                     minutes.toString().padStart(2, '0') + " phút",
                     seconds.toString().padStart(2, '0') + " giây",
-                    milliseconds + " ms",
-                    "nhỏ chưa trl câu hỏi đó rồi"
+                    milliseconds + " ms"
                 ].join(" ");
 
                 document.getElementById("stopwatch").innerText = formattedTime;
