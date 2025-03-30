@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Broadcast</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .broadcast { margin: 20px; padding: 10px; border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+    <h2>Broadcast Messages</h2>
+    <div id="broadcast-container"></div>
+    
+    <script>
+        async function loadBroadcasts() {
+            try {
+                let response = await fetch('data.json');
+                let data = await response.json();
+                let container = document.getElementById('broadcast-container');
+                
+                data.forEach(item => {
+                    let div = document.createElement('div');
+                    div.className = 'broadcast';
+                    div.textContent = `${item.Time} - ${item.Content}`;
+                    container.appendChild(div);
+                });
+            } catch (error) {
+                console.error('Lỗi khi tải dữ liệu:', error);
+            }
+        }
+        
+        loadBroadcasts();
+    </script>
+</body>
+</html>
