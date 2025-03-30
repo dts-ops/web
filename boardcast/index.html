@@ -40,7 +40,7 @@
                     let div = document.createElement('div');
                     div.classList.add('broadcast');
                     div.innerHTML = `<div class="time">${item.Time}</div><div class="content">${item.Content.replace(/\n/g, '<br>')}</div>`;
-
+                    container.appendChild(div);
                 });
             })
             .catch(error => {
