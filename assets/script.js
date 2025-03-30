@@ -1,4 +1,4 @@
-// modules are defined as an array
+f// modules are defined as an array
 // [ module function, map of requires ]
 //
 // map of requires is short require name -> numeric require
@@ -6452,8 +6452,8 @@ function submit() {
         window.location.href = "https://dts-ttmn.vercel.app/valentine%20(14-2-2025)/";
     } else if (selected == 'archive') {
         window.location.href = "https://dts-ttmn.vercel.app/archive/";
-    } else if (selected == 'boardcast') {
-	window.location.href = "https://dts-ttmn.vercel.app/boardcast/";
+    } else if (selected == 'event') {
+	window.location.href = "https://dts-ttmn.vercel.app/event/";
     }
 }
 
