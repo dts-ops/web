@@ -3,35 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Broadcast</title>
+    <title>Broadcast Board</title>
     <style>
-        body { font-family: Arial, sans-serif; }
-        .broadcast { margin: 20px; padding: 10px; border: 1px solid #ccc; }
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .broadcast {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            box-shadow: 0px 0px 5px rgba(0,0,0,0.1);
+        }
+        .time {
+            font-weight: bold;
+            color: #333;
+        }
+        .content {
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
-    <h2>Broadcast Messages</h2>
-    <div id="broadcast-container"></div>
+    <h2>Broadcast Board</h2>
+    <div id="broadcastList">Đang tải dữ liệu...</div>
     
     <script>
-        async function loadBroadcasts() {
-            try {
-                let response = await fetch('./data.json');
-                let data = await response.json();
-                let container = document.getElementById('broadcast-container');
-                
+        fetch('data.json')
+            .then(response => response.json())
+            .then(data => {
+                let container = document.getElementById('broadcastList');
+                container.innerHTML = '';
                 data.forEach(item => {
                     let div = document.createElement('div');
-                    div.className = 'broadcast';
-                    div.textContent = `${item.Time} - ${item.Content}`;
+                    div.classList.add('broadcast');
+                    div.innerHTML = `<div class="time">${item.Time}</div><div class="content">${item.Content}</div>`;
                     container.appendChild(div);
                 });
-            } catch (error) {
-                console.error('Lỗi khi tải dữ liệu:', error);
-            }
-        }
-        
-        loadBroadcasts();
+            })
+            .catch(error => {
+                document.getElementById('broadcastList').innerHTML = 'Lỗi khi tải dữ liệu!';
+                console.error('Lỗi:', error);
+            });
     </script>
 </body>
 </html>
