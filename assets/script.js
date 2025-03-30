@@ -6452,7 +6452,7 @@ function submit() {
         window.location.href = "https://dts-ttmn.vercel.app/valentine%20(14-2-2025)/";
     } else if (selected == 'archive') {
         window.location.href = "https://dts-ttmn.vercel.app/archive/";
-    } else if (selected == 'boardcast' {
+    } else if (selected == 'boardcast') {
 	window.location.href = "https://dts-ttmn.vercel.app/boardcast/";
 }
 
