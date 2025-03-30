@@ -6449,10 +6449,11 @@ function submit() {
     if (selected == "none") {
         alert("Chương trình sẽ sớm được ra mắt");
     } else if (selected == 'valentine-14-2-2025') {
-        window.location.href = "https://dts-mn.vercel.app/valentine%20(14-2-2025)/";
+        window.location.href = "https://dts-ttmn.vercel.app/valentine%20(14-2-2025)/";
     } else if (selected == 'archive') {
-        window.location.href = "https://dts-mn.vercel.app/archive/";
-    }
+        window.location.href = "https://dts-ttmn.vercel.app/archive/";
+    } else if (selected == 'boardcast' {
+	window.location.href = "https://dts-ttmn.vercel.app/boardcast/";
 }
 
 // Nhấn phím Enter để chọn
