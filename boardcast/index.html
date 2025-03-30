@@ -39,8 +39,8 @@
                 data.forEach(item => {
                     let div = document.createElement('div');
                     div.classList.add('broadcast');
-                    div.innerHTML = `<div class="time">${item.Time}</div><div class="content">${item.Content}</div>`;
-                    container.appendChild(div);
+                    div.innerHTML = `<div class="time">${item.Time}</div><div class="content">${item.Content.replace(/\n/g, '<br>')}</div>`;
+
                 });
             })
             .catch(error => {
