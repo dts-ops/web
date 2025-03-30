@@ -6454,6 +6454,7 @@ function submit() {
         window.location.href = "https://dts-ttmn.vercel.app/archive/";
     } else if (selected == 'boardcast') {
 	window.location.href = "https://dts-ttmn.vercel.app/boardcast/";
+    }
 }
 
 // Nhấn phím Enter để chọn
