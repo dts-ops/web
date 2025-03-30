@@ -16,7 +16,7 @@
     <script>
         async function loadBroadcasts() {
             try {
-                let response = await fetch('data.json');
+                let response = await fetch('./data.json');
                 let data = await response.json();
                 let container = document.getElementById('broadcast-container');
                 
