@@ -6454,6 +6454,8 @@ function submit() {
         window.location.href = "https://dts-ttmn.vercel.app/archive/";
     } else if (selected == 'event') {
 	window.location.href = "https://dts-ttmn.vercel.app/event/";
+    } else if (selected == 'time') {
+	window.location.href = "https://dts-ttmn.vercel.app/time/";
     }
 }
 
