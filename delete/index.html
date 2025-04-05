@@ -3,19 +3,14 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title></title>
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
         body {
             font-family: Consolas, sans-serif;
             text-align: center;
             margin: 0;
             padding: 0;
-            min-height: 100vh;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -25,39 +20,30 @@
         .container {
             text-align: center;
             color: red;
-            font-size: 5vw;
-            padding: 20px;
-            max-width: 100%;
-        }
-
-        .button-wrapper {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .yes-button,
-        .no-button {
-            padding: 10px 20px;
-            font-size: 4vw;
-            transition: all 0.2s ease;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            flex: 1 1 40%;
-            max-width: 200px;
+            font-size: 24px;
         }
 
         .yes-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            transition: all 0.2s ease;
             background-color: #4CAF50;
             color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
         }
 
         .no-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-left: 10px;
             background-color: #f44336;
             color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
         .yes-button:hover {
@@ -67,35 +53,16 @@
         .no-button:hover {
             background-color: #d32f2f;
         }
-
-        #gif {
-            max-width: 90%;
-            height: auto;
-            margin: 20px auto;
-            border-radius: 10px;
-        }
-
-        @media (min-width: 768px) {
-            .container {
-                font-size: 24px;
-            }
-
-            .yes-button,
-            .no-button {
-                font-size: 16px;
-            }
-        }
     </style>
 </head>
 
 <body>
     <div class="container">
         <p id="question">Nhỏ muốn chúng ta dừng lại à😞?</p>
-        <div class="button-wrapper">
-            <button class="yes-button" onclick="handleYesClick()">Không</button>
-            <button class="no-button" onclick="handleNoClick()">Muốn</button>
-        </div>
-        <img id="gif" src="/delete/no.gif" alt="Ảnh" />
+        <button class="yes-button" onclick="handleYesClick()">Không</button>
+        <button class="no-button" onclick="handleNoClick()">Muốn</button>
+        <br>
+        <img id="gif" src="/delete/no.gif" style="max-width: 300px; margin-bottom: 20px; border-radius: 10px;">
     </div>
 
     <script>
@@ -119,11 +86,11 @@
             }
 
             const currentFontSize = parseFloat(window.getComputedStyle(yesButton).fontSize);
-            const newFontSize = currentFontSize * 1.5;
+            const newFontSize = currentFontSize * 2;
             yesButton.style.fontSize = newFontSize + "px";
 
             const currentPadding = parseFloat(window.getComputedStyle(yesButton).paddingTop);
-            const newPadding = currentPadding * 1.5;
+            const newPadding = currentPadding * 2;
             yesButton.style.padding = newPadding + "px " + (newPadding * 2) + "px";
 
             clickCount++;
