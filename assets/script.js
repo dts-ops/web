@@ -6457,7 +6457,8 @@ function submit() {
     } else if (selected == 'delete') {
 	window.location.href = "https://dts-ttmn.vercel.app/delete/";
     } else if (selected == 'time') {
-  window.location.href = "https://dts-ttmn.vercel.app/time/";
+   window.location.href = "https://dts-ttmn.vercel.app/time/";
+    }
 }
 
 // Nhấn phím Enter để chọn
