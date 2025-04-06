@@ -1,54 +1,29 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Memory</title>
-    <style>
-        body {
-            font-family: Consolas, sans-serif;
-            padding: 20px;
-            background-color: #f4f4f4;
-        }
-        .broadcast {
-            background: white;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 5px;
-            box-shadow: 0px 0px 5px rgba(0,0,0,0.1);
-        }
-        .time {
-            font-weight: bold;
-            color: #333;
-            font-size: 1.2em;
-        }
-        .content {
-            margin-top: 5px;
-            padding-left: 20px;
-        }
-    </style>
-</head>
-<body>
-    <h2>EVENT</h2>
-    <div id="broadcastList">Loading...</div>
-    
-    <script>
-        fetch('data.json')
-            .then(response => response.json())
-            .then(data => {
-                let container = document.getElementById('broadcastList');
-                container.innerHTML = '';
-                data.forEach(item => {
-                    let div = document.createElement('div');
-                    div.classList.add('broadcast');
-                    div.innerHTML = `<div class="time">${item.Time}</div><div class="content">${item.Content.replace(/\n/g, '<br>')}</div>`;
-                    container.appendChild(div);
-                });
-            })
-            .catch(error => {
-                document.getElementById('broadcastList').innerHTML = 'Lỗi khi tải dữ liệu!';
-                console.error('Lỗi:', error);
+<script>
+    fetch('data.json')
+        .then(response => response.json())
+        .then(data => {
+            let container = document.getElementById('broadcastList');
+            container.innerHTML = '';
+            data.forEach(item => {
+                let div = document.createElement('div');
+                div.classList.add('broadcast');
+
+                // Xử lý nội dung
+                let contentHtml = '';
+                if (typeof item.Content === 'string' && item.Content.trim().startsWith('f"/')) {
+                    // Lấy đường dẫn từ dạng f"/path/to/img.png"
+                    let imgPath = item.Content.trim().slice(2, -1); // bỏ f" và "
+                    contentHtml = `<img src="${imgPath}" alt="Ảnh" style="max-width: 100%; border: 1px solid #ccc; border-radius: 4px;">`;
+                } else {
+                    contentHtml = item.Content.replace(/\n/g, '<br>');
+                }
+
+                div.innerHTML = `<div class="time">${item.Time}</div><div class="content">${contentHtml}</div>`;
+                container.appendChild(div);
             });
-    </script>
-</body>
-</html>
+        })
+        .catch(error => {
+            document.getElementById('broadcastList').innerHTML = 'Lỗi khi tải dữ liệu!';
+            console.error('Lỗi:', error);
+        });
+</script>
