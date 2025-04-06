@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,22 +11,27 @@
             padding: 20px;
             background-color: #f4f4f4;
         }
+
         .broadcast {
             background: white;
             padding: 15px;
             margin: 10px 0;
             border-radius: 5px;
-            box-shadow: 0px 0px 5px rgba(0,0,0,0.1);
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
         }
+
         .time {
             font-weight: bold;
             color: #333;
-            font-size: 1.2em;
+            font-size: 1.4em;
         }
+
         .content {
             margin-top: 5px;
+            font-size: 1.1em;
             padding-left: 20px;
         }
+
         img {
             max-width: 100%;
             border: 1px solid #ccc;
@@ -33,29 +39,38 @@
         }
     </style>
 </head>
+
 <body>
     <h2>EVENT</h2>
     <div id="broadcastList">Loading...</div>
-    
+
     <script>
         fetch('data.json')
             .then(response => response.json())
             .then(data => {
                 const container = document.getElementById('broadcastList');
                 container.innerHTML = '';
-                data.forEach(item => {
+
+                // Nếu file chỉ có 1 object thì cho vào mảng luôn
+                const entries = Array.isArray(data) ? data : [data];
+
+                entries.forEach(item => {
                     const div = document.createElement('div');
                     div.classList.add('broadcast');
 
                     let contentHtml = '';
-                    const content = item.Content.trim();
+                    const lines = item.Content.split('\n');
 
-                    if (content.startsWith('f"/') && content.endsWith('"')) {
-                        const imgPath = content.slice(2, -1); // cắt f" và dấu "
-                        contentHtml = `<img src="${imgPath}" style="max-width: 100%; border: 1px solid #ccc; border-radius: 4px;">`;
-                    } else {
-                        contentHtml = content.replace(/\n/g, '<br>');
-                    }
+                    lines.forEach(line => {
+                        line = line.trim();
+
+                        if ((line.startsWith("f'") && line.endsWith("'")) || (line.startsWith('f"') && line.endsWith('"'))) {
+                            const imgPath = line.slice(2, -1);
+                            contentHtml += `<img src="${imgPath}" style="width: 175px; height: auto; margin-top: 5px;"><br>`;
+                        } else {
+                            contentHtml += `${line}<br>`;
+                        }
+                    });
 
                     div.innerHTML = `
                         <div class="time">${item.Time}</div>
@@ -70,4 +85,5 @@
             });
     </script>
 </body>
+
 </html>
