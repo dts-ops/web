@@ -44,39 +44,35 @@
         <div class="time-box" id="seconds"></div>
     </div>
 
-<script>
-    const startTime = new Date("March 30, 2025 16:43:00").getTime();
+    <script>
+        const startTime = new Date("March 30, 2025 16:43:00").getTime();
 
-    function updateTimer() {
-        const now = new Date().getTime();
-        let elapsed = now - startTime;
+        function updateTimer() {
+            const now = new Date().getTime();
+            let elapsed = now - startTime;
 
-        // Lưu lại dấu âm nếu có
-        const isNegative = elapsed < 0;
-        elapsed = Math.abs(elapsed);
+            const isNegative = elapsed < 0;
+            elapsed = Math.abs(elapsed);
 
-        const days = Math.floor(elapsed / (1000 * 60 * 60 * 24));
-        elapsed %= (1000 * 60 * 60 * 24);
+            const days = Math.floor(elapsed / (1000 * 60 * 60 * 24));
+            elapsed %= (1000 * 60 * 60 * 24);
 
-        const hours = Math.floor(elapsed / (1000 * 60 * 60));
-        elapsed %= (1000 * 60 * 60);
+            const hours = Math.floor(elapsed / (1000 * 60 * 60));
+            elapsed %= (1000 * 60 * 60);
 
-        const minutes = Math.floor(elapsed / (1000 * 60));
-        elapsed %= (1000 * 60);
+            const minutes = Math.floor(elapsed / (1000 * 60));
+            elapsed %= (1000 * 60);
 
-        const seconds = Math.floor(elapsed / 1000);
+            const seconds = Math.floor(elapsed / 1000);
 
-        const prefix = isNegative ? "-" : "";
+            const prefix = isNegative ? "-" : "";
 
-        document.getElementById("days").innerText = `Ngày: ${prefix}${days}`;
-        document.getElementById("hours").innerText = `Giờ: ${prefix}${hours}`;
-        document.getElementById("minutes").innerText = `Phút: ${prefix}${minutes}`;
-        document.getElementById("seconds").innerText = `Giây: ${prefix}${seconds}`;
-    }
-
-    setInterval(updateTimer, 1000);
-    updateTimer();
-</script>
+            document.getElementById("days").innerText = `Ngày: ${prefix}${days}`;
+            document.getElementById("hours").innerText = `Giờ: ${prefix}${hours}`;
+            document.getElementById("minutes").innerText = `Phút: ${prefix}${minutes}`;
+            document.getElementById("seconds").innerText = `Giây: ${prefix}${seconds}`;
+        }
+    </script>
 
 </body>
 </html>
