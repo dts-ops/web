@@ -51,6 +51,10 @@
         const now = new Date().getTime();
         let elapsed = now - startTime;
 
+        // Lưu lại dấu âm nếu có
+        const isNegative = elapsed < 0;
+        elapsed = Math.abs(elapsed);
+
         const days = Math.floor(elapsed / (1000 * 60 * 60 * 24));
         elapsed %= (1000 * 60 * 60 * 24);
 
@@ -62,10 +66,12 @@
 
         const seconds = Math.floor(elapsed / 1000);
 
-        document.getElementById("days").innerText = `Ngày: ${days}`;
-        document.getElementById("hours").innerText = `Giờ: ${hours}`;
-        document.getElementById("minutes").innerText = `Phút: ${minutes}`;
-        document.getElementById("seconds").innerText = `Giây: ${seconds}`;
+        const prefix = isNegative ? "-" : "";
+
+        document.getElementById("days").innerText = `Ngày: ${prefix}${days}`;
+        document.getElementById("hours").innerText = `Giờ: ${prefix}${hours}`;
+        document.getElementById("minutes").innerText = `Phút: ${prefix}${minutes}`;
+        document.getElementById("seconds").innerText = `Giây: ${prefix}${seconds}`;
     }
 
     setInterval(updateTimer, 1000);
