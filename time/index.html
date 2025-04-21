@@ -3,68 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Time</title>
+    <title></title>
     <link rel="shortcut icon" href="./heart.png">
     <style>
+
         body {
             font-family: Consolas, sans-serif;
             text-align: center;
-            background-color: #f4f4f4;
+            background: linear-gradient(to right, #ffc0cb, #ffe4e1);
             margin: 0;
             padding: 20px;
+            animation: heartsBackground 20s linear infinite;
         }
+
+        @keyframes heartsBackground {
+            0% { background-position: 0 0; }
+            100% { background-position: 1000px 0; }
+        }
+
         .container {
             background: white;
             max-width: 400px;
             margin: auto;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(255, 105, 180, 0.4);
+            position: relative;
         }
+
         h2 {
-            color: #333;
+            color: #e91e63;
+            font-size: 36px;
+            margin-bottom: 20px;
         }
+
         .time-box {
             font-size: 24px;
-            margin: 15px 0;
+            margin: 10px 0;
             padding: 10px;
-            background: #7e70b5;
+            background: #ff80ab;
             color: white;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .heart {
+            position: absolute;
+            animation: float 6s infinite ease-in-out;
+            color: #ff69b4;
+            font-size: 20px;
+            user-select: none;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0); opacity: 1; }
+            100% { transform: translateY(-300px) rotate(360deg); opacity: 0; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Đã được kể từ lúc đó rồi</h2>
+        <h2>💖 TTMN 💖</h2>
         <div class="time-box" id="days"></div>
         <div class="time-box" id="hours"></div>
         <div class="time-box" id="minutes"></div>
         <div class="time-box" id="seconds"></div>
     </div>
 
-<script>
-    const startTime = new Date("March 30, 2025 16:43:00").getTime();
+    <script>
+        const startTime = new Date("March 30, 2025 16:43:00").getTime();
 
-    function updateTimer() {
-        const now = new Date().getTime();
-        let elapsed = now - startTime;
+        function updateTimer() {
+            const now = new Date().getTime();
+            let elapsed = now - startTime;
 
-        const days = Math.floor(elapsed / (1000 * 60 * 60 * 24));
-        const hours = Math.floor(elapsed / (1000 * 60 * 60));
-        const minutes = Math.floor(elapsed / (1000 * 60));
-        const seconds = Math.floor(elapsed / 1000);
+            const days = Math.floor(elapsed / (1000 * 60 * 60 * 24));
+            const hours = Math.floor(elapsed / (1000 * 60 * 60));
+            const minutes = Math.floor(elapsed / (1000 * 60));
+            const seconds = Math.floor(elapsed / 1000);
 
-        document.getElementById("days").innerText = `Ngày: ${days}`;
-        document.getElementById("hours").innerText = `Giờ: ${hours}`;
-        document.getElementById("minutes").innerText = `Phút: ${minutes}`;
-        document.getElementById("seconds").innerText = `Giây: ${seconds}`;
-    }
+            document.getElementById("days").innerText = `Ngày: ${days}`;
+            document.getElementById("hours").innerText = `Giờ: ${hours}`;
+            document.getElementById("minutes").innerText = `Phút: ${minutes}`;
+            document.getElementById("seconds").innerText = `Giây: ${seconds}`;
+        }
 
-    setInterval(updateTimer, 1000);
-    updateTimer();
-</script>
+        setInterval(updateTimer, 1000);
+        updateTimer();
 
+        // Tim bay bay
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.top = '100%';
+            heart.style.fontSize = Math.random() * 10 + 15 + 'px';
+            heart.innerText = '💖';
+            document.body.appendChild(heart);
+
+            setTimeout(() => {
+                heart.remove();
+            }, 6000);
+        }
+
+        setInterval(createHeart, 500);
+    </script>
 </body>
 </html>
