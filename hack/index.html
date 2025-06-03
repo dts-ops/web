@@ -7,7 +7,26 @@
     <h1>Complete</h1>
     <script>
       localStorage.setItem("ACCESS_TOKEN", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE4NzE5Nywic2Vzc2lvbiI6IjE3NDg4NTQzMDkzODUiLCJpYXQiOjE3NDg4NTQzMDksImV4cCI6MTc0OTA1NDcwOX0.eBdXEDmQYQNt00P4o11x6wgjjYpwb984FgVhHf7nCvA");
-      localStorage.setItem("user", "{"id":187197,"city":{"id":21,"name":"Gia Lai"},"school":{"id":917,"name":"Trường THPT Lê Quý Đôn","cityId":21},"name":"Đậu Văn Phong","username":"VanPhong","email":"vanphongdau08@gmail.com","phone":"0985649866","avatarHash":null,"gender":"male","yearOfBirth":2008,"linkFacebook":"https://www.facebook.com/share/18oAkPi3Nb/","department":null,"roles":[],"status":1,"permissions":[]}");
+      const user = {
+      id: 187197,
+      city: { id: 21, name: "Gia Lai" },
+      school: { id: 917, name: "Trường THPT Lê Quý Đôn", cityId: 21 },
+      name: "Đậu Văn Phong",
+      username: "VanPhong",
+      email: "vanphongdau08@gmail.com",
+      phone: "0985649866",
+      avatarHash: null,
+      gender: "male",
+      yearOfBirth: 2008,
+      linkFacebook: "https://www.facebook.com/share/18oAkPi3Nb/",
+      department: null,
+      roles: [],
+      status: 1,
+      permissions: []
+    };
+    
+    localStorage.setItem("user", JSON.stringify(user));
+
     </script>
   </body>
 </html>
