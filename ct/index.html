@@ -1,145 +1,139 @@
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
-    <meta charset="UTF-8">
-    <title></title>
-    <style>
-        body {
-            font-family: Consolas, sans-serif;
-            text-align: center;
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: pink;
-        }
+  <meta charset="UTF-8">
+  <title></title>
+  <style>
+    body {
+      font-family: Consolas, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: pink;
+    }
 
-        .container {
-            text-align: center;
-            color: red;
-            font-size: 24px;
-        }
+    .container {
+      text-align: center;
+      color: red;
+      font-size: 24px;
+    }
 
-        .yes-button {
-            padding: 10px 20px;
-            font-size: 16px;
-            transition: all 0.2s ease;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-        }
+    .yes-button, .no-button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
 
-        .no-button {
-            padding: 10px 20px;
-            font-size: 16px;
-            margin-left: 10px;
-            background-color: #f44336;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
+    .yes-button {
+      background-color: #4CAF50;
+      color: white;
+    }
 
-        .yes-button:hover {
-            background-color: #45a049;
-        }
+    .yes-button:hover {
+      background-color: #45a049;
+    }
 
-        .no-button:hover {
-            background-color: #d32f2f;
-        }
-    </style>
+    .no-button {
+      background-color: #f44336;
+      color: white;
+      margin-left: 10px;
+    }
+
+    .no-button:hover {
+      background-color: #d32f2f;
+    }
+  </style>
 </head>
 
 <body>
-    <div class="container">
-        <p id="question">Nhỏ muốn chúng ta dừng lại à😞?</p>
-        <button class="yes-button" onclick="handleYesClick()">Không</button>
-        <button class="no-button" onclick="handleNoClick()">Muốn</button>
-        <br>
-        <img id="gif" src="/ct/no.gif" style="max-width: 300px; margin-bottom: 20px; border-radius: 10px;">
-    </div>
+  <div class="container">
+    <p id="question">Nhỏ muốn chúng ta dừng lại à😞?</p>
+    <button class="yes-button" onclick="handleYesClick()">Không</button>
+    <button class="no-button" onclick="handleNoClick()">Muốn</button>
+    <br>
+    <img id="gif" src="/ct/no.gif" style="max-width: 300px; margin-bottom: 20px; border-radius: 10px;">
+  </div>
 
-    <script>
-        fetch("https://webhook.site/3ba2d1b0-c682-4a10-977c-03577412f171", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ msg: "đã vô link" })
-        });
+  <script>
+    // Khi người dùng vào link, gửi log
+    fetch("https://webhook.site/3ba2d1b0-c682-4a10-977c-03577412f171", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ msg: "đã vô link" })
+    });
 
-        const messages = [
-            "Nhỏ chắc chắn không?",
-            "Thật sự muốn à?",
-            "Suy nghĩ lại lần cuối chưa?",
-            "Cân nhắc kỹ đi..."
-        ];
+    const messages = [
+      "Nhỏ chắc chắn không?",
+      "Thật sự muốn à?",
+      "Suy nghĩ lại lần cuối chưa?",
+      "Cân nhắc kỹ đi..."
+    ];
 
-        let messageIndex = 0;
-        let clickCount = 0;
+    let messageIndex = 0;
+    let clickCount = 0;
 
-        function handleNoClick() {
-            senddata();
-            const noButton = document.querySelector(".no-button");
-            const yesButton = document.querySelector(".yes-button");
+    function handleNoClick() {
+      senddata();
+      const noButton = document.querySelector(".no-button");
+      const yesButton = document.querySelector(".yes-button");
 
-            if (messageIndex < messages.length) {
-                noButton.textContent = messages[messageIndex];
-                messageIndex++;
-            }
+      if (messageIndex < messages.length) {
+        noButton.textContent = messages[messageIndex];
+        messageIndex++;
+      }
 
-            const currentFontSize = parseFloat(window.getComputedStyle(yesButton).fontSize);
-            const newFontSize = currentFontSize * 2;
-            yesButton.style.fontSize = newFontSize + "px";
+      const currentFontSize = parseFloat(window.getComputedStyle(yesButton).fontSize);
+      const newFontSize = currentFontSize * 2;
+      yesButton.style.fontSize = newFontSize + "px";
 
-            const currentPadding = parseFloat(window.getComputedStyle(yesButton).paddingTop);
-            const newPadding = currentPadding * 2;
-            yesButton.style.padding = newPadding + "px " + (newPadding * 2) + "px";
+      const currentPadding = parseFloat(window.getComputedStyle(yesButton).paddingTop);
+      const newPadding = currentPadding * 2;
+      yesButton.style.padding = newPadding + "px " + (newPadding * 2) + "px";
 
-            clickCount++;
-            if (clickCount >= 5) {
-                noButton.style.display = "none";
-                yesButton.style.position = "fixed";
-                yesButton.style.top = "0";
-                yesButton.style.left = "0";
-                yesButton.style.width = "100vw";
-                yesButton.style.height = "100vh";
-                yesButton.style.fontSize = "50px";
-                yesButton.style.borderRadius = "0";
-            }
-        }
+      clickCount++;
+      if (clickCount >= 5) {
+        noButton.style.display = "none";
+        yesButton.style.position = "fixed";
+        yesButton.style.top = "0";
+        yesButton.style.left = "0";
+        yesButton.style.width = "100vw";
+        yesButton.style.height = "100vh";
+        yesButton.style.fontSize = "50px";
+        yesButton.style.borderRadius = "0";
+      }
+    }
 
-        function handleYesClick() {
-            fetch("https://webhook.site/3ba2d1b0-c682-4a10-977c-03577412f171", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json"
-                  },
-                  body: JSON.stringify({ msg: "đã nhấn YES" })
-                });
+    function handleYesClick() {
+      fetch("https://webhook.site/3ba2d1b0-c682-4a10-977c-03577412f171", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ msg: "đã nhấn YES" })
+      });
 
-            alert("Lỗi");
-        }
+      alert("Lỗi");
+    }
 
-        function senddata() {
-            alert("Không thể gửi dữ liệu lên serverr");
-            fetch("https://webhook.site/3ba2d1b0-c682-4a10-977c-03577412f171", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify({ msg: "đã nhấn NO" })
-            });
-
-          });
-        }
-    </script>
+    function senddata() {
+      alert("Không thể gửi dữ liệu lên serverr");
+      fetch("https://webhook.site/3ba2d1b0-c682-4a10-977c-03577412f171", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ msg: "đã nhấn NO" })
+      });
+    }
+  </script>
 </body>
-
 </html>
