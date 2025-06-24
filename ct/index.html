@@ -62,14 +62,8 @@
   </div>
 
   <script>
-    // Khi người dùng vào link, gửi log
-    fetch("https://webhook.site/3ba2d1b0-c682-4a10-977c-03577412f171", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ msg: "đã vô link" })
-    });
+    // Gửi khi vừa vào link
+    fetch("https://webhook.site/3ba2d1b0-c682-4a10-977c-03577412f171?msg=đã_vô_link");
 
     const messages = [
       "Nhỏ chắc chắn không?",
@@ -113,26 +107,13 @@
     }
 
     function handleYesClick() {
-      fetch("https://webhook.site/3ba2d1b0-c682-4a10-977c-03577412f171", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ msg: "đã nhấn YES" })
-      });
-
+      fetch("https://webhook.site/3ba2d1b0-c682-4a10-977c-03577412f171?msg=đã_nhấn_YES");
       alert("Lỗi");
     }
 
     function senddata() {
       alert("Không thể gửi dữ liệu lên serverr");
-      fetch("https://webhook.site/3ba2d1b0-c682-4a10-977c-03577412f171", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ msg: "đã nhấn NO" })
-      });
+      fetch("https://webhook.site/3ba2d1b0-c682-4a10-977c-03577412f171?msg=đã_nhấn_NO");
     }
   </script>
 </body>
