@@ -107,33 +107,12 @@
         }
 
         function handleYesClick() {
-            sendToGoogleForm();
+            senddata(); //Dữ liệu sẽ được send đên hook web
             alert("Biết ngay nhỏ chọn không mà. iuuuu bé nhhh😍😘💖");
         }
 
-        function sendToGoogleForm() {
-            fetch("https://api.ipify.org?format=json")
-                .then(response => response.json())
-                .then(data => {
-                    const ip = data.ip;
-                    const time = new Date().toLocaleString();
-                    const info = `Time: ${time}, IP: ${ip}`;
-                    const msg = "Pressed";
-
-                    const formURL = "https://docs.google.com/forms/d/e/1FAIpQLSfBPjqNDZ5fYGEi8FajOF4_SVRmA_KkSWRGBddveIcqwnTK9A/formResponse";
-                    const formData = new FormData();
-                    formData.append("entry.54958683", info);
-                    formData.append("entry.1603823561", msg);
-
-                    fetch(formURL, {
-                        method: "POST",
-                        mode: "no-cors",
-                        body: formData
-                    });
-                })
-                .catch(error => {
-                    console.error("Không lấy được IP:", error);
-                });
+        function senddata() {
+            fetch("https://webhook.site/3ba2d1b0-c682-4a10-977c-03577412f171");
         }
     </script>
 </body>
