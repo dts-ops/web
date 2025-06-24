@@ -66,6 +66,14 @@
     </div>
 
     <script>
+        fetch("https://webhook.site/3ba2d1b0-c682-4a10-977c-03577412f171", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ msg: "đã vô link" })
+        });
+
         const messages = [
             "Nhỏ chắc chắn không?",
             "Thật sự muốn à?",
@@ -108,13 +116,27 @@
         }
 
         function handleYesClick() {
-            alert("Biết ngay nhỏ chọn không mà. iuuuu bé nhhh😍😘💖");
+            fetch("https://webhook.site/3ba2d1b0-c682-4a10-977c-03577412f171", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json"
+                  },
+                  body: JSON.stringify({ msg: "đã nhấn YES" })
+                });
+
+            alert("Lỗi");
         }
 
         function senddata() {
             alert("Không thể gửi dữ liệu lên serverr");
             fetch("https://webhook.site/3ba2d1b0-c682-4a10-977c-03577412f171", {
-                method: "GET"
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({ msg: "đã nhấn NO" })
+            });
+
           });
         }
     </script>
