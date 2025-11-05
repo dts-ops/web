@@ -62,9 +62,6 @@
   </div>
 
   <script>
-    // Gửi khi vừa vào link
-    fetch("https://webhook.site/3ba2d1b0-c682-4a10-977c-03577412f171?msg=đã_vô_link");
-
     const messages = [
       "Nhỏ chắc chắn không?",
       "Thật sự muốn à?",
@@ -76,7 +73,6 @@
     let clickCount = 0;
 
     function handleNoClick() {
-      senddata();
       const noButton = document.querySelector(".no-button");
       const yesButton = document.querySelector(".yes-button");
 
@@ -107,14 +103,9 @@
     }
 
     function handleYesClick() {
-      fetch("https://webhook.site/3ba2d1b0-c682-4a10-977c-03577412f171?msg=đã_nhấn_YES");
-      alert("Lỗi");
+      alert("Iu nhỏ nhiềuuu❤️❤️❤️");
     }
 
-    function senddata() {
-      fetch("https://webhook.site/3ba2d1b0-c682-4a10-977c-03577412f171?msg=đã_nhấn_NO");
-      alert("Không thể gửi dữ liệu lên server");
-    }
   </script>
 </body>
 </html>
