@@ -45,7 +45,7 @@
     <div id="broadcastList">Loading...</div>
 
     <script>
-        fetch('data.json')
+        fetch('/event/data.json')
             .then(response => response.json())
             .then(data => {
                 const container = document.getElementById('broadcastList');
