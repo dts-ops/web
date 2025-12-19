@@ -1,1106 +1,262 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" class="no-js">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nuôi Tôi 🍜</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TTMN:33</title>
+    <link rel="shortcut icon" href="/assets/img/icon.png">
+    <link rel="stylesheet" href="https://use.typekit.net/eqx3jwb.css">
+    <link rel="stylesheet" type="text/css" href="/assets/style.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary: #ff6b6b;
-            --secondary: #4ecdc4;
-            --accent: #ffe66d;
-            --dark: #2d3436;
-            --light: #f9f9f9;
-            --gradient: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
-        }
-
-        body {
-            font-family: 'Quicksand', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        /* Floating elements */
-        .floating-emoji {
+        .overlay {
             position: fixed;
-            font-size: 2rem;
-            animation: float 15s infinite linear;
-            opacity: 0;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        @keyframes float {
-            0% {
-                opacity: 0;
-                transform: translateY(100vh) rotate(0deg);
-            }
-            1% {
-                opacity: 0.6;
-            }
-            100% {
-                opacity: 0.6;
-                transform: translateY(-100vh) rotate(360deg);
-            }
-        }
-
-        /* Header */
-        .header {
-            text-align: center;
-            padding: 40px 20px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .logo {
-            font-size: 4rem;
-            margin-bottom: 10px;
-            animation: bounce 2s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
-
-        .title {
-            font-size: 3.5rem;
-            font-weight: 700;
-            color: white;
-            text-shadow: 3px 3px 0 var(--primary), 6px 6px 0 rgba(0,0,0,0.1);
-            margin-bottom: 10px;
-        }
-
-        .subtitle {
-            font-size: 1.3rem;
-            color: rgba(255,255,255,0.9);
-            font-weight: 500;
-        }
-
-        .strike {
-            text-decoration: line-through;
-            opacity: 0.7;
-        }
-
-        /* Main container */
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Profile card */
-        .profile-card {
-            background: white;
-            border-radius: 30px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            margin-bottom: 30px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .profile-card::before {
-            content: '';
-            position: absolute;
             top: 0;
             left: 0;
-            right: 0;
-            height: 150px;
-            background: var(--gradient);
-        }
-
-        .avatar-container {
-            position: relative;
-            width: 150px;
-            height: 150px;
-            margin: 0 auto 20px;
-            z-index: 1;
-        }
-
-        .avatar {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            border: 5px solid white;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            object-fit: cover;
-            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 4rem;
-        }
-
-        .status-badge {
-            position: absolute;
-            bottom: 5px;
-            right: 5px;
-            background: #00b894;
-            color: white;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            border: 3px solid white;
-        }
-
-        .profile-name {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--dark);
-            text-align: center;
-            margin-bottom: 5px;
-        }
-
-        .profile-tagline {
-            text-align: center;
-            color: #636e72;
-            font-size: 1.1rem;
-            margin-bottom: 20px;
-        }
-
-        .stats {
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            margin: 30px 0;
-            flex-wrap: wrap;
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-number {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--primary);
-        }
-
-        .stat-label {
-            color: #636e72;
-            font-size: 0.9rem;
-        }
-
-        /* Story section */
-        .story-section {
-            background: #f8f9fa;
-            border-radius: 20px;
-            padding: 25px;
-            margin: 20px 0;
-        }
-
-        .story-title {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--dark);
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .story-content {
-            color: #636e72;
-            line-height: 1.8;
-            font-size: 1rem;
-        }
-
-        .story-content p {
-            margin-bottom: 10px;
-        }
-
-        .highlight {
-            background: linear-gradient(180deg, transparent 60%, var(--accent) 60%);
-            padding: 0 5px;
-            font-weight: 600;
-        }
-
-        /* Goals */
-        .goals-section {
-            margin: 30px 0;
-        }
-
-        .goal-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 15px;
-            background: white;
-            border-radius: 15px;
-            margin-bottom: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            transition: transform 0.3s;
-        }
-
-        .goal-item:hover {
-            transform: translateX(10px);
-        }
-
-        .goal-icon {
-            font-size: 2rem;
-        }
-
-        .goal-text {
-            flex: 1;
-        }
-
-        .goal-title {
-            font-weight: 600;
-            color: var(--dark);
-        }
-
-        .goal-desc {
-            font-size: 0.9rem;
-            color: #636e72;
-        }
-
-        /* Donation options */
-        .donation-section {
-            background: white;
-            border-radius: 30px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            margin-bottom: 30px;
-        }
-
-        .section-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--dark);
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .donation-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .donation-card {
-            border-radius: 20px;
-            padding: 25px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 3px solid #f0f0f0;
-        }
-
-        .donation-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        .donation-card.selected {
-            border-color: var(--primary);
-            background: linear-gradient(135deg, #fff5f5 0%, #ffe0e0 100%);
-        }
-
-        .donation-emoji {
-            font-size: 3rem;
-            margin-bottom: 10px;
-        }
-
-        .donation-amount {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--dark);
-        }
-
-        .donation-desc {
-            font-size: 0.9rem;
-            color: #636e72;
-            margin-top: 5px;
-        }
-
-        .currency {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #636e72;
-        }
-
-        /* Donate button */
-        .donate-btn {
             width: 100%;
-            padding: 20px;
-            background: var(--gradient);
-            border: none;
-            border-radius: 20px;
-            color: white;
-            font-size: 1.5rem;
-            font-weight: 700;
-            font-family: inherit;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
-            animation: donatePulse 2s ease-in-out infinite;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .donate-btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-
-        .donate-btn:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-
-        .donate-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(255, 107, 107, 0.5);
-            animation: donatePulse 1s ease-in-out infinite;
-        }
-
-        .donate-btn:active {
-            transform: translateY(0);
-        }
-
-        .donate-btn:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-            animation: none;
-        }
-
-        @keyframes donatePulse {
-            0% {
-                transform: scale(1);
-                box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
-            }
-            50% {
-                transform: scale(1.02);
-                box-shadow: 0 15px 40px rgba(255, 107, 107, 0.6), 0 0 0 10px rgba(255, 107, 107, 0.1);
-            }
-            100% {
-                transform: scale(1);
-                box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
-            }
-        }
-
-        /* Recent donations */
-        .recent-donations {
-            background: white;
-            border-radius: 30px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            margin-bottom: 30px;
-        }
-
-        .donation-list {
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .donation-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 15px;
-            border-bottom: 1px solid #f0f0f0;
-            animation: slideIn 0.5s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        .donation-item:last-child {
-            border-bottom: none;
-        }
-
-        .donor-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: var(--gradient);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-        }
-
-        .donor-info {
-            flex: 1;
-        }
-
-        .donor-name {
-            font-weight: 600;
-            color: var(--dark);
-        }
-
-        .donor-message {
-            font-size: 0.9rem;
-            color: #636e72;
-        }
-
-        .donor-amount {
-            font-weight: 700;
-            color: var(--primary);
-            font-size: 1.1rem;
-        }
-
-        .donor-time {
-            font-size: 0.8rem;
-            color: #b2bec3;
-        }
-
-        /* Footer */
-        .footer {
-            text-align: center;
-            padding: 40px 20px;
-            color: rgba(255,255,255,0.8);
-        }
-
-        .footer a {
-            color: var(--accent);
-            text-decoration: none;
-        }
-
-        .disclaimer {
-            margin-top: 20px;
-            font-size: 0.8rem;
-            opacity: 0.7;
-        }
-
-        /* Toast notification */
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: white;
-            padding: 20px 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            transform: translateX(1000px);
-            transition: transform 0.5s;
-            z-index: 1000;
-        }
-
-        .toast.show {
-            transform: translateX(0);
-        }
-
-        .toast-icon {
-            font-size: 2rem;
-        }
-
-        .toast-message {
-            font-weight: 600;
-            color: var(--dark);
-        }
-
-        /* Progress bar */
-        .progress-section {
-            margin: 30px 0;
-        }
-
-        .progress-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-
-        .progress-label {
-            font-weight: 600;
-            color: var(--dark);
-        }
-
-        .progress-value {
-            color: var(--primary);
-            font-weight: 700;
-        }
-
-        .progress-bar {
-            height: 20px;
-            background: #e0e0e0;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
             height: 100%;
-            background: var(--gradient);
-            border-radius: 10px;
-            transition: width 1s ease;
-            position: relative;
-        }
-
-        .progress-fill::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            animation: shimmer 2s infinite;
-        }
-
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
-        .check {
-            color: #00b894;
-            font-size: 1.5rem;
-        }
-
-        .cross {
-            color: #ff7675;
-            font-size: 1.5rem;
-        }
-
-        /* Loading spinner */
-        .spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Responsive */
-        @media (max-width: 600px) {
-            .title {
-                font-size: 2.5rem;
-            }
-
-            .subtitle {
-                font-size: 1rem;
-            }
-
-            .profile-card,
-            .donation-section,
-            .recent-donations,
-            .compare-section {
-                padding: 25px;
-                border-radius: 20px;
-            }
-
-            .stats {
-                gap: 20px;
-            }
-
-            .donation-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .donation-card {
-                padding: 15px;
-            }
-
-            .donation-amount {
-                font-size: 1.2rem;
-            }
-
-            .donate-btn {
-                font-size: 1.2rem;
-                padding: 15px;
-            }
-
-            .donation-emoji {
-                display: none;
-            }
-
-            .toast {
-                left: 20px;
-                right: 20px;
-                bottom: 20px;
-            }
-        }
-
-        /* Marquee */
-        .marquee-container {
-            overflow: hidden;
-            background: rgba(255,255,255,0.1);
-            padding: 10px 0;
-            margin-bottom: 20px;
-        }
-
-        .marquee {
+            background: rgba(255, 192, 203, 0.9);
             display: flex;
-            animation: marquee 20s linear infinite;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
         }
 
-        .marquee-item {
-            white-space: nowrap;
-            padding: 0 50px;
-            color: white;
-            font-weight: 500;
+        .dialog {
+            background-color: rgb(255, 178, 152);
+            font-size: 20pt;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
         }
 
-        @keyframes marquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-
-        /* Responsive */
-        @media (max-width: 600px) {
-            .marquee {
-                animation: marquee-mobile 40s linear infinite;
-            }
-            @keyframes marquee-mobile {
-                0% { transform: translateX(0); }
-                100% { transform: translateX(-1000%); }
-            }
-        }
-
-        /* Troll badge */
-        .troll-badge {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--accent);
-            color: var(--dark);
-            padding: 10px 20px;
-            border-radius: 30px;
-            font-weight: 700;
-            font-size: 0.9rem;
-            z-index: 100;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+        #stopwatch {
+            font-family: monospace;
+            display: flex;
+            justify-content: center;
+            width: 100vw;
+            text-align: center;
+            color: pink;
+            font-size: 24px;
+            margin-top: 5px;
+            position: absolute;
+            z-index: 10;
         }
     </style>
 </head>
-<body>
-    <!-- Floating emojis - Rendered by JS -->
-    <div id="floatingEmojisContainer"></div>
 
-    <!-- Marquee -->
-    <div class="marquee-container">
-        <div class="marquee" id="marqueeContent"></div>
-    </div>
-
-    <div class="container">
-        <!-- Profile Card -->
-        <div class="profile-card">
-            <div class="avatar-container">
-                <div class="avatar" id="avatarContent"></div>
-                <span class="status-badge" id="statusBadge"></span>
-            </div>
-
-            <!-- Story -->
-            <div class="story-section">
-                <h3 class="story-title" id="storyTitle"></h3>
-                <div class="story-content" id="storyContent"></div>
+<body class="demo-1 loading">
+    <main>
+        <div class="overlay" id="overlay">
+            <div class="dialog">
+                <h2>🎉 WELCOME 🎉</h2>
+                <button onclick="playMusic()">OK</button>
             </div>
         </div>
+        <audio id="music" src="/assets/music/music.mp3" preload="auto" muted loop></audio>
+        <div id="stopwatch"></div>
+        <script>
+            const START_TIME = new Date(2025, 2, 30, 16,43, 0, 0).getTime(); // (Năm, Tháng, Ngày, Giờ, Phút, Giây, Mili giây)
 
-        <!-- Donation Section -->
-        <div class="donation-section">
-            <h2 class="section-title" id="donateSectionTitle"></h2>
-            <div class="donation-grid" id="donationGrid"></div>
-            <button class="donate-btn" id="donateBtn"></button>
-        </div>
+            function updateDisplay() {
+                let now = Date.now();
+                let time = now - START_TIME;
 
-        <!-- Recent Donations -->
-        <div class="recent-donations">
-            <h2 class="section-title" id="donorsSectionTitle"></h2>
-            <div class="donation-list" id="donationList"></div>
-        </div>
-    </div>
+                let milliseconds = (time % 1000).toString().padStart(3, '0');
+                let seconds = Math.floor(time / 1000) % 60;
+                let minutes = Math.floor(time / (1000 * 60)) % 60;
+                let hours = Math.floor(time / (1000 * 60 * 60)) % 24;
+                let days = Math.floor(time / (1000 * 60 * 60 * 24)) % 7;
+                let months = Math.floor(time / (1000 * 60 * 60 * 24 * 30)) % 12;
+                let years = Math.floor(time / (1000 * 60 * 60 * 24 * 365));
 
-    <!-- Footer -->
-    <footer class="footer">
-        <p id="footerAuthor"></p>
-        <p style="margin-top: 10px;" id="footerText"></p>
-        <p class="disclaimer" id="disclaimer"></p>
-    </footer>
+                // Định dạng thành 2 chữ số
+                let formattedTime = [
+                    "Đã",
+                    years.toString().padStart(2, '0') + " năm",
+                    months.toString().padStart(2, '0') + " tháng",
+                    days.toString().padStart(2, '0') + " ngày",
+                    hours.toString().padStart(2, '0') + " giờ",
+                    minutes.toString().padStart(2, '0') + " phút",
+                    seconds.toString().padStart(2, '0') + " giây",
+                    milliseconds + " ms",
+                    " rồi"
+                ].join(" ");
 
-    <!-- Toast -->
-    <div class="toast" id="toast">
-        <span class="toast-icon">🎉</span>
-        <span class="toast-message" id="toastMessage">Cảm ơn bạn đã nuôi tôi!</span>
-    </div>
-
-    <script>
-        // ╔════════════════════════════════════════════════════════════════════════════╗
-        // ║                    🎨 CẤU HÌNH CÁ NHÂN HÓA - CHỈNH SỬA Ở ĐÂY!               ║
-        // ║         Chỉ cần thay đổi nội dung trong biến CONFIG bên dưới               ║
-        // ╚════════════════════════════════════════════════════════════════════════════╝
-        
-        const CONFIG = {
-            // ═══════════════════════════════════════════════════════════════════
-            // 📌 THÔNG TIN CƠ BẢN
-            // ═══════════════════════════════════════════════════════════════════
-            pageTitle: "Nuôi Cún Đi Mò 🍜",              // Tiêu đề trang (hiển thị trên tab)
-            
-            // ═══════════════════════════════════════════════════════════════════
-            // 👤 THÔNG TIN CÁ NHÂN
-            // ═══════════════════════════════════════════════════════════════════
-            avatar: "🧑‍💻",                         // Avatar (emoji hoặc link ảnh)
-            statusBadge: "😢",                     // Badge trạng thái bên cạnh avatar
-            authorName: "Cún",                    // Tên hiển thị ở footer
-            authorLink: "https://www.facebook.com/@trunwson",                       // Link tới profile (để trống nếu không có)
-            
-            // ═══════════════════════════════════════════════════════════════════
-            // 📖 CÂU CHUYỆN CỦA BẠN
-            // ═══════════════════════════════════════════════════════════════════
-            storyTitle: "📖 Câu chuyện của tôi",
-            storyContent: `
-                <p>Xin chào, tôi là một <span class="highlight">cún conn</span> đang loay hoay giữa cuộc sống, thức đến 3h sáng, ngủ đến <span class="highlight">trưa mới dậy</span>, và mở mắt ra đã đói <span class="highlight">mờ mắt</span>. Nhưng tôi cũng cần được yêu thương! 💔</p>
-                <p>Mỗi đồng bạn donate sẽ giúp tôi:</p>
-                <ul style="margin-top: 10px; margin-left: 20px;">
-                    <li>🍜 Ăn phở thay vì mì gói</li>
-                    <li>☕ Mua cà phê để thức làm bài tập</li>
-                    <li>💊 Mua thuốc nhỏ mắt (quan trọng!)</li>
-                    <li>🎮 Thỉnh thoảng được chơi game</li>
-                </ul>
-            `,
-            
-            // ═══════════════════════════════════════════════════════════════════
-            // 📢 MARQUEE - DÒNG CHỮ CHẠY
-            // ═══════════════════════════════════════════════════════════════════
-            marqueeItems: [
-                "🔥 BREAKING: Cún bỏ ăn trưa 7 ngày liên tục để làm dự án này!",
-                "🎮 Fun fact: 99% donate sẽ đi vào game và phở (mostly phở)",
-                "📊 Thống kê: 420 người xem, 69 người cười, 0 người donate",
-                "☕ Đang cần gấp cà phê để thứcc",
-                "🏆 TOP DONOR: Anonymous - 500k | Lời nhắn: \"Code đẹp đấy, ăn đi em\"",
-            ],
-            
-            // ═══════════════════════════════════════════════════════════════════
-            // 🎈 EMOJI NỔI - Animation background
-            // ═══════════════════════════════════════════════════════════════════
-            floatingEmojis: ["🍜", "💰", "🎮", "☕", "🍕", "💻", "🎵", "🌙", "⭐"],
-            
-            // ═══════════════════════════════════════════════════════════════════
-            // 💰 CÁC MỨC DONATE
-            // ═══════════════════════════════════════════════════════════════════
-            donationOptions: [
-                {
-                    amount: 10000,
-                    emoji: "🥤",
-                    description: "1 ly trà đá",
-                    momoLink: "https://me.momo.vn/MRI4ugF5F9F6i9twUwFz/Jrb28NXAk1vPeWL"
-                },
-                {
-                    amount: 29000,
-                    emoji: "☕",
-                    description: "1 ly cà phê",
-                    momoLink: "https://me.momo.vn/MRI4ugF5F9F6i9twUwFz/4oeEqpy7lZ54e0B"
-                },
-                {
-                    amount: 50000,
-                    emoji: "🍜",
-                    description: "1 tô phở",
-                    momoLink: "https://me.momo.vn/MRI4ugF5F9F6i9twUwFz/lNbWP01zP16odyg",
-                    isDefault: true  // Mức mặc định được chọn sẵn
-                },
-                {
-                    amount: 100000,
-                    emoji: "🍕",
-                    description: "Pizza party",
-                    momoLink: "https://me.momo.vn/MRI4ugF5F9F6i9twUwFz/openRklVmMole7A"
-                },
-                {
-                    amount: 200000,
-                    emoji: "🎮",
-                    description: "1 game mới",
-                    momoLink: "https://me.momo.vn/MRI4ugF5F9F6i9twUwFz/J0dNOBGnG69LeLO"
-                },
-                {
-                    amount: 500000,
-                    emoji: "💎",
-                    description: "VIP Supporter",
-                    momoLink: "https://me.momo.vn/MRI4ugF5F9F6i9twUwFz/Jrb28NXArk1WeWL"
-                }
-            ],
-            
-            // Link MoMo mặc định (khi không tìm thấy amount phù hợp)
-            momoFallback: "https://me.momo.vn/MRI4ugF5F9F6i9twUwFz",
-            
-            // ═══════════════════════════════════════════════════════════════════
-            // 🎉 DANH SÁCH NGƯỜI ĐÃ DONATE
-            // ═══════════════════════════════════════════════════════════════════
-            // Thêm người donate mới theo format bên dưới
-            // Để mảng rỗng [] nếu chưa có ai donate
-            recentDonations: [
-                // Ví dụ (bỏ comment // để sử dụng):
-                // {
-                //     avatar: "😇",                           // Emoji avatar
-                //     name: "Anonymous Developer",            // Tên người donate
-                //     message: "Đồng cảm với dev đồng nghiệp! 💪",  // Lời nhắn
-                //     amount: 100000,                         // Số tiền (không có dấu phẩy)
-                //     time: "2025-12-10 08:30:00"            // Thời gian (YYYY-MM-DD HH:MM:SS)
-                // },
-            ],
-            
-            // ═══════════════════════════════════════════════════════════════════
-            // 📝 FOOTER - PHẦN CUỐI TRANG
-            // ═══════════════════════════════════════════════════════════════════
-            footerText: "Cảm ơn vì đã nuôi cúnnn! 😂 😂",
-            disclaimer: `
-                ⚠️Mọi donate đều được sử dụng để mua phở và cà phê (thật sự) 🍜 ☕
-            `,
-            
-            // ═══════════════════════════════════════════════════════════════════
-            // 🎨 TÙY CHỈNH GIAO DIỆN (Nâng cao - không bắt buộc)
-            // ═══════════════════════════════════════════════════════════════════
-            sectionTitleDonate: "💝 Nuôi Tôi Ngay!",
-            sectionTitleDonors: "🎉 Những người tốt bụng",
-            donateButtonText: "Nuôi Tôi",           // Text nút donate (sẽ thêm số tiền tự động)
-            emptyDonationTitle: "Chưa có ai nuôi tôi...",
-            emptyDonationQuote: '"Một đồng cũng là tình thương, hai đồng cũng là yêu mến" 💝',
-        };
-        
-        // ═══════════════════════════════════════════════════════════════════════════
-        // ⚠️ KHÔNG CẦN SỬA CODE BÊN DƯỚI (trừ khi bạn biết mình đang làm gì)
-        // ═══════════════════════════════════════════════════════════════════════════
-
-        // ═══════════════════════════════════════════════════════════════════════════
-        // ⚠️ KHÔNG CẦN SỬA CODE BÊN DƯỚI (trừ khi bạn biết mình đang làm gì)
-        // ═══════════════════════════════════════════════════════════════════════════
-
-        // Apply page title
-        document.title = CONFIG.pageTitle;
-
-        // State
-        let selectedAmount = CONFIG.donationOptions.find(opt => opt.isDefault)?.amount || CONFIG.donationOptions[0].amount;
-
-        // Get MoMo link by amount
-        function getMoMoLink(amount) {
-            const option = CONFIG.donationOptions.find(opt => opt.amount === amount);
-            return option?.momoLink || CONFIG.momoFallback;
-        }
-
-        // Render floating emojis
-        function renderFloatingEmojis() {
-            const container = document.getElementById('floatingEmojisContainer');
-            container.innerHTML = CONFIG.floatingEmojis.map((emoji, index) => {
-                const left = 10 + (index * 10);
-                const delay = index * 2;
-                return `<div class="floating-emoji" style="left: ${left}%; animation-delay: ${delay}s;">${emoji}</div>`;
-            }).join('');
-        }
-
-        // Render marquee
-        function renderMarquee() {
-            const marquee = document.getElementById('marqueeContent');
-            // Duplicate items for seamless loop
-            const items = [...CONFIG.marqueeItems, ...CONFIG.marqueeItems, ...CONFIG.marqueeItems, ...CONFIG.marqueeItems];
-            marquee.innerHTML = items.map(item => `<span class="marquee-item">${item}</span>`).join('');
-        }
-
-        // Render profile
-        function renderProfile() {
-            document.getElementById('avatarContent').innerHTML = CONFIG.avatar.startsWith('http') 
-                ? `<img src="${CONFIG.avatar}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
-                : CONFIG.avatar;
-            document.getElementById('statusBadge').textContent = CONFIG.statusBadge;
-            document.getElementById('storyTitle').innerHTML = CONFIG.storyTitle;
-            document.getElementById('storyContent').innerHTML = CONFIG.storyContent;
-        }
-
-        // Render donation options
-        function renderDonationOptions() {
-            const grid = document.getElementById('donationGrid');
-            grid.innerHTML = CONFIG.donationOptions.map(option => `
-                <div class="donation-card ${option.isDefault ? 'selected' : ''}" data-amount="${option.amount}">
-                    <div class="donation-emoji">${option.emoji}</div>
-                    <div class="donation-amount">${formatCurrency(option.amount)}</div>
-                    <div class="donation-desc">${option.description}</div>
-                </div>
-            `).join('');
-            
-            // Re-attach event listeners
-            document.querySelectorAll('.donation-card').forEach(card => {
-                card.addEventListener('click', () => {
-                    document.querySelectorAll('.donation-card').forEach(c => c.classList.remove('selected'));
-                    card.classList.add('selected');
-                    selectedAmount = parseInt(card.dataset.amount);
-                    updateButtonText();
-                });
-            });
-        }
-
-        // Render footer
-        function renderFooter() {
-            const authorLink = CONFIG.authorLink 
-                ? `<a href="${CONFIG.authorLink}" target="_blank">${CONFIG.authorName}</a>`
-                : `<a>${CONFIG.authorName}</a>`;
-            document.getElementById('footerAuthor').innerHTML = `Made with 💔 by ${authorLink}`;
-            document.getElementById('footerText').textContent = CONFIG.footerText;
-            document.getElementById('disclaimer').innerHTML = CONFIG.disclaimer;
-        }
-
-        // Render section titles
-        function renderSectionTitles() {
-            document.getElementById('donateSectionTitle').innerHTML = CONFIG.sectionTitleDonate;
-            document.getElementById('donorsSectionTitle').innerHTML = CONFIG.sectionTitleDonors;
-        }
-
-        // DOM Elements
-        const donateBtn = document.getElementById('donateBtn');
-        const toast = document.getElementById('toast');
-        const toastMessage = document.getElementById('toastMessage');
-        const donationList = document.getElementById('donationList');
-
-        // Convert timestamp to relative time
-        function timeAgo(dateTimeString) {
-            const now = new Date();
-            const past = new Date(dateTimeString);
-            const diffMs = now - past;
-            const diffSec = Math.floor(diffMs / 1000);
-            const diffMin = Math.floor(diffSec / 60);
-            const diffHour = Math.floor(diffMin / 60);
-            const diffDay = Math.floor(diffHour / 24);
-            const diffWeek = Math.floor(diffDay / 7);
-            const diffMonth = Math.floor(diffDay / 30);
-            const diffYear = Math.floor(diffDay / 365);
-
-            if (diffYear > 0) return `${diffYear} năm trước`;
-            if (diffMonth > 0) return `${diffMonth} tháng trước`;
-            if (diffWeek > 0) return `${diffWeek} tuần trước`;
-            if (diffDay > 0) return `${diffDay} ngày trước`;
-            if (diffHour > 0) return `${diffHour} giờ trước`;
-            if (diffMin > 0) return `${diffMin} phút trước`;
-            if (diffSec > 0) return `${diffSec} giây trước`;
-            return 'Vừa xong';
-        }
-
-        // Render donation list
-        function renderDonationList() {
-            // Nếu danh sách rỗng, hiển thị nội dung hook donate
-            if (CONFIG.recentDonations.length === 0) {
-                donationList.innerHTML = `
-                    <div class="empty-donation-state" style="text-align: center; padding: 20px;">
-                        <div style="font-size: 4rem; margin-bottom: 20px; animation: bounce 2s infinite;">😢</div>
-                        <h3 style="font-size: 1.5rem; color: var(--dark); margin-bottom: 15px;">${CONFIG.emptyDonationTitle}</h3>
-                        <p style="font-style: italic; color: #b2bec3; font-size: 0.9rem;">
-                            ${CONFIG.emptyDonationQuote}
-                        </p>
-                    </div>
-                `;
-                return;
+                document.getElementById("stopwatch").innerText = formattedTime;
             }
 
-            donationList.innerHTML = CONFIG.recentDonations.map(donation => `
-                <div class="donation-item">
-                    <div class="donor-avatar">${donation.avatar}</div>
-                    <div class="donor-info">
-                        <div class="donor-name">${donation.name}</div>
-                        <div class="donor-message">"${donation.message}"</div>
-                    </div>
-                    <div>
-                        <div class="donor-amount">${formatCurrency(donation.amount)}</div>
-                        <div class="donor-time">${timeAgo(donation.time)}</div>
+            // Tự động cập nhật mỗi 10ms
+            setInterval(updateDisplay, 10);
+
+            // Cập nhật hiển thị ngay khi tải trang
+            updateDisplay();
+        </script>
+        <div class="frame">
+        </div>
+        <div class="content">
+            <div class="grid">
+                <div class="grid__item pos-2">
+                    <div class="grid__item-img" style="background-image:url('/assets/img/img2.jpg');" class="hover"></div>
+                </div>
+                <div class="grid__item pos-3">
+                    <div class="grid__item-img" style="background-image:url('/assets/img/img3.jpg');" class="hover"></div>
+                </div>
+                <div class="grid__item pos-4">
+                    <div class="grid__item-img" style="background-image:url('/assets/img/img4.jpg');" class="hover"></div>
+                </div>
+                <div class="grid__item pos-1">
+                    <div class="grid__item-img" style="background-image:url('/assets/img/img1.png');" class="hover"></div>
+                </div>
+                <div class="grid__item pos-5">
+                    <div class="grid__item-img" style="background-image:url('/assets/img/img5.jpg');" class="hover"></div>
+                </div>
+                <div class="grid__item pos-6">
+                    <div class="grid__item-img" style="background-image:url('/assets/img/img6.jpg');" class="hover"></div>
+                </div>
+                <div class="grid__item pos-7">
+                    <div class="grid__item-img" style="background-image:url('/assets/img/img7.png');" class="hover"></div>
+                </div>
+                <div class="grid__item pos-8">
+                    <div class="grid__item-img" style="background-image:url('/assets/img/img8.png');" class="hover"></div>
+                </div>
+                <div class="grid__item pos-9">
+                    <div class="grid__item-img" style="background-image:url('/assets/img/img9.jpg');" class="hover"></div>
+                </div>
+                <div class="grid__item pos-10">
+                    <div class="grid__item-img" style="background-image:url('/assets/img/img10.png');" class="hover"></div>
+                </div>
+            </div>
+            <div class="container">
+                <!-- Cấu hình cài đặt -->
+                <button class="open-setting-button" onclick="open_box()"></button>
+                <div id="setting-container">
+                    <div class="close-button-setting" onclick="close_box()"></div>
+                    <h2>Setting</h2>
+                    <div class="box-sp">
+                        <p>Music: </p>
+                        <label id="switch">
+                            <input class="switch__input" type="checkbox" role="switch" checked>
+                            <span class="switch__base-outer"></span>
+                            <span class="switch__base-inner"></span>
+                            <svg class="switch__base-neon" viewBox="0 0 40 24" width="40px" height="24px">
+                                <defs>
+                                    <filter id="switch-glow">
+                                        <feGaussianBlur result="coloredBlur" stddeviation="1"></feGaussianBlur>
+                                        <feMerge>
+                                            <feMergeNode in="coloredBlur"></feMergeNode>
+                                            <feMergeNode in="SourceGraphic"></feMergeNode>
+                                        </feMerge>
+                                    </filter>
+                                    <linearGradient id="switch-gradient1" x1="0" y1="0" x2="1" y2="0">
+                                        <stop offset="0%" stop-color="hsl(var(--on-hue1),90%,70%)" />
+                                        <stop offset="100%" stop-color="hsl(var(--on-hue2),90%,70%)" />
+                                    </linearGradient>
+                                    <linearGradient id="switch-gradient2" x1="0.7" y1="0" x2="0.3" y2="1">
+                                        <stop offset="25%" stop-color="hsla(var(--on-hue1),90%,70%,0)" />
+                                        <stop offset="50%" stop-color="hsla(var(--on-hue1),90%,70%,0.3)" />
+                                        <stop offset="100%" stop-color="hsla(var(--on-hue2),90%,70%,0.3)" />
+                                    </linearGradient>
+                                </defs>
+                                <path fill="none" filter="url(#switch-glow)" stroke="url(#switch-gradient1)" stroke-width="1" stroke-dasharray="0 104.26 0" stroke-dashoffset="0.01" stroke-linecap="round" d="m.5,12C.5,5.649,5.649.5,12,.5h16c6.351,0,11.5,5.149,11.5,11.5s-5.149,11.5-11.5,11.5H12C5.649,23.5.5,18.351.5,12Z" />
+                            </svg>
+                            <span class="switch__knob-shadow"></span>
+                            <span class="switch__knob-container">
+                                <span class="switch__knob">
+                                    <svg class="switch__knob-neon" viewBox="0 0 48 48" width="48px" height="48px">
+                                        <circle fill="none" stroke="url(#switch-gradient2)" stroke-dasharray="0 90.32 0 54.19" stroke-linecap="round" stroke-width="1" r="23" cx="24" cy="24" transform="rotate(-112.5,24,24)" />
+                                    </svg>
+                                </span>
+                            </span>
+                            <span class="switch__led"></span>
+                            <span class="switch__text">Power</span>
+                        </label>
                     </div>
                 </div>
-            `).join('');
-        }
+                <h2>Chọn dii</h2>
+                <select id="choose_box">
+                    <option value="archive">Archive</option>
+                    <option value="valentine-14-2-2025">Valentine (14/2/2025)</option>
+                    <option value="time">Time</option>
+                    <option value="ct">Chia tay hả🥺?</option>
+                    <option value="none">Chưa ra mắt</option>
+                </select>
+                <div class="sparkle-button">
 
-        // Update button text
-        function updateButtonText() {
-            donateBtn.innerHTML = `${CONFIG.donateButtonText} ${formatCurrency(selectedAmount)}!`;
-        }
-
-        // Format currency
-        function formatCurrency(amount) {
-            return new Intl.NumberFormat('vi-VN').format(amount) + ' VNĐ';
-        }
-
-        // Show toast
-        function showToast(message, emoji = '🎉') {
-            toastMessage.textContent = message;
-            document.querySelector('.toast-icon').textContent = emoji;
-            toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-
-        // Initialize all dynamic content
-        function init() {
-            renderFloatingEmojis();
-            renderMarquee();
-            renderProfile();
-            renderDonationOptions();
-            renderDonationList();
-            renderFooter();
-            renderSectionTitles();
-            updateButtonText();
-        }
-
-        // Run initialization
-        init();
-
-        // Donate button click
-        donateBtn.addEventListener('click', () => {
-            const momoLink = getMoMoLink(selectedAmount);
-            showToast('Đang mở MoMo... 💜', '📱');
-            window.open(momoLink, '_blank');
-        });
-
-        // Easter egg: Konami code
-        let konamiCode = [];
-        const konamiSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
-        
-        document.addEventListener('keydown', (e) => {
-            konamiCode.push(e.key);
-            konamiCode = konamiCode.slice(-10);
-            
-            if (konamiCode.join(',') === konamiSequence.join(',')) {
-                document.body.style.animation = 'rainbow 1s infinite';
-                showToast('🌈 RAINBOW MODE ACTIVATED! 🌈', '🎮');
-                
-                // Add rainbow animation
-                const style = document.createElement('style');
-                style.textContent = `
-                    @keyframes rainbow {
-                        0% { filter: hue-rotate(0deg); }
-                        100% { filter: hue-rotate(360deg); }
-                    }
-                `;
-                document.head.appendChild(style);
-            }
-        });
-    </script>
+                    <button onclick="submit()" class="but">
+                        <span class="spark"></span>
+                        <!-- <span class="spark"></span> -->
+                        <span class="backdrop"></span>
+                        <svg class="sparkle" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M14.187 8.096L15 5.25L15.813 8.096C16.0231 8.83114 16.4171 9.50062 16.9577 10.0413C17.4984 10.5819 18.1679 10.9759 18.903 11.186L21.75 12L18.904 12.813C18.1689 13.0231 17.4994 13.4171 16.9587 13.9577C16.4181 14.4984 16.0241 15.1679 15.814 15.903L15 18.75L14.187 15.904C13.9769 15.1689 13.5829 14.4994 13.0423 13.9587C12.5016 13.4181 11.8321 13.0241 11.097 12.814L8.25 12L11.096 11.187C11.8311 10.9769 12.5006 10.5829 13.0413 10.0423C13.5819 9.50162 13.9759 8.83214 14.186 8.097L14.187 8.096Z" fill="black" stroke="black" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M6 14.25L5.741 15.285C5.59267 15.8785 5.28579 16.4206 4.85319 16.8532C4.42059 17.2858 3.87853 17.5927 3.285 17.741L2.25 18L3.285 18.259C3.87853 18.4073 4.42059 18.7142 4.85319 19.1468C5.28579 19.5794 5.59267 20.1215 5.741 20.715L6 21.75L6.259 20.715C6.40725 20.1216 6.71398 19.5796 7.14639 19.147C7.5788 18.7144 8.12065 18.4075 8.714 18.259L9.75 18L8.714 17.741C8.12065 17.5925 7.5788 17.2856 7.14639 16.853C6.71398 16.4204 6.40725 15.8784 6.259 15.285L6 14.25Z" fill="black" stroke="black" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M6.5 4L6.303 4.5915C6.24777 4.75718 6.15472 4.90774 6.03123 5.03123C5.90774 5.15472 5.75718 5.24777 5.5915 5.303L5 5.5L5.5915 5.697C5.75718 5.75223 5.90774 5.84528 6.03123 5.96877C6.15472 6.09226 6.24777 6.24282 6.303 6.4085L6.5 7L6.697 6.4085C6.75223 6.24282 6.84528 6.09226 6.96877 5.96877C7.09226 5.84528 7.24282 5.75223 7.4085 5.697L8 5.5L7.4085 5.303C7.24282 5.24777 7.09226 5.15472 6.96877 5.03123C6.84528 4.90774 6.75223 4.75718 6.697 4.5915L6.5 4Z" fill="black" stroke="black" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <span class="text">GO</span>
+                    </button>
+                    <div class="bodydrop"></div>
+                    <span aria-hidden="true" class="particle-pen">
+                        <svg class="particle" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6.937 3.846L7.75 1L8.563 3.846C8.77313 4.58114 9.1671 5.25062 9.70774 5.79126C10.2484 6.3319 10.9179 6.72587 11.653 6.936L14.5 7.75L11.654 8.563C10.9189 8.77313 10.2494 9.1671 9.70874 9.70774C9.1681 10.2484 8.77413 10.9179 8.564 11.653L7.75 14.5L6.937 11.654C6.72687 10.9189 6.3329 10.2494 5.79226 9.70874C5.25162 9.1681 4.58214 8.77413 3.847 8.564L1 7.75L3.846 6.937C4.58114 6.72687 5.25062 6.3329 5.79126 5.79226C6.3319 5.25162 6.72587 4.58214 6.936 3.847L6.937 3.846Z" fill="black" stroke="black" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <svg class="particle" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6.937 3.846L7.75 1L8.563 3.846C8.77313 4.58114 9.1671 5.25062 9.70774 5.79126C10.2484 6.3319 10.9179 6.72587 11.653 6.936L14.5 7.75L11.654 8.563C10.9189 8.77313 10.2494 9.1671 9.70874 9.70774C9.1681 10.2484 8.77413 10.9179 8.564 11.653L7.75 14.5L6.937 11.654C6.72687 10.9189 6.3329 10.2494 5.79226 9.70874C5.25162 9.1681 4.58214 8.77413 3.847 8.564L1 7.75L3.846 6.937C4.58114 6.72687 5.25062 6.3329 5.79126 5.79226C6.3319 5.25162 6.72587 4.58214 6.936 3.847L6.937 3.846Z" fill="black" stroke="black" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <svg class="particle" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6.937 3.846L7.75 1L8.563 3.846C8.77313 4.58114 9.1671 5.25062 9.70774 5.79126C10.2484 6.3319 10.9179 6.72587 11.653 6.936L14.5 7.75L11.654 8.563C10.9189 8.77313 10.2494 9.1671 9.70874 9.70774C9.1681 10.2484 8.77413 10.9179 8.564 11.653L7.75 14.5L6.937 11.654C6.72687 10.9189 6.3329 10.2494 5.79226 9.70874C5.25162 9.1681 4.58214 8.77413 3.847 8.564L1 7.75L3.846 6.937C4.58114 6.72687 5.25062 6.3329 5.79126 5.79226C6.3319 5.25162 6.72587 4.58214 6.936 3.847L6.937 3.846Z" fill="black" stroke="black" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <svg class="particle" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6.937 3.846L7.75 1L8.563 3.846C8.77313 4.58114 9.1671 5.25062 9.70774 5.79126C10.2484 6.3319 10.9179 6.72587 11.653 6.936L14.5 7.75L11.654 8.563C10.9189 8.77313 10.2494 9.1671 9.70874 9.70774C9.1681 10.2484 8.77413 10.9179 8.564 11.653L7.75 14.5L6.937 11.654C6.72687 10.9189 6.3329 10.2494 5.79226 9.70874C5.25162 9.1681 4.58214 8.77413 3.847 8.564L1 7.75L3.846 6.937C4.58114 6.72687 5.25062 6.3329 5.79126 5.79226C6.3319 5.25162 6.72587 4.58214 6.936 3.847L6.937 3.846Z" fill="black" stroke="black" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <svg class="particle" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6.937 3.846L7.75 1L8.563 3.846C8.77313 4.58114 9.1671 5.25062 9.70774 5.79126C10.2484 6.3319 10.9179 6.72587 11.653 6.936L14.5 7.75L11.654 8.563C10.9189 8.77313 10.2494 9.1671 9.70874 9.70774C9.1681 10.2484 8.77413 10.9179 8.564 11.653L7.75 14.5L6.937 11.654C6.72687 10.9189 6.3329 10.2494 5.79226 9.70874C5.25162 9.1681 4.58214 8.77413 3.847 8.564L1 7.75L3.846 6.937C4.58114 6.72687 5.25062 6.3329 5.79126 5.79226C6.3319 5.25162 6.72587 4.58214 6.936 3.847L6.937 3.846Z" fill="black" stroke="black" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <svg class="particle" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6.937 3.846L7.75 1L8.563 3.846C8.77313 4.58114 9.1671 5.25062 9.70774 5.79126C10.2484 6.3319 10.9179 6.72587 11.653 6.936L14.5 7.75L11.654 8.563C10.9189 8.77313 10.2494 9.1671 9.70874 9.70774C9.1681 10.2484 8.77413 10.9179 8.564 11.653L7.75 14.5L6.937 11.654C6.72687 10.9189 6.3329 10.2494 5.79226 9.70874C5.25162 9.1681 4.58214 8.77413 3.847 8.564L1 7.75L3.846 6.937C4.58114 6.72687 5.25062 6.3329 5.79126 5.79226C6.3319 5.25162 6.72587 4.58214 6.936 3.847L6.937 3.846Z" fill="black" stroke="black" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <svg class="particle" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6.937 3.846L7.75 1L8.563 3.846C8.77313 4.58114 9.1671 5.25062 9.70774 5.79126C10.2484 6.3319 10.9179 6.72587 11.653 6.936L14.5 7.75L11.654 8.563C10.9189 8.77313 10.2494 9.1671 9.70874 9.70774C9.1681 10.2484 8.77413 10.9179 8.564 11.653L7.75 14.5L6.937 11.654C6.72687 10.9189 6.3329 10.2494 5.79226 9.70874C5.25162 9.1681 4.58214 8.77413 3.847 8.564L1 7.75L3.846 6.937C4.58114 6.72687 5.25062 6.3329 5.79126 5.79226C6.3319 5.25162 6.72587 4.58214 6.936 3.847L6.937 3.846Z" fill="black" stroke="black" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <svg class="particle" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6.937 3.846L7.75 1L8.563 3.846C8.77313 4.58114 9.1671 5.25062 9.70774 5.79126C10.2484 6.3319 10.9179 6.72587 11.653 6.936L14.5 7.75L11.654 8.563C10.9189 8.77313 10.2494 9.1671 9.70874 9.70774C9.1681 10.2484 8.77413 10.9179 8.564 11.653L7.75 14.5L6.937 11.654C6.72687 10.9189 6.3329 10.2494 5.79226 9.70874C5.25162 9.1681 4.58214 8.77413 3.847 8.564L1 7.75L3.846 6.937C4.58114 6.72687 5.25062 6.3329 5.79126 5.79226C6.3319 5.25162 6.72587 4.58214 6.936 3.847L6.937 3.846Z" fill="black" stroke="black" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <svg class="particle" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6.937 3.846L7.75 1L8.563 3.846C8.77313 4.58114 9.1671 5.25062 9.70774 5.79126C10.2484 6.3319 10.9179 6.72587 11.653 6.936L14.5 7.75L11.654 8.563C10.9189 8.77313 10.2494 9.1671 9.70874 9.70774C9.1681 10.2484 8.77413 10.9179 8.564 11.653L7.75 14.5L6.937 11.654C6.72687 10.9189 6.3329 10.2494 5.79226 9.70874C5.25162 9.1681 4.58214 8.77413 3.847 8.564L1 7.75L3.846 6.937C4.58114 6.72687 5.25062 6.3329 5.79126 5.79226C6.3319 5.25162 6.72587 4.58214 6.936 3.847L6.937 3.846Z" fill="black" stroke="black" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <svg class="particle" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6.937 3.846L7.75 1L8.563 3.846C8.77313 4.58114 9.1671 5.25062 9.70774 5.79126C10.2484 6.3319 10.9179 6.72587 11.653 6.936L14.5 7.75L11.654 8.563C10.9189 8.77313 10.2494 9.1671 9.70874 9.70774C9.1681 10.2484 8.77413 10.9179 8.564 11.653L7.75 14.5L6.937 11.654C6.72687 10.9189 6.3329 10.2494 5.79226 9.70874C5.25162 9.1681 4.58214 8.77413 3.847 8.564L1 7.75L3.846 6.937C4.58114 6.72687 5.25062 6.3329 5.79126 5.79226C6.3319 5.25162 6.72587 4.58214 6.936 3.847L6.937 3.846Z" fill="black" stroke="black" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg><svg class="particle" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6.937 3.846L7.75 1L8.563 3.846C8.77313 4.58114 9.1671 5.25062 9.70774 5.79126C10.2484 6.3319 10.9179 6.72587 11.653 6.936L14.5 7.75L11.654 8.563C10.9189 8.77313 10.2494 9.1671 9.70874 9.70774C9.1681 10.2484 8.77413 10.9179 8.564 11.653L7.75 14.5L6.937 11.654C6.72687 10.9189 6.3329 10.2494 5.79226 9.70874C5.25162 9.1681 4.58214 8.77413 3.847 8.564L1 7.75L3.846 6.937C4.58114 6.72687 5.25062 6.3329 5.79126 5.79226C6.3319 5.25162 6.72587 4.58214 6.936 3.847L6.937 3.846Z" fill="black" stroke="black" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg><svg class="particle" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6.937 3.846L7.75 1L8.563 3.846C8.77313 4.58114 9.1671 5.25062 9.70774 5.79126C10.2484 6.3319 10.9179 6.72587 11.653 6.936L14.5 7.75L11.654 8.563C10.9189 8.77313 10.2494 9.1671 9.70874 9.70774C9.1681 10.2484 8.77413 10.9179 8.564 11.653L7.75 14.5L6.937 11.654C6.72687 10.9189 6.3329 10.2494 5.79226 9.70874C5.25162 9.1681 4.58214 8.77413 3.847 8.564L1 7.75L3.846 6.937C4.58114 6.72687 5.25062 6.3329 5.79126 5.79226C6.3319 5.25162 6.72587 4.58214 6.936 3.847L6.937 3.846Z" fill="black" stroke="black" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <svg class="particle" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6.937 3.846L7.75 1L8.563 3.846C8.77313 4.58114 9.1671 5.25062 9.70774 5.79126C10.2484 6.3319 10.9179 6.72587 11.653 6.936L14.5 7.75L11.654 8.563C10.9189 8.77313 10.2494 9.1671 9.70874 9.70774C9.1681 10.2484 8.77413 10.9179 8.564 11.653L7.75 14.5L6.937 11.654C6.72687 10.9189 6.3329 10.2494 5.79226 9.70874C5.25162 9.1681 4.58214 8.77413 3.847 8.564L1 7.75L3.846 6.937C4.58114 6.72687 5.25062 6.3329 5.79126 5.79226C6.3319 5.25162 6.72587 4.58214 6.936 3.847L6.937 3.846Z" fill="black" stroke="black" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg><svg class="particle" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6.937 3.846L7.75 1L8.563 3.846C8.77313 4.58114 9.1671 5.25062 9.70774 5.79126C10.2484 6.3319 10.9179 6.72587 11.653 6.936L14.5 7.75L11.654 8.563C10.9189 8.77313 10.2494 9.1671 9.70874 9.70774C9.1681 10.2484 8.77413 10.9179 8.564 11.653L7.75 14.5L6.937 11.654C6.72687 10.9189 6.3329 10.2494 5.79226 9.70874C5.25162 9.1681 4.58214 8.77413 3.847 8.564L1 7.75L3.846 6.937C4.58114 6.72687 5.25062 6.3329 5.79126 5.79226C6.3319 5.25162 6.72587 4.58214 6.936 3.847L6.937 3.846Z" fill="black" stroke="black" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg><svg class="particle" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6.937 3.846L7.75 1L8.563 3.846C8.77313 4.58114 9.1671 5.25062 9.70774 5.79126C10.2484 6.3319 10.9179 6.72587 11.653 6.936L14.5 7.75L11.654 8.563C10.9189 8.77313 10.2494 9.1671 9.70874 9.70774C9.1681 10.2484 8.77413 10.9179 8.564 11.653L7.75 14.5L6.937 11.654C6.72687 10.9189 6.3329 10.2494 5.79226 9.70874C5.25162 9.1681 4.58214 8.77413 3.847 8.564L1 7.75L3.846 6.937C4.58114 6.72687 5.25062 6.3329 5.79126 5.79226C6.3319 5.25162 6.72587 4.58214 6.936 3.847L6.937 3.846Z" fill="black" stroke="black" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg><svg class="particle" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6.937 3.846L7.75 1L8.563 3.846C8.77313 4.58114 9.1671 5.25062 9.70774 5.79126C10.2484 6.3319 10.9179 6.72587 11.653 6.936L14.5 7.75L11.654 8.563C10.9189 8.77313 10.2494 9.1671 9.70874 9.70774C9.1681 10.2484 8.77413 10.9179 8.564 11.653L7.75 14.5L6.937 11.654C6.72687 10.9189 6.3329 10.2494 5.79226 9.70874C5.25162 9.1681 4.58214 8.77413 3.847 8.564L1 7.75L3.846 6.937C4.58114 6.72687 5.25062 6.3329 5.79126 5.79226C6.3319 5.25162 6.72587 4.58214 6.936 3.847L6.937 3.846Z" fill="black" stroke="black" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg><svg class="particle" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6.937 3.846L7.75 1L8.563 3.846C8.77313 4.58114 9.1671 5.25062 9.70774 5.79126C10.2484 6.3319 10.9179 6.72587 11.653 6.936L14.5 7.75L11.654 8.563C10.9189 8.77313 10.2494 9.1671 9.70874 9.70774C9.1681 10.2484 8.77413 10.9179 8.564 11.653L7.75 14.5L6.937 11.654C6.72687 10.9189 6.3329 10.2494 5.79226 9.70874C5.25162 9.1681 4.58214 8.77413 3.847 8.564L1 7.75L3.846 6.937C4.58114 6.72687 5.25062 6.3329 5.79126 5.79226C6.3319 5.25162 6.72587 4.58214 6.936 3.847L6.937 3.846Z" fill="black" stroke="black" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg><svg class="particle" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6.937 3.846L7.75 1L8.563 3.846C8.77313 4.58114 9.1671 5.25062 9.70774 5.79126C10.2484 6.3319 10.9179 6.72587 11.653 6.936L14.5 7.75L11.654 8.563C10.9189 8.77313 10.2494 9.1671 9.70874 9.70774C9.1681 10.2484 8.77413 10.9179 8.564 11.653L7.75 14.5L6.937 11.654C6.72687 10.9189 6.3329 10.2494 5.79226 9.70874C5.25162 9.1681 4.58214 8.77413 3.847 8.564L1 7.75L3.846 6.937C4.58114 6.72687 5.25062 6.3329 5.79126 5.79226C6.3319 5.25162 6.72587 4.58214 6.936 3.847L6.937 3.846Z" fill="black" stroke="black" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg><svg class="particle" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6.937 3.846L7.75 1L8.563 3.846C8.77313 4.58114 9.1671 5.25062 9.70774 5.79126C10.2484 6.3319 10.9179 6.72587 11.653 6.936L14.5 7.75L11.654 8.563C10.9189 8.77313 10.2494 9.1671 9.70874 9.70774C9.1681 10.2484 8.77413 10.9179 8.564 11.653L7.75 14.5L6.937 11.654C6.72687 10.9189 6.3329 10.2494 5.79226 9.70874C5.25162 9.1681 4.58214 8.77413 3.847 8.564L1 7.75L3.846 6.937C4.58114 6.72687 5.25062 6.3329 5.79126 5.79226C6.3319 5.25162 6.72587 4.58214 6.936 3.847L6.937 3.846Z" fill="black" stroke="black" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg><svg class="particle" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6.937 3.846L7.75 1L8.563 3.846C8.77313 4.58114 9.1671 5.25062 9.70774 5.79126C10.2484 6.3319 10.9179 6.72587 11.653 6.936L14.5 7.75L11.654 8.563C10.9189 8.77313 10.2494 9.1671 9.70874 9.70774C9.1681 10.2484 8.77413 10.9179 8.564 11.653L7.75 14.5L6.937 11.654C6.72687 10.9189 6.3329 10.2494 5.79226 9.70874C5.25162 9.1681 4.58214 8.77413 3.847 8.564L1 7.75L3.846 6.937C4.58114 6.72687 5.25062 6.3329 5.79126 5.79226C6.3319 5.25162 6.72587 4.58214 6.936 3.847L6.937 3.846Z" fill="black" stroke="black" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </main>
+    <svg class="cursor" width="80" height="80" viewBox="0 0 80 80">
+        <circle class="cursor__inner" cx="40" cy="40" r="20"></circle>
+    </svg>
+    <script src="/assets/script.js" defer></script>
 </body>
+
 </html>
