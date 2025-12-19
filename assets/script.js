@@ -6460,7 +6460,7 @@ function submit() {
    window.location.href = "https://dts-ttmn.vercel.app/ct/";
     } else if (selected == 'feed-me') {
 	window.location.href = "https://dts-ttmn.vercel.app/feed-me/";
-}
+};
 
 // Nhấn phím Enter để chọn
 document.addEventListener("keydown", function (event) {
