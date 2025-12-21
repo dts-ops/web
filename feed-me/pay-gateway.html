@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Pay</title>
+    <link rel="stylesheet" href="css/pay-gateway.css" />
+  </head>
+
+  <body>
+    <div class="page-container">
+      <header class="header">
+        <div class="header-content">
+          <img src="img/vietqr_ico.png" alt="vietqr logo" class="logo-small" />
+          <span class="header-title"
+            >Quét mã thanh toán miễn phí qua VietQR</span
+          >
+        </div>
+      </header>
+
+      <main class="main-content">
+        <div class="transaction-card">
+          <!-- Banner Notification -->
+          <div class="info-banner">
+            <div class="banner-icon">
+              <img src="img/vietqr_ico.png" alt="vietqr logo" />
+            </div>
+            <p class="banner-text">
+              Bạn đang sử dụng dịch vụ chuyển tiền được cung cấp bởi VietQR
+            </p>
+          </div>
+
+          <h2 class="section-title">Thông tin giao dịch</h2>
+
+          <!-- Transaction Details Box -->
+          <div class="details-box">
+            <div class="detail-item">
+              <label>Người nhận</label>
+              <div class="user-info">
+                <div class="avatar">
+                  <img src="img/avatar.jpg" alt="Avatar" />
+                </div>
+                <div class="user-name">
+                  <strong>Đặng Trung Sơn</strong>
+                  <span>*******370</span>
+                </div>
+              </div>
+            </div>
+            <div class="detail-item">
+              <label>Lời nhắn</label>
+              <div class="message-value" id="messageValue">None</div>
+            </div>
+            <div class="detail-item no-border">
+              <label>Số tiền</label>
+              <div class="amount-value" id="amountValue">0đ</div>
+            </div>
+          </div>
+
+          <h2 class="section-title">Phương thức chuyển tiền</h2>
+
+          <!-- Payment Method -->
+          <div class="payment-method selected">
+            <div class="method-info">
+              <img
+                src="img/vietqr_ico.png"
+                alt="vietqr logo"
+                class="method-logo"
+              />
+              <span class="method-name">Thanh toán bằng mã QR</span>
+            </div>
+            <div class="radio-indicator">
+              <div class="radio-inner"></div>
+            </div>
+          </div>
+          <!-- NÚT TIẾP TỤC -->
+          <button class="submit-btn" id="openQR">Tiếp tục</button>
+
+          <!-- MODAL QR -->
+          <div class="qr-modal" id="qrModal">
+            <div class="qr-box">
+              <button class="close-btn" id="closeQR">✕</button>
+
+              <h3>Quét mã để thanh toán</h3>
+
+              <img
+                id="qrImage"
+                src="https://qr.sepay.vn/img?bank=MBBank&acc=0977782370&amount=0&des="
+                alt="QR thanh toán"
+              />
+              <p
+                id="qrError"
+                style="display: none; color: red; margin-top: 12px"
+              >
+                Đã xảy ra lỗi khi tải mã QR. Vui lòng thử lại sau.
+              </p>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script src="js/pay-gateway.js"></script>
+  </body>
+</html>
