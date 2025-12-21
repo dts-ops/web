@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🍜</text></svg>">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🍜</text></svg>">
     <style>
         * {
             margin: 0;
@@ -46,9 +48,11 @@
                 opacity: 0;
                 transform: translateY(100vh) rotate(0deg);
             }
+
             1% {
                 opacity: 0.6;
             }
+
             100% {
                 opacity: 0.6;
                 transform: translateY(-100vh) rotate(360deg);
@@ -70,21 +74,28 @@
         }
 
         @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
         }
 
         .title {
             font-size: 3.5rem;
             font-weight: 700;
             color: white;
-            text-shadow: 3px 3px 0 var(--primary), 6px 6px 0 rgba(0,0,0,0.1);
+            text-shadow: 3px 3px 0 var(--primary), 6px 6px 0 rgba(0, 0, 0, 0.1);
             margin-bottom: 10px;
         }
 
         .subtitle {
             font-size: 1.3rem;
-            color: rgba(255,255,255,0.9);
+            color: rgba(255, 255, 255, 0.9);
             font-weight: 500;
         }
 
@@ -107,7 +118,7 @@
             background: white;
             border-radius: 30px;
             padding: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             margin-bottom: 30px;
             position: relative;
             overflow: hidden;
@@ -136,7 +147,7 @@
             height: 150px;
             border-radius: 50%;
             border: 5px solid white;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             object-fit: cover;
             background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
             display: flex;
@@ -243,7 +254,7 @@
             background: white;
             border-radius: 15px;
             margin-bottom: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             transition: transform 0.3s;
         }
 
@@ -274,7 +285,7 @@
             background: white;
             border-radius: 30px;
             padding: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             margin-bottom: 30px;
         }
 
@@ -304,7 +315,7 @@
 
         .donation-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
 
         .donation-card.selected {
@@ -393,10 +404,12 @@
                 transform: scale(1);
                 box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
             }
+
             50% {
                 transform: scale(1.02);
                 box-shadow: 0 15px 40px rgba(255, 107, 107, 0.6), 0 0 0 10px rgba(255, 107, 107, 0.1);
             }
+
             100% {
                 transform: scale(1);
                 box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
@@ -408,7 +421,7 @@
             background: white;
             border-radius: 30px;
             padding: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             margin-bottom: 30px;
         }
 
@@ -431,6 +444,7 @@
                 opacity: 0;
                 transform: translateX(-20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateX(0);
@@ -481,7 +495,7 @@
         .footer {
             text-align: center;
             padding: 40px 20px;
-            color: rgba(255,255,255,0.8);
+            color: rgba(255, 255, 255, 0.8);
         }
 
         .footer a {
@@ -503,7 +517,7 @@
             background: white;
             padding: 20px 30px;
             border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
             display: flex;
             align-items: center;
             gap: 15px;
@@ -568,13 +582,18 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
             animation: shimmer 2s infinite;
         }
 
         @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(100%);
+            }
         }
 
         .check {
@@ -592,14 +611,16 @@
             display: inline-block;
             width: 20px;
             height: 20px;
-            border: 3px solid rgba(255,255,255,0.3);
+            border: 3px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
             border-top-color: white;
             animation: spin 1s ease-in-out infinite;
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         /* Responsive */
@@ -655,7 +676,7 @@
         /* Marquee */
         .marquee-container {
             overflow: hidden;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             padding: 10px 0;
             margin-bottom: 20px;
         }
@@ -673,8 +694,13 @@
         }
 
         @keyframes marquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
         }
 
         /* Responsive */
@@ -682,9 +708,15 @@
             .marquee {
                 animation: marquee-mobile 40s linear infinite;
             }
+
             @keyframes marquee-mobile {
-                0% { transform: translateX(0); }
-                100% { transform: translateX(-1000%); }
+                0% {
+                    transform: translateX(0);
+                }
+
+                100% {
+                    transform: translateX(-1000%);
+                }
             }
         }
 
@@ -704,11 +736,19 @@
         }
 
         @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
         }
     </style>
 </head>
+
 <body>
     <!-- Floating emojis - Rendered by JS -->
     <div id="floatingEmojisContainer"></div>
@@ -765,13 +805,13 @@
         // ║                    🎨 CẤU HÌNH CÁ NHÂN HÓA - CHỈNH SỬA Ở ĐÂY!               ║
         // ║         Chỉ cần thay đổi nội dung trong biến CONFIG bên dưới               ║
         // ╚════════════════════════════════════════════════════════════════════════════╝
-        
+
         const CONFIG = {
             // ═══════════════════════════════════════════════════════════════════
             // 📌 THÔNG TIN CƠ BẢN
             // ═══════════════════════════════════════════════════════════════════
             pageTitle: "Nuôi Cún Đi Mò 🍜",              // Tiêu đề trang (hiển thị trên tab)
-            
+
             // ═══════════════════════════════════════════════════════════════════
             // 👤 THÔNG TIN CÁ NHÂN
             // ═══════════════════════════════════════════════════════════════════
@@ -779,7 +819,7 @@
             statusBadge: "😢",                     // Badge trạng thái bên cạnh avatar
             authorName: "Cún",                    // Tên hiển thị ở footer
             authorLink: "https://www.facebook.com/@trunwson",                       // Link tới profile (để trống nếu không có)
-            
+
             // ═══════════════════════════════════════════════════════════════════
             // 📖 CÂU CHUYỆN CỦA BẠN
             // ═══════════════════════════════════════════════════════════════════
@@ -794,7 +834,7 @@
                     <li>🎮 Thỉnh thoảng được chơi game</li>
                 </ul>
             `,
-            
+
             // ═══════════════════════════════════════════════════════════════════
             // 📢 MARQUEE - DÒNG CHỮ CHẠY
             // ═══════════════════════════════════════════════════════════════════
@@ -805,12 +845,12 @@
                 "☕ Đang cần gấp cà phê để thứcc",
                 "🏆 TOP DONOR: Anonymous - 500k | Lời nhắn: \"Code đẹp đấy, ăn đi em\"",
             ],
-            
+
             // ═══════════════════════════════════════════════════════════════════
             // 🎈 EMOJI NỔI - Animation background
             // ═══════════════════════════════════════════════════════════════════
             floatingEmojis: ["🍜", "💰", "🎮", "☕", "🍕", "💻", "🎵", "🌙", "⭐"],
-            
+
             // ═══════════════════════════════════════════════════════════════════
             // 💰 CÁC MỨC DONATE
             // ═══════════════════════════════════════════════════════════════════
@@ -819,44 +859,41 @@
                     amount: 10000,
                     emoji: "🥤",
                     description: "1 ly trà đá",
-                    momoLink: "https://me.momo.vn/MRI4ugF5F9F6i9twUwFz/Jrb28NXAk1vPeWL"
+                    qr: "https://dts-ttmn.vercel.app/feed-me/pay-gateway?amount=10000&message=1%20ly%20tra%20da"
                 },
                 {
                     amount: 25000,
                     emoji: "☕",
                     description: "1 ly cà phê",
-                    momoLink: "https://me.momo.vn/MRI4ugF5F9F6i9twUwFz/4oeEqpy7lZ54e0B"
+                    qr: "https://dts-ttmn.vercel.app/feed-me/pay-gateway?amount=25000&message=1%20ly%20ca%20phe"
                 },
                 {
                     amount: 50000,
                     emoji: "🍜",
                     description: "1 tô phở",
-                    momoLink: "https://me.momo.vn/MRI4ugF5F9F6i9twUwFz/lNbWP01zP16odyg",
-                    isDefault: true  // Mức mặc định được chọn sẵn
+                    qr: "https://dts-ttmn.vercel.app/feed-me/pay-gateway?amount=50000&message=1%20to%20pho",
+                    isDefault: true
                 },
                 {
                     amount: 100000,
                     emoji: "🍕",
                     description: "Pizza party",
-                    momoLink: "https://me.momo.vn/MRI4ugF5F9F6i9twUwFz/openRklVmMole7A"
+                    qr: "https://dts-ttmn.vercel.app/feed-me/pay-gateway?amount=100000&message=Pizza%20party"
                 },
                 {
                     amount: 200000,
                     emoji: "🎮",
                     description: "1 game mới",
-                    momoLink: "https://me.momo.vn/MRI4ugF5F9F6i9twUwFz/J0dNOBGnG69LeLO"
+                    qr: "https://dts-ttmn.vercel.app/feed-me/pay-gateway?amount=200000&message=1%20game%20moi"
                 },
                 {
                     amount: 500000,
                     emoji: "💎",
                     description: "VIP Supporter",
-                    momoLink: "https://me.momo.vn/MRI4ugF5F9F6i9twUwFz/Jrb28NXArk1WeWL"
+                    qr: "https://dts-ttmn.vercel.app/feed-me/pay-gateway?amount=500000&message=VIP%20Supporter"
                 }
             ],
-            
-            // Link MoMo mặc định (khi không tìm thấy amount phù hợp)
-            momoFallback: "https://me.momo.vn/MRI4ugF5F9F6i9twUwFz",
-            
+
             // ═══════════════════════════════════════════════════════════════════
             // 🎉 DANH SÁCH NGƯỜI ĐÃ DONATE
             // ═══════════════════════════════════════════════════════════════════
@@ -872,7 +909,7 @@
                 //     time: "2025-12-10 08:30:00"            // Thời gian (YYYY-MM-DD HH:MM:SS)
                 // },
             ],
-            
+
             // ═══════════════════════════════════════════════════════════════════
             // 📝 FOOTER - PHẦN CUỐI TRANG
             // ═══════════════════════════════════════════════════════════════════
@@ -880,7 +917,7 @@
             disclaimer: `
                 ⚠️Mọi donate đều được sử dụng để mua phở và cà phê (thật sự) 🍜 ☕
             `,
-            
+
             // ═══════════════════════════════════════════════════════════════════
             // 🎨 TÙY CHỈNH GIAO DIỆN (Nâng cao - không bắt buộc)
             // ═══════════════════════════════════════════════════════════════════
@@ -890,7 +927,7 @@
             emptyDonationTitle: "Chưa có ai nuôi cún...",
             emptyDonationQuote: '"Một đồng cũng là tình thương, hai đồng cũng là yêu mến" 💝',
         };
-        
+
         // ═══════════════════════════════════════════════════════════════════════════
         // ⚠️ KHÔNG CẦN SỬA CODE BÊN DƯỚI (trừ khi bạn biết mình đang làm gì)
         // ═══════════════════════════════════════════════════════════════════════════
@@ -906,9 +943,9 @@
         let selectedAmount = CONFIG.donationOptions.find(opt => opt.isDefault)?.amount || CONFIG.donationOptions[0].amount;
 
         // Get MoMo link by amount
-        function getMoMoLink(amount) {
+        function getQr(amount) {
             const option = CONFIG.donationOptions.find(opt => opt.amount === amount);
-            return option?.momoLink || CONFIG.momoFallback;
+            return option ? option.qr : null;
         }
 
         // Render floating emojis
@@ -931,7 +968,7 @@
 
         // Render profile
         function renderProfile() {
-            document.getElementById('avatarContent').innerHTML = CONFIG.avatar.startsWith('http') 
+            document.getElementById('avatarContent').innerHTML = CONFIG.avatar.startsWith('http')
                 ? `<img src="${CONFIG.avatar}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
                 : CONFIG.avatar;
             document.getElementById('statusBadge').textContent = CONFIG.statusBadge;
@@ -949,7 +986,7 @@
                     <div class="donation-desc">${option.description}</div>
                 </div>
             `).join('');
-            
+
             // Re-attach event listeners
             document.querySelectorAll('.donation-card').forEach(card => {
                 card.addEventListener('click', () => {
@@ -963,7 +1000,7 @@
 
         // Render footer
         function renderFooter() {
-            const authorLink = CONFIG.authorLink 
+            const authorLink = CONFIG.authorLink
                 ? `<a href="${CONFIG.authorLink}" target="_blank">${CONFIG.authorName}</a>`
                 : `<a>${CONFIG.authorName}</a>`;
             document.getElementById('footerAuthor').innerHTML = `Made with 💔 by ${authorLink}`;
@@ -1074,23 +1111,23 @@
 
         // Donate button click
         donateBtn.addEventListener('click', () => {
-            const momoLink = getMoMoLink(selectedAmount);
+            const qr = getQr(selectedAmount);
             showToast('Đang mở MoMo... 💜', '📱');
-            window.open(momoLink, '_blank');
+            window.open(qr, '_blank');
         });
 
         // Easter egg: Konami code
         let konamiCode = [];
         const konamiSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
-        
+
         document.addEventListener('keydown', (e) => {
             konamiCode.push(e.key);
             konamiCode = konamiCode.slice(-10);
-            
+
             if (konamiCode.join(',') === konamiSequence.join(',')) {
                 document.body.style.animation = 'rainbow 1s infinite';
                 showToast('🌈 RAINBOW MODE ACTIVATED! 🌈', '🎮');
-                
+
                 // Add rainbow animation
                 const style = document.createElement('style');
                 style.textContent = `
@@ -1104,4 +1141,5 @@
         });
     </script>
 </body>
+
 </html>
