@@ -84,3 +84,21 @@ closeBtn.onclick = closeModal;
 modal.onclick = (e) => {
   if (e.target === modal) closeModal();
 };
+
+const downloadBtn = document.getElementById("downloadQR");
+
+downloadBtn.onclick = () => {
+    const url = qrImg.src;
+
+    if (!url) {
+        alert("Chưa có mã QR");
+        return;
+    }
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "qr-thanh-toan.png";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+};
