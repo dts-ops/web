@@ -88,16 +88,14 @@ modal.onclick = (e) => {
 const downloadBtn = document.getElementById("downloadQR");
 
 downloadBtn.onclick = () => {
-    const url = qrImg.src;
-
-    if (!url) {
+    if (!qrImg.src) {
         alert("Chưa có mã QR");
         return;
     }
 
     const a = document.createElement("a");
-    a.href = url;
-    a.download = "qr-thanh-toan.png";
+    a.href = qrImg.src;
+    a.download = "qr-thanh-toan.png"; // ÉP TẢI
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
