@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Valentine's Day</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+  <style>
+    .gradient-background {
+      background: linear-gradient(180deg, #ffd0e5 0%, #ffe8f2 36%, #ffffff 100%);
+      min-height: 100vh;
+    }
+
+    .bounce {
+      animation: bounce 2s ease infinite;
+    }
+
+    @keyframes bounce {
+      0%,20%,50%,80%,100% { transform: translateY(0); }
+      40% { transform: translateY(-20px); }
+      60% { transform: translateY(-10px); }
+    }
+  </style>
+</head>
+
+<body class="gradient-background">
+  <main class="flex items-center justify-center h-screen">
+    <section class="flex flex-col items-center p-4">
+      <img
+        id="imageDisplay"
+        src="./images/image1.gif"
+        class="rounded-md h-[300px] object-cover"
+      />
+
+      <h1 id="valentineQuestion" class="text-4xl font-bold italic text-[#bd1e59] my-4">
+        Will you be my Valentine?
+      </h1>
+
+      <div id="responseButtons" class="flex gap-4 pt-5 items-center">
+        <button
+          id="yesButton"
+          class="bounce rounded-md text-xl font-medium px-4 py-2 bg-green-500 text-white transition-all duration-300 ease-in-out"
+        >
+          Yes
+        </button>
+
+        <button
+          id="noButton"
+          class="rounded-md text-xl font-medium px-4 py-2 bg-red-500 text-white"
+        >
+          No
+        </button>
+      </div>
+    </section>
+  </main>
+
+<script>
+(() => {
+
+  const yesButton = document.getElementById('yesButton');
+  const noButton = document.getElementById('noButton');
+  const imageDisplay = document.getElementById('imageDisplay');
+  const valentineQuestion = document.getElementById('valentineQuestion');
+  const responseButtons = document.getElementById('responseButtons');
+
+  const MAX_NO_CLICKS = 5;
+  const GROWTH_PER_CLICK = 30;
+  const FONT_GROWTH_PER_CLICK = 15;
+
+  const IMAGE_PATHS = [
+    './images/image1.gif',
+    './images/image2.gif',
+    './images/image3.gif',
+    './images/image4.gif',
+    './images/image5.gif',
+    './images/image6.gif',
+  ];
+
+  const NO_BUTTON_MESSAGES = [
+    'No',
+    'Are you sure?',
+    'Please reconsider 🥺',
+    "Don't do this...",
+    "You're breaking my heart",
+    "Last chance..."
+  ];
+
+  let noClickCount = 0;
+  let buttonSize = 60;
+  let fontSize = 20;
+
+  noButton.addEventListener('click', () => {
+
+    if (noClickCount >= MAX_NO_CLICKS) return;
+
+    noClickCount++;
+
+    // Nếu là lần cuối → YES FULL MÀN HÌNH
+    if (noClickCount === MAX_NO_CLICKS) {
+
+      yesButton.classList.remove('bounce');
+
+      yesButton.style.position = 'fixed';
+      yesButton.style.top = '0';
+      yesButton.style.left = '0';
+      yesButton.style.width = '100vw';
+      yesButton.style.height = '100vh';
+      yesButton.style.fontSize = '6rem';
+      yesButton.style.borderRadius = '0';
+      yesButton.style.zIndex = '9999';
+
+      noButton.style.display = 'none';
+      imageDisplay.style.display = 'none';
+      valentineQuestion.style.display = 'none';
+
+      return;
+    }
+
+    // Còn click bình thường → tăng kích thước
+    imageDisplay.src = IMAGE_PATHS[noClickCount];
+
+    buttonSize += GROWTH_PER_CLICK;
+    fontSize += FONT_GROWTH_PER_CLICK;
+
+    yesButton.style.width = buttonSize + 'px';
+    yesButton.style.height = buttonSize + 'px';
+    yesButton.style.fontSize = fontSize + 'px';
+
+    noButton.textContent = NO_BUTTON_MESSAGES[noClickCount];
+
+  });
+
+  yesButton.addEventListener('click', () => {
+
+    yesButton.innerHTML = "YAYYYYY 💖";
+
+    responseButtons.style.display = 'none';
+    valentineQuestion.textContent = 'You have no escape now 😌';
+
+    confetti({
+      particleCount: 200,
+      spread: 120,
+      origin: { y: 0.6 }
+    });
+
+  });
+
+})();
+</script>
+
+</body>
+</html>
