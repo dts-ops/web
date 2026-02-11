@@ -43,8 +43,14 @@
 <body>
     <h2>EVENT</h2>
     <div id="broadcastList">Loading...</div>
-    <audio id="music" src="/assets/music/music.mp3" preload="auto" muted loop></audio>
+    <audio id="music" loop>
+      <source src="/assets/music/music.mp3" type="audio/mpeg">
+    </audio>
     <script>
+        document.addEventListener("click", function() {
+              var audio = document.getElementById("music");
+              audio.play();
+            }, { once: true });
         fetch('/event/data.json')
             .then(response => response.json())
             .then(data => {
