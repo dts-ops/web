@@ -43,7 +43,7 @@
 <body>
     <h2>EVENT</h2>
     <div id="broadcastList">Loading...</div>
-
+    <audio id="music" src="/assets/music/music.mp3" preload="auto" muted loop></audio>
     <script>
         fetch('/event/data.json')
             .then(response => response.json())
