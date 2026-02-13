@@ -6449,9 +6449,9 @@ function submit() {
     if (selected == "none") {
         alert("Chương trình sẽ sớm được ra mắt");
     } else if (selected == 'valentine_2025') {
-        window.location.href = "https://dts-ttmn.vercel.app/valentine_2025)/";
+        window.location.href = "https://dts-ttmn.vercel.app/valentine_2025/";
     } else if (selected == 'valentine_2026') {
-        window.location.href = "https://dts-ttmn.vercel.app/valentine_2026)/";
+        window.location.href = "https://dts-ttmn.vercel.app/valentine_2026/";
     } else if (selected == 'archive') {
         window.location.href = "https://dts-ttmn.vercel.app/archive/";
     } else if (selected == 'event') {
