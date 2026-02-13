@@ -1,106 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Love particles</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Love particles</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body, html { margin: 0; padding: 0; overflow: hidden; background-color: #050505; color: white; }
+    </style>
+    <!-- Load MediaPipe Globals -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+    
 
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <style>
-    body, html {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      background-color: #050505;
-      color: white;
+<link rel="stylesheet" href="/index.css">
+    <script type="importmap">
+    {
+      "imports": {
+        "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+        "react": "https://esm.sh/react@^19.2.4",
+        "react/": "https://esm.sh/react@^19.2.4/",
+        "three": "https://esm.sh/three@^0.182.0",
+        "three/": "https://esm.sh/three@^0.182.0/",
+        "@react-three/fiber": "https://esm.sh/@react-three/fiber@^9.5.0",
+        "@react-three/drei": "https://esm.sh/@react-three/drei@^10.7.7"
+      }
     }
-  </style>
-
-  <!-- MediaPipe -->
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
-
-  <link rel="stylesheet" href="/index.css">
-
-  <script type="importmap">
-  {
-    "imports": {
-      "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
-      "react": "https://esm.sh/react@^19.2.4",
-      "react/": "https://esm.sh/react@^19.2.4/",
-      "three": "https://esm.sh/three@^0.182.0",
-      "three/": "https://esm.sh/three@^0.182.0/",
-      "@react-three/fiber": "https://esm.sh/@react-three/fiber@^9.5.0",
-      "@react-three/drei": "https://esm.sh/@react-three/drei@^10.7.7"
-    }
-  }
-  </script>
-
-  <!-- PRELOAD + LOADING -->
-  <script type="module">
-    // Tạo loading screen
-    const loading = document.createElement("div");
-    loading.style.position = "fixed";
-    loading.style.inset = "0";
-    loading.style.background = "#050505";
-    loading.style.display = "flex";
-    loading.style.flexDirection = "column";
-    loading.style.alignItems = "center";
-    loading.style.justifyContent = "center";
-    loading.style.zIndex = "9999";
-    loading.style.fontFamily = "sans-serif";
-    loading.style.color = "white";
-    loading.innerHTML = `
-      <div style="font-size:24px;margin-bottom:10px;">
-        Initializing magic ✨
-      </div>
-      <div id="loading-text" style="opacity:.7">
-        Loading model...
-      </div>
-    `;
-    document.body.appendChild(loading);
-
-    async function preloadMediaPipe() {
-      const hands = new Hands({
-        locateFile: (file) =>
-          `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
-      });
-
-      hands.setOptions({
-        maxNumHands: 1,
-        modelComplexity: 1,
-        minDetectionConfidence: 0.7,
-        minTrackingConfidence: 0.7
-      });
-
-      // Warmup để compile WASM trước
-      const canvas = document.createElement("canvas");
-      canvas.width = 640;
-      canvas.height = 480;
-      await hands.send({ image: canvas });
-    }
-
-    // Preload
-    await preloadMediaPipe();
-
-    document.getElementById("loading-text").innerText = "Ready!";
-    await new Promise(r => setTimeout(r, 500));
-
-    loading.remove();
-
-    // Sau khi preload xong mới load app chính
-    const appScript = document.createElement("script");
-    appScript.type = "module";
-    appScript.crossOrigin = "";
-    appScript.src = "/valentine_2026/assets/index-B7Uln1PG.js";
-    document.body.appendChild(appScript);
-  </script>
+    </script>
+  <script type="module" crossorigin src="/valentine_2026/assets/index-B7Uln1PG.js"></script>
 </head>
-
-<body>
-  <div id="root"></div>
+  <body>
+    <div id="root"></div>
 </body>
 </html>
