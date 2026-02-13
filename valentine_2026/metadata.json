@@ -1,0 +1,7 @@
+{
+  "name": "Gesture Love Particles",
+  "description": "A 3D particle system controlled by hand gestures using MediaPipe and Three.js. Show 1 finger for 'I', 2 for 'LOVE', 3 for 'YOU'.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
