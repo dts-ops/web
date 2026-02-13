@@ -1,0 +1,7 @@
+{
+  "name": "GestureVolumetrics",
+  "description": "A real-time hand-controlled 3D particle system that morphs into volumetric text based on finger gestures.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
