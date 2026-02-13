@@ -30,74 +30,52 @@
     }
     </script>
     <script>
-    function showLoading() {
-      let div = document.getElementById("cam-loading");
-      if (!div) {
-        div = document.createElement("div");
-        div.id = "cam-loading";
-        div.style = `
-          position:fixed;
-          inset:0;
-          background:#050505;
-          display:flex;
-          align-items:center;
-          justify-content:center;
-          z-index:9999;
-          color:white;
-          font-size:24px;
-          font-family:sans-serif;
-        `;
-        div.innerText = "Starting camera...";
-        document.body.appendChild(div);
-      }
-    }
-  
-    function hideLoading() {
-      const div = document.getElementById("cam-loading");
-      if (div) div.remove();
-    }
-  
-    const originalGetUserMedia =
-      navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
-  
-    navigator.mediaDevices.getUserMedia = async function (...args) {
-      const stream = await originalGetUserMedia(...args);
-  
-      showLoading();
-  
-      let stableFrames = 0;
-      let lastTime = performance.now();
-  
-      await new Promise(resolve => {
-        function check() {
-          const now = performance.now();
-          const delta = now - lastTime;
-          lastTime = now;
-  
-          if (delta < 25) {
-            stableFrames++;
-          } else {
-            stableFrames = 0;
-          }
-  
-          if (stableFrames >= 5) {
-            resolve();
-          } else {
-            requestAnimationFrame(check);
-          }
+      function showLoading() {
+        let div = document.getElementById("cam-loading");
+        if (!div) {
+          div = document.createElement("div");
+          div.id = "cam-loading";
+          div.style = `
+            position:fixed;
+            inset:0;
+            background:#050505;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            z-index:9999;
+            color:white;
+            font-size:24px;
+            font-family:sans-serif;
+          `;
+          div.innerText = "Starting camera...";
+          document.body.appendChild(div);
         }
-        requestAnimationFrame(check);
-      });
-  
-      hideLoading();
-      return stream;
-    };
-</script>
+      }
+    
+      function hideLoading() {
+        const div = document.getElementById("cam-loading");
+        if (div) div.remove();
+      }
+    
+      const originalGetUserMedia =
+        navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+    
+      navigator.mediaDevices.getUserMedia = async function (...args) {
+        const stream = await originalGetUserMedia(...args);
+    
+        // user vừa bấm Allow xong
+        showLoading();
+    
+        // giữ loading đúng 4 giây
+        setTimeout(() => {
+          hideLoading();
+        }, 4000);
+    
+        return stream;
+      };
+    </script>
 
-<script type="module" crossorigin src="/valentine_2026/assets/index-B7Uln1PG.js"></script>
-</head>
-
-  <script type="module" crossorigin src="/valentine_2026/assets/index-B7Uln1PG.js"></script>
+    <script type="module" crossorigin src="/valentine_2026/assets/index-B7Uln1PG.js"></script>
 </head>
   <body>
     <div id="root"></div>
