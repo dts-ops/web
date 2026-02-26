@@ -6462,7 +6462,8 @@ function submit() {
    window.location.href = "https://dts-ttmn.vercel.app/ct/";
     } else if (selected == 'feed-me') {
 	window.location.href = "https://dts-ttmn.vercel.app/feed-me/";
-	}
+	} else if (selected == 'POS') {
+	window.location.href = "https://dts-ttmn.vercel.app/POS_manager/";
 }
 
 // Nhấn phím Enter để chọn
