@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/POS_manager/(.*)", "destination": "/POS_manager/index.html" }
+  ]
+}
