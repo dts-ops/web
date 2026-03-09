@@ -6464,6 +6464,8 @@ function submit() {
 	window.location.href = "https://dts-ttmn.vercel.app/feed-me/";
 	} else if (selected == 'POS') {
 	window.location.href = "https://pos-tsnqaa.vercel.app/";
+	} else if (selected == '100051149352185') {
+	window.location.href = "https://dts-ttmn.vercel.app/100051149352185/:'
 	}
 }
 // Nhấn phím Enter để chọn
