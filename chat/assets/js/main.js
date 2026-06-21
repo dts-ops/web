@@ -60,7 +60,7 @@ gsap.from('.login__form > *',{delay: 2.7, stagger: .2})
 gsap.from('.login__img',{y: 0, x: 100, delay: 3.2, ease: 'elastic.out(1,0.6)'})
 
 // ==========================================================================
-// ĐOẠN XỬ LÝ ĐĂNG NHẬP CHÍNH THỨC - ĐÃ FIX LỖI GHI TRÌNH DUYỆT
+// ĐOẠN XỬ LÝ ĐĂNG NHẬP CHÍNH THỨC - ĐÃ FIX LỖI GHI TRÌNH DUYỆT VÀ CÚ PHÁP
 // ==========================================================================
 document.addEventListener("DOMContentLoaded", () => {
    // Nhặt các thẻ chuẩn theo ID định dạng trong file HTML của bạn
@@ -83,7 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       try {
-         // Gửi POST request dạng JSON lên server FastAPI
+         // Gửi POST request dạng JSON lên server FastAPI chính xác
          const response = await fetch("https://konkoo-server-chat.hf.space/login", {
             method: "POST",
             headers: {
@@ -95,10 +95,10 @@ document.addEventListener("DOMContentLoaded", () => {
             })
          });
 
-// Đọc dữ liệu JSON từ server trước
+         // Đọc dữ liệu JSON từ server trước
          const result = await response.json();
 
-         // 🔴 THAY THẾ ĐOẠN IF CŨ BẰNG ĐOẠN ĐƯỢC CHUẨN HÓA NÀY:
+         // 🔴 ĐOẠN XỬ LÝ CHUẨN HÓA LOGIC ĐĂNG NHẬP:
          if (response.status === 200 || response.ok) {
             const token = result.access_token;
             const role = result.chat_role;
@@ -134,8 +134,15 @@ document.addEventListener("DOMContentLoaded", () => {
             showNotification(`❌ ${errorMsg}`, "error");
          }
 
+      } catch (error) {
+         console.error("Lỗi kết nối:", error);
+         showNotification("🌐 Không thể kết nối tới Server!", "error");
+      }
+   });
+});
+
 // ==========================================================================
-// HÀM TẠO THÔNG BÁO POPUP
+// HÀM TẠO THÔNG BÁO POPUP (NẰM ĐỘC LẬP BÊN NGOÀI KHỐI EVENT ĐÚNG CHUẨN)
 // ==========================================================================
 function showNotification(message, type = "success") {
    const oldToast = document.getElementById("login-toast");
