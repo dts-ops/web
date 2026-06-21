@@ -18,7 +18,7 @@ let MY_NAME = localStorage.getItem("chat_display_name") || "Ẩn danh";
 let MY_ROLE = localStorage.getItem("chat_my_role") || "n";
 
 // Tự động cập nhật tên đối phương lên Header dựa theo vai trò thực tế
-const PARTNER_NAME = (MY_ROLE === "s") ? "Người dùng (n)" : "Anh Sơn (s)";
+const PARTNER_NAME = (MY_ROLE === "s") ? "Nga Ngố" : "Anh Sơn";
 const headerNameSelector = document.querySelector(".profile .left-text h2");
 if (headerNameSelector) {
     headerNameSelector.innerText = PARTNER_NAME;
@@ -189,9 +189,6 @@ function connectWebSocket() {
 }
 
 // ==========================================================================
-// 5. HÀM ĐỔ TIN NHẮN LÊN GIAO DIỆN (HTML RENDERING CẬP NHẬT)
-// ==========================================================================
-// ==========================================================================
 // 5. HÀM ĐỔ TIN NHẮN LÊN GIAO DIỆN (HTML RENDERING THEO MÁY NGƯỜI DÙNG)
 // ==========================================================================
 let renderMessageFromServer = function(sender, content, time, msgId = null, isPending = false, role = "n") {
@@ -240,7 +237,7 @@ let renderMessageFromServer = function(sender, content, time, msgId = null, isPe
 
     let ptag = document.createElement("p");
     // Nếu là tin nhắn của mình thì hiện trơn text, tin nhắn của người khác thì hiện thêm 'Tên: nội dung'
-    ptag.innerText = isMyOwnMessage ? content : `${sender}: ${content}`;
+    ptag.innerText = isMyOwnMessage ? content : content;
 
     let checkDiv = document.createElement("div");
     checkDiv.className = "check";
