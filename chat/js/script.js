@@ -1,6 +1,9 @@
 // ==========================================================================
 // 1. CẤU HÌNH BIẾN TOÀN CỤC & ĐỊNH DANH USER (LOCAL STORAGE)
 // ==========================================================================
+// ==========================================================================
+// 1. CẤU HÌNH BIẾN TOÀN CỤC & ĐỊNH DANH USER (LOCAL STORAGE)
+// ==========================================================================
 let chatBoxContainer = document.getElementById("chatBoxContainer");
 let inputPostText = document.getElementById("inputPostText");
 let micPost = document.getElementById("micPost");
@@ -13,33 +16,15 @@ let checkNetworkInterval = null;
 let missedHeartbeats = 0;
 let isCheckingNetwork = false;
 
-// Đọc giá trị từ Local Storage, mặc định ban đầu là "s"
-let MY_NAME = localStorage.getItem("chat_username");
-if (!MY_NAME) {
-    MY_NAME = "s";
-    localStorage.setItem("chat_username", "s");
-}
+// Lấy chính xác tên người dùng đã đăng nhập thành công từ bộ nhớ máy
+let MY_NAME = localStorage.getItem("chat_display_name") || "Ẩn danh";
 
-// Tự động cập nhật tên đối phương lên Header
-const PARTNER_NAME = (MY_NAME === "s") ? "n" : "s";
+// Tự động cập nhật tên đối phương lên Header dựa theo tài khoản đang đăng nhập
 const headerNameSelector = document.querySelector(".profile .left-text h2");
 if (headerNameSelector) {
-    headerNameSelector.innerText = PARTNER_NAME;
+    // Nếu mình là trunwson thì người kia là Thành viên, ngược lại mình là thành viên thì người kia là trunwson
+    headerNameSelector.innerText = (MY_NAME === "trunwson") ? "Thành viên" : "trunwson";
 }
-
-console.log("👉 [HỆ THỐNG] Bạn đang online với tên User là:", MY_NAME);
-console.log("👉 [HỆ THỐNG] Muốn đổi tài khoản? Gõ lệnh này vào console: setRole('n')");
-
-window.setRole = function(name) {
-    if (name === "s" || name === "n") {
-        localStorage.setItem("chat_username", name);
-        console.log(`🎉 Đã đổi thành công sang User: "${name}". Đang tải lại trang...`);
-        location.reload();
-    } else {
-        console.error("❌ Lỗi: Chỉ được nhập 's' hoặc 'n' thôi!");
-    }
-};
-
 // ==========================================================================
 // 2. HÀM QUẢN LÝ GIAO DIỆN TRẠNG THÁI KẾT NỐI
 // ==========================================================================
