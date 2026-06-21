@@ -260,7 +260,7 @@ let renderMessageFromServer = function(sender, content, time, msgId = null, isPe
 
     if (sender === MY_NAME && !isPending) {
         let checkImg = document.createElement("img");
-        checkImg.src = "img/check-2.png"; 
+        checkImg.src = "/chat/img/check-2.png"; 
         checkDiv.appendChild(checkImg);
     }
         
