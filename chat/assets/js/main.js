@@ -1,4 +1,4 @@
-/*=============== GSAP ANIMATION ===============*/
+/*=============== GSAP ANIMATION (Giữ nguyên từ code gốc của bạn) ===============*/
 const tl = gsap.timeline({})
 
 /* Animate form in the center */
@@ -60,7 +60,7 @@ gsap.from('.login__form > *',{delay: 2.7, stagger: .2})
 gsap.from('.login__img',{y: 0, x: 100, delay: 3.2, ease: 'elastic.out(1,0.6)'})
 
 // ==========================================================================
-// ĐOẠN XỬ LÝ DEMO GỬI DỮ LIỆU ĐÃ KHỚP VỚI HTML CỦA BẠN
+// ĐOẠN XỬ LÝ ĐĂNG NHẬP CHÍNH THỨC - ĐÃ FIX LỖI GHI TRÌNH DUYỆT
 // ==========================================================================
 document.addEventListener("DOMContentLoaded", () => {
    // Nhặt các thẻ chuẩn theo ID định dạng trong file HTML của bạn
@@ -76,6 +76,12 @@ document.addEventListener("DOMContentLoaded", () => {
       const username = usernameInput.value.trim();
       const password = passwordInput.value.trim();
 
+      // Kiểm tra nhanh ở client trước khi gửi đi
+      if (!username || !password) {
+         showNotification("⚠️ Vui lòng nhập đầy đủ thông tin!", "error");
+         return;
+      }
+
       try {
          // Gửi POST request dạng JSON lên server FastAPI
          const response = await fetch("https://konkoo-server-chat.hf.space/login", {
@@ -89,21 +95,44 @@ document.addEventListener("DOMContentLoaded", () => {
             })
          });
 
+// Đọc dữ liệu JSON từ server trước
          const result = await response.json();
 
-         if (response.ok) {
-            // Hiện popup thông báo thành công từ phản hồi của server
-            showNotification(`🎉 ${result.message || "Gửi dữ liệu demo thành công!"}`, "success");
-         } else {
-            showNotification("❌ Gửi dữ liệu thất bại!", "error");
-         }
+         // 🔴 THAY THẾ ĐOẠN IF CŨ BẰNG ĐOẠN ĐƯỢC CHUẨN HÓA NÀY:
+         if (response.status === 200 || response.ok) {
+            const token = result.access_token;
+            const role = result.chat_role;
+            const displayName = result.user_name;
 
-      } catch (error) {
-         console.error("Lỗi kết nối:", error);
-         showNotification("🌐 Không thể kết nối tới Server!", "error");
-      }
-   });
-});
+            // Kiểm tra kỹ xem thực sự có token trả về không
+            if (!token) {
+               console.error("Server trả về mã 200 nhưng không có token:", result);
+               showNotification("❌ Lỗi hệ thống: Server không cấp Token!", "error");
+               return;
+            }
+
+            // Lưu vào máy nếu mọi thứ đều hợp lệ
+            localStorage.setItem("chat_token", token);
+            localStorage.setItem("chat_my_role", role);
+            localStorage.setItem("chat_display_name", displayName);
+
+            showNotification(`🎉 Đăng nhập thành công!`, "success");
+            
+            setTimeout(() => {
+               window.location.replace("index.html");
+            }, 1500);
+
+         } else {
+            // ❌ NẾU SERVER TRẢ VỀ 401 HOẶC BẤT KỲ MÃ LỖI NÀO:
+            console.log("Đăng nhập thất bại với mã:", response.status, result);
+            
+            // Ép buộc xóa sạch token cũ (nếu có) để tránh kẹt cổng
+            localStorage.clear(); 
+            
+            // Hiển thị thông báo lỗi màu đỏ, lấy từ 'detail' của FastAPI
+            const errorMsg = result.detail || "Tài khoản hoặc mật khẩu không chính xác!";
+            showNotification(`❌ ${errorMsg}`, "error");
+         }
 
 // ==========================================================================
 // HÀM TẠO THÔNG BÁO POPUP
@@ -127,11 +156,13 @@ function showNotification(message, type = "success") {
       font-weight: bold; 
       z-index: 9999; 
       box-shadow: 0 4px 12px rgba(0,0,0,0.15); 
-      background-color: ${type === 'success' ? '#2ed573' : '#ff4757'}
+      background-color: ${type === 'success' ? '#2ed573' : '#ff4757'};
+      font-family: sans-serif;
+      transition: all 0.3s ease;
    `;
 
    document.body.appendChild(toast);
    
-   // Tự động xóa thông báo sau 3 giây
+   // Tự động xóa thông báo sau 3 giây (nếu không bị chuyển trang)
    setTimeout(() => toast.remove(), 3000);
 }
