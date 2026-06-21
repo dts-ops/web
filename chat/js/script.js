@@ -1,9 +1,6 @@
 // ==========================================================================
 // 1. CẤU HÌNH BIẾN TOÀN CỤC & ĐỊNH DANH USER (LOCAL STORAGE)
 // ==========================================================================
-// ==========================================================================
-// 1. CẤU HÌNH BIẾN TOÀN CỤC & ĐỊNH DANH USER (LOCAL STORAGE)
-// ==========================================================================
 let chatBoxContainer = document.getElementById("chatBoxContainer");
 let inputPostText = document.getElementById("inputPostText");
 let micPost = document.getElementById("micPost");
@@ -183,11 +180,10 @@ function connectWebSocket() {
 // 5. HÀM ĐỔ TIN NHẮN LÊN GIAO DIỆN (HTML RENDERING)
 // ==========================================================================
 let renderMessageFromServer = function(sender, content, time, msgId = null, isPending = false) {
-    // 1. KIỂM TRA XEM TIN NHẮN ĐÃ TỒN TẠI TRÊN MÀN HÌNH CHƯA
+    // 1. KIỂM TRA XEM TIN NHẮN ĐÃ TỒN TẠI TRÊN MÀN HÌNH CHƯA (Cập nhật tin "Đang gửi...")
     if (msgId) {
         let existingBubble = document.getElementById(msgId);
         
-        // Nếu tìm thấy bong bóng chat cũ đang trạng thái "Đang gửi..."
         if (existingBubble) {
             // Cập nhật lại thời gian chuẩn từ Server
             let spanTime = existingBubble.querySelector(".check span");
@@ -204,29 +200,33 @@ let renderMessageFromServer = function(sender, content, time, msgId = null, isPe
             let checkDiv = existingBubble.querySelector(".check");
             if (checkDiv && !isPending && !checkDiv.querySelector("img")) {
                 let checkImg = document.createElement("img");
-                checkImg.src = "img/check-2.png"; 
+                checkImg.src = "/chat/img/check-2.png"; // Đồng nhất đường dẫn ảnh tích xanh
                 checkDiv.appendChild(checkImg);
             }
 
-            // Xóa ID tạm đi để sạch HTML (hoặc giữ lại tùy bạn)
+            // Xóa ID tạm đi để sạch HTML
             existingBubble.removeAttribute("id");
-            return; // ĐÃ CẬP NHẬT XONG -> THOÁT HÀM, KHÔNG CHẠY XUỐNG ĐOẠN TẠO MỚI NỮA!
+            return; // Đã cập nhật xong -> Thoát hàm
         }
     }
 
-    // 2. NẾU TIN NHẮN CHƯA CÓ TRÊN MÀN HÌNH -> TIẾN HÀNH TẠO MỚI (Logic cũ của bạn)
+    // 2. NẾU TIN NHẮN CHƯA CÓ TRÊN MÀN HÌNH -> TIẾN HÀNH TẠO MỚI
     let chatDiv = document.createElement("div");
-    chatDiv.className = (sender === MY_NAME) ? "chat-r" : "chat-l";
+    
+    // 🟢 KIỂM TRA: Nếu người gửi trùng với tên trong LocalStorage (MY_NAME) -> Bên PHẢI, ngược lại -> Bên TRÁI
+    let isMyMessage = (sender === MY_NAME);
+    chatDiv.className = isMyMessage ? "chat-r" : "chat-l";
     
     if (msgId) {
         chatDiv.id = msgId;
     }
 
     let messDiv = document.createElement("div");
-    messDiv.className = (sender === MY_NAME) ? "mess mess-r" : "mess";
+    messDiv.className = isMyMessage ? "mess mess-r" : "mess";
 
     let ptag = document.createElement("p");
-    ptag.innerText = content;
+    // 🟢 TỐI ƯU hiển thị văn bản: Nếu là mình gửi thì chỉ hiện content, người khác gửi thì hiện "Tên: Nội dung"
+    ptag.innerText = isMyMessage ? content : `${sender}: ${content}`;
 
     let checkDiv = document.createElement("div");
     checkDiv.className = "check";
@@ -243,7 +243,8 @@ let renderMessageFromServer = function(sender, content, time, msgId = null, isPe
     spanTime.innerText = displayTime;
     checkDiv.appendChild(spanTime);
 
-    if (sender === MY_NAME && !isPending) {
+    // Hiển thị tích xanh nếu là tin nhắn của chính mình và không ở trạng thái "Đang gửi..."
+    if (isMyMessage && !isPending) {
         let checkImg = document.createElement("img");
         checkImg.src = "/chat/img/check-2.png"; 
         checkDiv.appendChild(checkImg);
@@ -255,6 +256,7 @@ let renderMessageFromServer = function(sender, content, time, msgId = null, isPe
     
     chatBoxContainer.appendChild(chatDiv);
 };
+
 let scrollToBottom = function() {
     if (chatBoxContainer) {
         chatBoxContainer.scrollTop = chatBoxContainer.scrollHeight;
