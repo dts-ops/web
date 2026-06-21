@@ -226,7 +226,7 @@ let renderMessageFromServer = function(sender, content, time, msgId = null, isPe
 
     let ptag = document.createElement("p");
     // 🟢 TỐI ƯU hiển thị văn bản: Nếu là mình gửi thì chỉ hiện content, người khác gửi thì hiện "Tên: Nội dung"
-    ptag.innerText = isMyMessage ? content : `${sender}: ${content}`;
+    ptag.innerText = isMyMessage ? content : content;
 
     let checkDiv = document.createElement("div");
     checkDiv.className = "check";
