@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+   <html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+      <!--=============== REMIXICONS ===============-->
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+
+      <!--=============== CSS ===============-->
+      <link rel="stylesheet" href="/chat/assets/css/styles.css">
+
+      <title>LOGIN</title>
+      <script>
+         (function() {
+            // 1. Lấy token từ máy xem người dùng đã đăng nhập chưa
+            const token = localStorage.getItem("chat_token");
+            const role = localStorage.getItem("chat_my_role");
+
+            // 2. Nếu có đủ token và vai trò, tiến hành kiểm tra thời hạn
+            if (token && role) {
+               try {
+                  // Giải mã phần payload của JWT để xem thời gian hết hạn (exp)
+                  const base64Url = token.split('.')[1];
+                  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                  const payload = JSON.parse(window.atob(base64));
+                  
+                  const now = Math.floor(Date.now() / 1000);
+                  
+                  // Nếu token ĐANG CÒN HẠN (thời gian hiện tại chưa vượt quá exp)
+                  if (payload.exp && now < payload.exp) {
+                     // Đẩy thẳng người dùng vào phòng chat, không cho ở lại trang login
+                     window.location.replace("/chat/index.html");
+                  }
+               } catch (e) {
+                  // Nếu lỗi token không hợp lệ thì xóa đi để họ đăng nhập lại bình thường
+                  localStorage.clear();
+               }
+            }
+         })();
+      </script>
+   </head>
+   <body>
+      <section class="login">
+         <div class="login__content">
+            <div>
+               <h2 class="login__title">Welcome back 👋</h2>
+      
+               <form action="" method="post" class="login__form">
+                  <div class="login__group">
+                     <div class="login__box">
+                        <i class="ri-user-fill login__icon"></i>
+                        <input type="name" name="name" autocomplete="name" required placeholder=" " class="login__input" id="name">
+                        <label for="name" class="login__label">User</label>
+                     </div>
+                     
+                     <div class="login__box">
+                        <i class="ri-lock-2-fill login__icon"></i>
+                        <input type="password" name="password" autocomplete="current-password" required placeholder=" " class="login__input" id="password">
+                        <label for="password" class="login__label">Password</label>
+                     </div>
+                  </div>
+   
+                  <a href="#" class="login__forgot">Forgot Password?</a>
+   
+                  <button type="submit" class="login__button">
+                     Log In <i class="ri-send-plane-2-fill"></i>
+                  </button>
+               </form>
+            </div>
+
+            <div class="login__image">
+               <img src="/chat/assets/img/login-bg.png" alt="" class="login__img">
+            </div>
+         </div>
+      </section>
+
+      <!--=============== GSAP ===============-->
+      <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.1/dist/gsap.min.js"></script>
+
+      <!--=============== MAIN JS ===============-->
+      <script src="/chat/assets/js/main.js"></script>
+   </body>
+</html>

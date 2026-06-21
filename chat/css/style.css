@@ -1,0 +1,339 @@
+* {
+	padding: 0;
+	margin: 0;
+	box-sizing: border-box;
+	font-family: sans-serif;
+}
+
+/* --- FIX CO GIÃN ĐA THIẾT BỊ --- */
+.container {
+	width: 100%;
+	max-width: 800px; /* Máy tính giới hạn vừa mắt, Điện thoại tự khít 100% */
+	margin: auto;
+	height: 100vh;
+}
+
+body, html {
+	background-color: #dadbd4;
+	overflow: hidden; /* Chống cuộn toàn trang web */
+}
+
+.chat {
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+	background: #f1f0e8;
+}
+
+/* --- FIX HEADER THẲNG HÀNG --- */
+.chat-header {
+	display: flex;
+	cursor: pointer;
+	height: 60px;
+	z-index: 10;
+}
+
+.profile {
+	width: 100%;
+	background: #036055;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0px 15px;
+}
+
+.profile .left {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+/* Sửa lại kích thước và vị trí avatar, nút quay lại */
+.profile .arrow {
+	width: 20px;
+	cursor: pointer;
+}
+
+.profile .pp {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	object-fit: cover;
+}
+
+/* Gộp tên và chữ online vào khối dọc để không bị đè nhau */
+.profile .left-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.profile h2 {
+	color: #fff;
+	font-size: 18px;
+	font-weight: 500;
+}
+
+.profile span {
+	color: #ccc;
+	font-size: 13px;
+	margin-top: 2px;
+}
+
+/* Thanh công cụ bên phải header */
+.profile .right {
+	display: flex;
+	align-items: center;
+	gap: 15px;
+}
+
+.right .icon {
+	width: 22px;
+	cursor: pointer;
+}
+
+/* --- FIX CHAT BOX HIỂN THỊ --- */
+.chat-box {
+	background: url('../img/bg.jpeg');
+	background-attachment: fixed;
+	padding: 15px 20px;
+	overflow-y: auto; /* Thay scroll bằng auto để mượt hơn */
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+}
+
+.chat-box .img_chat {
+	width: 100%;
+	max-width: 280px;
+	border-radius: 6px;
+	margin-bottom: 4px;
+}
+
+.chat-r {
+	display: flex;
+	justify-content: flex-end; /* Đẩy tin nhắn mình sang phải */
+	width: 100%;
+}
+
+.chat-l {
+	display: flex;
+	justify-content: flex-start; /* Đẩy tin nhắn người ta sang trái */
+	width: 100%;
+}
+
+/* Bỏ các thẻ trống .sp cũ không cần thiết */
+.chat-r .sp, .chat-l .sp {
+	display: none;
+}
+
+.chat-box .mess {
+	max-width: 65%; /* Giới hạn độ dài bong bóng chat hợp lý */
+	background: #F7FCF6;
+	padding: 8px 12px;
+	border-radius: 8px;
+	margin: 5px 0px;
+	cursor: pointer;
+	box-shadow: 0 1px 0.5px rgba(0,0,0,0.13);
+	display: flex;
+	flex-direction: column;
+}
+
+.chat-box .mess p {
+	word-break: break-word; /* Đổi sang break-word để ngắt dòng đúng tiếng Việt */
+	font-size: 16px;
+	color: #111b21;
+}
+
+.chat-box .mess-r {
+    background: #E2FFC7;
+}
+
+.chat-box .emoji {
+	width: 20px;
+	vertical-align: middle;
+	display: inline-block;
+}
+
+/* Căn chỉnh cụm thời gian bám góc dưới bên phải tin nhắn */
+.chat-box .check {
+	align-self: flex-end;
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	margin-top: 2px;
+}
+
+.chat-box .check img {
+	width: 16px;
+	height: 16px;
+}
+
+.chat-box .check span {
+	color: #888;
+	font-size: 11px;
+	font-weight: normal;
+}
+
+/* --- THANH THANH CUỘN (SCROLLBAR) --- */
+*::-webkit-scrollbar {
+	width: 5px;
+}
+*::-webkit-scrollbar-track {
+	background: #f1f1f1;
+}
+*::-webkit-scrollbar-thumb {
+	background: #aaa;
+}
+*::-webkit-scrollbar-thumb:hover {
+	background: #555;
+}
+
+/* --- ĐỊNH DẠNG NÚT GỬI MÁY BAY CHUẨN WHATSAPP --- */
+.chat-footer .send-btn {
+	display: block;
+	width: 32px;  /* Bằng khít kích thước nút Mic (55px ở code cũ của bạn là quá to) */
+	height: 32px;
+	margin-right: 20px; /* Căn lề phải giống nút Mic */
+	cursor: pointer;
+}
+
+/* Class bổ trợ để ẩn nút khi chưa gõ chữ hoặc gõ chữ */
+.disNone {
+	display: none !important;
+}
+
+/* --- FIX KHUNG NHẬP LIỆU CHUẨN ĐÁY (.chat-footer) --- */
+/* --- THANH FOOTER HOÀN TOÀN BẰNG FLEXBOX CHỐNG LỆCH --- */
+.chat-footer {
+	display: flex !important;
+	align-items: center !important; /* Căn tất cả icon và input thẳng hàng dọc */
+	background-color: #f0f2f5;
+	padding: 8px 12px;
+	gap: 10px; /* Khoảng cách đều giữa các phần tử */
+	min-height: 52px;
+	border-top: 1px solid #e9edef;
+	position: relative;
+}
+
+/* Icon Emoji mặt cười ở đầu */
+.chat-footer .emo {
+	display: block;
+	width: 28px;
+	height: 28px;
+	cursor: pointer;
+	flex-shrink: 0; /* Không cho icon bị bóp nhỏ */
+}
+
+/* Ô nhập liệu textarea tự động giãn rộng chiếm hết khoảng trống ở giữa */
+.chat-footer textarea {
+	display: block;
+	flex: 1; /* Tự động co giãn khít không gian */
+	height: 38px;
+	border-radius: 20px;
+	padding: 8px 15px; /* Chỉ cần padding đều 2 bên */
+	outline: none;
+	font-size: 16px;
+	border: 1px solid #ccc;
+	color: #111b21;
+	resize: none;
+	background: #fff;
+}
+
+/* Cụm chứa nút đính kèm và camera xếp ngay ngắn sau textarea */
+.chat-footer .icons {
+	position: static !important; /* Phá bỏ absolute gây lỗi đè chữ */
+	display: flex !important;
+	align-items: center;
+	gap: 10px;
+	flex-shrink: 0;
+}
+
+.chat-footer .icons img {
+	display: inline-block;
+	width: 24px;
+	height: 24px;
+	cursor: pointer;
+}
+
+/* Nút Mic và nút Send xếp ở cuối cùng ngoài rìa phải */
+.chat-footer .mic,
+.chat-footer .send-btn {
+	display: block !important;
+	width: 28px !important;
+	height: 28px !important;
+	cursor: pointer;
+	flex-shrink: 0;
+	margin: 0 !important; /* Xóa margin-right cũ gây lệch */
+}
+
+/* Class bổ trợ ẩn hiện của JS */
+.disNone {
+	display: none !important;
+}
+
+/* --- THÔNG BÁO TRUNG GIAN (SYSTEM MESSAGE) --- */
+.chat-box .system-msg {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin: 12px 0;
+	width: 100%;
+}
+
+.chat-box .system-msg span {
+	background-color: #ffffff; /* Nền trắng bo tròn nhỏ */
+	color: #54656f; /* Màu chữ xám trầm */
+	font-size: 12px;
+	padding: 5px 12px;
+	border-radius: 8px;
+	box-shadow: 0 1px 0.5px rgba(0,0,0,0.1);
+	text-align: center;
+	max-width: 80%;
+	word-break: break-word;
+	font-weight: 500;
+}
+
+
+/* Khung nền mờ phủ toàn bộ hộp chat */
+#first-load-screen {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(255, 255, 255, 0.9); /* Nền trắng hơi trong suốt */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 999; /* Luôn nằm trên cùng */
+    font-family: sans-serif;
+    color: #555;
+}
+
+/* Vòng tròn xoay xoay */
+.main-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db; /* Màu xanh chủ đạo */
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 10px;
+}
+
+/* Kịch bản xoay 360 độ */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Trạng thái mặc định hoặc khi kết nối thành công */
+.status-connected {
+    color: #2ecc71 !important; /* Màu xanh lá */
+    font-weight: bold;
+}
+
+/* Trạng thái khi bị mất kết nối */
+.status-disconnected {
+    color: #e74c3c !important; /* Màu đỏ hoặc xám tùy bạn */
+}

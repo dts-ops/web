@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Private Chat</title>
+	<link rel="stylesheet" href="/chat/css/style.css">
+	<script>
+	   (function() {
+	      // 1. Lấy token từ bộ nhớ LocalStorage ra xem có không
+	      const token = localStorage.getItem("chat_token");
+	      const role = localStorage.getItem("chat_my_role");
+
+	      // 2. Nếu không có token hoặc không có vai trò (chưa đăng nhập)
+	      if (!token || !role) {
+	         // Đá người dùng về trang login ngay lập tức
+	         window.location.replace("/chat/login.html");
+	         return;
+	      }
+
+	      // 3. (Tùy chọn nâng cao) Bạn có thể check xem JWT có bị hết hạn hay không
+	      try {
+	         // Token JWT gồm 3 phần cách nhau bằng dấu chấm, phần 2 (index 1) chứa thông tin hết hạn (exp)
+	         const base64Url = token.split('.')[1];
+	         const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+	         const payload = JSON.parse(window.atob(base64));
+	         
+	         // Lấy thời gian hiện tại (tính bằng giây)
+	         const now = Math.floor(Date.now() / 1000);
+	         
+	         // Nếu thời gian hiện tại lớn hơn thời gian hết hạn của token
+	         if (payload.exp && now >= payload.exp) {
+	            alert("🔒 Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại!");
+	            // Xóa sạch dữ liệu cũ để tránh lỗi vòng lặp
+	            localStorage.clear();
+	            window.location.replace("login.html");
+	         }
+	      } catch (e) {
+	         // Nếu token lỗi, không giải mã được -> cũng cho ra rìa luôn
+	         localStorage.clear();
+	         window.location.replace("login.html");
+	      }
+	   })();
+	</script>
+</head>
+<body>
+	<div class="container">
+		<div class="chat">
+			
+			<div class="chat-header">
+				<div class="profile">
+					<div class="left">
+						<img src="/chat/img/pp.png" class="pp" alt="">
+						<div class="left-text">
+							<h2>Users</h2>
+							<span id="connection-status" class="status-e2ee"></span>
+						</div>
+					</div>
+
+					<div class="right">
+						<!--
+						<img src="img/video.png" class="icon" alt="">
+						<img src="img/phone.png" class="icon" alt="">
+						-->
+						<img src="/chat/img/more.png" class="icon" alt="">
+					</div>
+
+				</div>
+			</div>
+			<div id="chat-box-container">
+			    <div id="first-load-screen">
+			        <div class="main-spinner"></div>
+			        <p>Đang tải tin nhắn...</p>
+			    </div>
+
+			    <div id="chat-messages-list"></div>
+			</div>
+			<div class="chat-box" id="chatBoxContainer">
+				<!--
+				<div class="chat-r">
+					<div class="mess mess-r">
+						<p><img src="img/emoji-1.png" class="emoji" alt=""> Hi, Elias</p>
+						<div class="check">
+							<span>4:00 PM</span>
+							<img src="img/check-2.png" alt="">
+						</div>
+					</div>
+				</div>
+
+				<div class="chat-l">
+					<div class="mess">
+						<p>Oh! hi <img src="img/emoji-2.png" class="emoji" alt=""></p>
+						<div class="check">
+							<span>4:00 PM</span>
+						</div>
+					</div>
+				</div>
+				
+				<div class="system-msg">
+					<span>Messages are end-to-end encrypted. No one outside of this chat can read them.</span>
+				</div>
+				-->
+			</div>
+
+			<div class="chat-footer">
+				<img src="/chat/img/emo.png" class="emo" alt="Emoji">
+				
+				<textarea id="inputPostText" placeholder="Type a message"></textarea>
+				
+				<div class="icons">
+					<img src="/chat/img/attach file.png" alt="Attach">
+					<img src="/chat/img/camera.png" alt="Camera">
+				</div>
+				
+				<img id="micPost" src="/chat/img/mic.png" class="mic" alt="Microphone">
+				<img id="textSubmit" src="/chat/img/send.png" class="send-btn disNone" alt="Send">
+			</div>
+
+		</div>
+	</div>
+	<script src="/chat/js/script.js" defer></script>
+</body>
+</html>
