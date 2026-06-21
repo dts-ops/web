@@ -177,7 +177,7 @@ function connectWebSocket() {
                     let checkDiv = pendingBubble.querySelector(".check");
                     if (checkDiv && !checkDiv.querySelector("img")) {
                         let checkImg = document.createElement("img");
-                        checkImg.src = "img/check-2.png";
+                        checkImg.src = "/chat/img/check-2.png";
                         checkDiv.appendChild(checkImg);
                     }
                     
