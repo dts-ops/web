@@ -191,6 +191,9 @@ function connectWebSocket() {
 // ==========================================================================
 // 5. HÀM ĐỔ TIN NHẮN LÊN GIAO DIỆN (HTML RENDERING CẬP NHẬT)
 // ==========================================================================
+// ==========================================================================
+// 5. HÀM ĐỔ TIN NHẮN LÊN GIAO DIỆN (HTML RENDERING THEO MÁY NGƯỜI DÙNG)
+// ==========================================================================
 let renderMessageFromServer = function(sender, content, time, msgId = null, isPending = false, role = "n") {
     
     // 1. KIỂM TRA XEM TIN NHẮN ĐÃ TỒN TẠI TRÊN MÀN HÌNH CHƯA (Xử lý tích xanh cập nhật)
@@ -223,20 +226,21 @@ let renderMessageFromServer = function(sender, content, time, msgId = null, isPe
     // 2. NẾU TIN NHẮN CHƯA CÓ TRÊN MÀN HÌNH -> TIẾN HÀNH TẠO MỚI
     let chatDiv = document.createElement("div");
     
-    // 🟢 ĐÃ SỬA: Phân loại vị trí bong bóng chat (Trái hay Phải) dựa hoàn toàn vào biến role của Server
-    chatDiv.className = (role === "s") ? "chat-r" : "chat-l";
+    // 🟢 ĐÃ SỬA: Nếu NGƯỜI GỬI (sender) trùng với TÊN CỦA BẠN (MY_NAME) -> Nằm bên PHẢI (chat-r), ngược lại nằm bên TRÁI (chat-l)
+    let isMyOwnMessage = (sender === MY_NAME);
+    chatDiv.className = isMyOwnMessage ? "chat-r" : "chat-l";
     
     if (msgId) {
         chatDiv.id = msgId;
     }
 
     let messDiv = document.createElement("div");
-    // 🟢 ĐÃ SỬA: Phân loại màu sắc/class của hộp chat dựa hoàn toàn vào biến role của Server
-    messDiv.className = (role === "s") ? "mess mess-r" : "mess";
+    // 🟢 ĐÃ SỬA: Khung tin nhắn của chính mình sẽ là 'mess mess-r', của người khác là 'mess'
+    messDiv.className = isMyOwnMessage ? "mess mess-r" : "mess";
 
     let ptag = document.createElement("p");
-    // Nếu là Sơn ('s') thì hiển thị trơn content, nếu là người thường thì hiển thị 'Tên: nội dung'
-    ptag.innerText = (role === "s") ? content : `${sender}: ${content}`;
+    // Nếu là tin nhắn của mình thì hiện trơn text, tin nhắn của người khác thì hiện thêm 'Tên: nội dung'
+    ptag.innerText = isMyOwnMessage ? content : `${sender}: ${content}`;
 
     let checkDiv = document.createElement("div");
     checkDiv.className = "check";
@@ -253,8 +257,8 @@ let renderMessageFromServer = function(sender, content, time, msgId = null, isPe
     spanTime.innerText = displayTime;
     checkDiv.appendChild(spanTime);
 
-    // Tích xanh hiển thị nếu đó là tin nhắn của Sơn ('s') và đã hoàn tất gửi lên Server
-    if (role === "s" && !isPending) {
+    // Tích xanh hiển thị nếu đó là tin nhắn do chính bạn gửi và đã hoàn tất lên Server
+    if (isMyOwnMessage && !isPending) {
         let checkImg = document.createElement("img");
         checkImg.src = "/chat/img/check-2.png"; 
         checkDiv.appendChild(checkImg);
