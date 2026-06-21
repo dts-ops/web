@@ -325,3 +325,37 @@ window.addEventListener('offline', function() {
 
 // KHỔI CHẠY HỆ THỐNG LẦN ĐẦU TIÊN
 connectWebSocket();
+
+document.addEventListener("DOMContentLoaded", () => {
+    const dropdownBtn = document.getElementById("dropdownBtn");
+    const dropdownMenu = document.getElementById("dropdownMenu");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    // 1. Bấm vào icon để Ẩn/Hiện menu
+    dropdownBtn.addEventListener("click", (e) => {
+        e.stopPropagation(); // Ngăn sự kiện nổi bọt lên window
+        dropdownMenu.classList.toggle("show");
+    });
+
+    // 2. Tự động đóng menu nếu người dùng bấm ra ngoài khoảng trống
+    window.addEventListener("click", () => {
+        if (dropdownMenu.classList.contains("show")) {
+            dropdownMenu.classList.remove("show");
+        }
+    });
+
+    // 3. Xử lý sự kiện khi bấm nút Đăng xuất
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", (e) => {
+            e.preventDefault(); // Chặn hành vi nhảy link mặc định
+
+            // Xóa toàn bộ Token, Quyền, Tên đã lưu ở trang đăng nhập
+            localStorage.clear(); 
+            
+            console.log("🔒 Đã xóa sạch session đăng nhập.");
+            
+            // Chuyển hướng người dùng về trang đăng nhập login.html lập tức
+            window.location.replace("login.html");
+        });
+    }
+});
