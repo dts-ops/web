@@ -197,12 +197,13 @@ function connectWebSocket() {
 // ==========================================================================
 // 5. HÀM ĐỔ TIN NHẮN LÊN GIAO DIỆN (HTML RENDERING)
 // ==========================================================================
-let renderMessageFromServer = function(sender, content, time, msgId = null, isPending = false) {
-    // 1. KIỂM TRA XEM TIN NHẮN ĐÃ TỒN TẠI TRÊN MÀN HÌNH CHƯA
+// 🟢 ĐÃ CẬP NHẬT: Thêm tham số 'role' vào hàm để phân loại giao diện từ Server
+let renderMessageFromServer = function(sender, content, time, msgId = null, isPending = false, role = "n") {
+    
+    // 1. KIỂM TRA XEM TIN NHẮN ĐÃ TỒN TẠI TRÊN MÀN HÌNH CHƯA (Xử lý tích xanh cập nhật)
     if (msgId) {
         let existingBubble = document.getElementById(msgId);
         
-        // Nếu tìm thấy bong bóng chat cũ đang trạng thái "Đang gửi..."
         if (existingBubble) {
             // Cập nhật lại thời gian chuẩn từ Server
             let spanTime = existingBubble.querySelector(".check span");
@@ -223,25 +224,28 @@ let renderMessageFromServer = function(sender, content, time, msgId = null, isPe
                 checkDiv.appendChild(checkImg);
             }
 
-            // Xóa ID tạm đi để sạch HTML (hoặc giữ lại tùy bạn)
             existingBubble.removeAttribute("id");
-            return; // ĐÃ CẬP NHẬT XONG -> THOÁT HÀM, KHÔNG CHẠY XUỐNG ĐOẠN TẠO MỚI NỮA!
+            return; // Đã cập nhật xong -> Thoát hàm
         }
     }
 
-    // 2. NẾU TIN NHẮN CHƯA CÓ TRÊN MÀN HÌNH -> TIẾN HÀNH TẠO MỚI (Logic cũ của bạn)
+    // 2. NẾU TIN NHẮN CHƯA CÓ TRÊN MÀN HÌNH -> TIẾN HÀNH TẠO MỚI
     let chatDiv = document.createElement("div");
-    chatDiv.className = (sender === MY_NAME) ? "chat-r" : "chat-l";
+    
+    // 🟢 THAY ĐỔI LOGIC: Phân loại vị trí bong bóng chat dựa hoàn toàn vào biến role của Server
+    chatDiv.className = (role === "s") ? "chat-r" : "chat-l";
     
     if (msgId) {
         chatDiv.id = msgId;
     }
 
     let messDiv = document.createElement("div");
-    messDiv.className = (sender === MY_NAME) ? "mess mess-r" : "mess";
+    // 🟢 THAY ĐỔI LOGIC: Style cho khung tin nhắn dựa hoàn toàn vào biến role của Server
+    messDiv.className = (role === "s") ? "mess mess-r" : "mess";
 
     let ptag = document.createElement("p");
-    ptag.innerText = content;
+    // Bạn có thể hiển thị thêm tên người gửi nếu muốn người thường biết ai đang chat
+    ptag.innerText = role === "s" ? content : `${sender}: ${content}`;
 
     let checkDiv = document.createElement("div");
     checkDiv.className = "check";
@@ -258,7 +262,8 @@ let renderMessageFromServer = function(sender, content, time, msgId = null, isPe
     spanTime.innerText = displayTime;
     checkDiv.appendChild(spanTime);
 
-    if (sender === MY_NAME && !isPending) {
+    // Tích xanh hiển thị nếu đó là tin nhắn của Sơn và đã gửi xong
+    if (role === "s" && !isPending) {
         let checkImg = document.createElement("img");
         checkImg.src = "/chat/img/check-2.png"; 
         checkDiv.appendChild(checkImg);
@@ -270,6 +275,7 @@ let renderMessageFromServer = function(sender, content, time, msgId = null, isPe
     
     chatBoxContainer.appendChild(chatDiv);
 };
+
 let scrollToBottom = function() {
     if (chatBoxContainer) {
         chatBoxContainer.scrollTop = chatBoxContainer.scrollHeight;
