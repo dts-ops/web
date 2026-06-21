@@ -1,5 +1,5 @@
 // ==========================================================================
-// 1. CẤU HÌNH BIẾN TOÀN CỤC & ĐỊNH DANH USER (LOCAL STORAGE)
+// 1. CẤU HÌNH BIẾN TOÀN CỤC & ĐỊNH DANH USER (LOCAL STORAGE CHUẨN)
 // ==========================================================================
 let chatBoxContainer = document.getElementById("chatBoxContainer");
 let inputPostText = document.getElementById("inputPostText");
@@ -13,32 +13,18 @@ let checkNetworkInterval = null;
 let missedHeartbeats = 0;
 let isCheckingNetwork = false;
 
-// Đọc giá trị từ Local Storage, mặc định ban đầu là "s"
-let MY_NAME = localStorage.getItem("chat_username");
-if (!MY_NAME) {
-    MY_NAME = "s";
-    localStorage.setItem("chat_username", "s");
-}
+// 🟢 ĐÃ SỬA: Đồng bộ hóa thông tin lấy từ trang đăng nhập
+let MY_NAME = localStorage.getItem("chat_display_name") || "Ẩn danh";
+let MY_ROLE = localStorage.getItem("chat_my_role") || "n";
 
-// Tự động cập nhật tên đối phương lên Header
-const PARTNER_NAME = (MY_NAME === "s") ? "n" : "s";
+// Tự động cập nhật tên đối phương lên Header dựa theo vai trò thực tế
+const PARTNER_NAME = (MY_ROLE === "s") ? "Người dùng (n)" : "Anh Sơn (s)";
 const headerNameSelector = document.querySelector(".profile .left-text h2");
 if (headerNameSelector) {
     headerNameSelector.innerText = PARTNER_NAME;
 }
 
-console.log("👉 [HỆ THỐNG] Bạn đang online với tên User là:", MY_NAME);
-console.log("👉 [HỆ THỐNG] Muốn đổi tài khoản? Gõ lệnh này vào console: setRole('n')");
-
-window.setRole = function(name) {
-    if (name === "s" || name === "n") {
-        localStorage.setItem("chat_username", name);
-        console.log(`🎉 Đã đổi thành công sang User: "${name}". Đang tải lại trang...`);
-        location.reload();
-    } else {
-        console.error("❌ Lỗi: Chỉ được nhập 's' hoặc 'n' thôi!");
-    }
-};
+console.log(`👉 [HỆ THỐNG] Bạn đang online với tên: ${MY_NAME} (Quyền: ${MY_ROLE})`);
 
 // ==========================================================================
 // 2. HÀM QUẢN LÝ GIAO DIỆN TRẠNG THÁI KẾT NỐI
@@ -96,9 +82,7 @@ function startCheckingNetworkNgam() {
 
     checkNetworkInterval = setInterval(async () => {
         try {
-            // Thay đổi URL HEAD này bằng đường dẫn HTTP thực tế từ Server FastAPI của bạn
             const response = await fetch("https://konkoo-server-chat.hf.space/", { method: "GET", cache: "no-store" });
-            // Chấp nhận tất cả các status từ 200 đến 499 (vì có phản hồi từ server là server đang chạy)
             if (response.status >= 200 && response.status < 500) {
                 console.log("🎉 Tìm thấy Server trực tuyến! Thực hiện kết nối lại WebSocket...");
                 clearInterval(checkNetworkInterval);
@@ -141,13 +125,22 @@ function connectWebSocket() {
         try {
             let data = JSON.parse(event.data);
 
-            // Phản hồi Pong giữ nhịp tim từ Server
+            // A. Phản hồi Pong giữ nhịp tim từ Server
             if (data.type === "pong") {
                 missedHeartbeats = 0;
                 return;
             }
 
-            // Trường hợp A: Tải lịch sử chat cũ từ Supabase
+            // B. Nhận số lượng người kết nối online từ Server gửi về
+            if (data.type === "online_count") {
+                const onlineTextElem = document.getElementById("online-text");
+                if (onlineTextElem) {
+                    onlineTextElem.innerText = `🟢 Đang online: ${data.count} người`;
+                }
+                return;
+            }
+
+            // C. Trường hợp tải lịch sử chat cũ từ Supabase
             if (data.type === "history") {
                 let loadScreen = document.getElementById("first-load-screen");
                 if (loadScreen) loadScreen.remove();
@@ -155,11 +148,12 @@ function connectWebSocket() {
                 chatBoxContainer.innerHTML = ""; 
                 let messages = data.messages || [];
                 messages.forEach(function(msg) {
-                    renderMessageFromServer(msg.sender, msg.content, msg.timestamp);
+                    // 🟢 ĐÃ SỬA: Truyền kèm msg.role từ server để hiển thị đúng bên trái/phải
+                    renderMessageFromServer(msg.sender, msg.content, msg.timestamp, null, false, msg.role);
                 });
                 scrollToBottom();
             } 
-            // Trường hợp B: Nhận tin nhắn Realtime mới
+            // D. Trường hợp nhận tin nhắn Realtime mới
             else if (data.type === "message") {
                 let pendingBubble = document.getElementById(data.tempId);
 
@@ -173,7 +167,7 @@ function connectWebSocket() {
                         spanTime.innerText = `${hours}:${minutes}`;
                     }
 
-                    // Chèn thêm ảnh tích xanh double-check
+                    // Chèn thêm ảnh tích xanh double-check công nhận tin nhắn đã lên DB
                     let checkDiv = pendingBubble.querySelector(".check");
                     if (checkDiv && !checkDiv.querySelector("img")) {
                         let checkImg = document.createElement("img");
@@ -181,10 +175,10 @@ function connectWebSocket() {
                         checkDiv.appendChild(checkImg);
                     }
                     
-                    pendingBubble.removeAttribute("id"); // Xóa id tạm để tránh trùng lặp trùng lặp
+                    pendingBubble.removeAttribute("id"); 
                 } else {
-                    // Nếu là tin nhắn của người khác gửi đến, render mới sang bên TRÁI
-                    renderMessageFromServer(data.sender, data.content, data.timestamp);
+                    // 🟢 ĐÃ SỬA: Render tin nhắn mới với thuộc tính data.role thực tế của người gửi
+                    renderMessageFromServer(data.sender, data.content, data.timestamp, null, false, data.role);
                 }
                 scrollToBottom();
             }
@@ -195,9 +189,8 @@ function connectWebSocket() {
 }
 
 // ==========================================================================
-// 5. HÀM ĐỔ TIN NHẮN LÊN GIAO DIỆN (HTML RENDERING)
+// 5. HÀM ĐỔ TIN NHẮN LÊN GIAO DIỆN (HTML RENDERING CẬP NHẬT)
 // ==========================================================================
-// 🟢 ĐÃ CẬP NHẬT: Thêm tham số 'role' vào hàm để phân loại giao diện từ Server
 let renderMessageFromServer = function(sender, content, time, msgId = null, isPending = false, role = "n") {
     
     // 1. KIỂM TRA XEM TIN NHẮN ĐÃ TỒN TẠI TRÊN MÀN HÌNH CHƯA (Xử lý tích xanh cập nhật)
@@ -205,7 +198,6 @@ let renderMessageFromServer = function(sender, content, time, msgId = null, isPe
         let existingBubble = document.getElementById(msgId);
         
         if (existingBubble) {
-            // Cập nhật lại thời gian chuẩn từ Server
             let spanTime = existingBubble.querySelector(".check span");
             if (spanTime && time && time.includes("T")) {
                 let dateObj = new Date(time);
@@ -216,23 +208,22 @@ let renderMessageFromServer = function(sender, content, time, msgId = null, isPe
                 spanTime.innerText = time;
             }
 
-            // Chèn thêm ảnh tích xanh vì tin đã lên server thành công
             let checkDiv = existingBubble.querySelector(".check");
             if (checkDiv && !isPending && !checkDiv.querySelector("img")) {
                 let checkImg = document.createElement("img");
-                checkImg.src = "img/check-2.png"; 
+                checkImg.src = "/chat/img/check-2.png"; 
                 checkDiv.appendChild(checkImg);
             }
 
             existingBubble.removeAttribute("id");
-            return; // Đã cập nhật xong -> Thoát hàm
+            return; 
         }
     }
 
     // 2. NẾU TIN NHẮN CHƯA CÓ TRÊN MÀN HÌNH -> TIẾN HÀNH TẠO MỚI
     let chatDiv = document.createElement("div");
     
-    // 🟢 THAY ĐỔI LOGIC: Phân loại vị trí bong bóng chat dựa hoàn toàn vào biến role của Server
+    // 🟢 ĐÃ SỬA: Phân loại vị trí bong bóng chat (Trái hay Phải) dựa hoàn toàn vào biến role của Server
     chatDiv.className = (role === "s") ? "chat-r" : "chat-l";
     
     if (msgId) {
@@ -240,12 +231,12 @@ let renderMessageFromServer = function(sender, content, time, msgId = null, isPe
     }
 
     let messDiv = document.createElement("div");
-    // 🟢 THAY ĐỔI LOGIC: Style cho khung tin nhắn dựa hoàn toàn vào biến role của Server
+    // 🟢 ĐÃ SỬA: Phân loại màu sắc/class của hộp chat dựa hoàn toàn vào biến role của Server
     messDiv.className = (role === "s") ? "mess mess-r" : "mess";
 
     let ptag = document.createElement("p");
-    // Bạn có thể hiển thị thêm tên người gửi nếu muốn người thường biết ai đang chat
-    ptag.innerText = role === "s" ? content : `${sender}: ${content}`;
+    // Nếu là Sơn ('s') thì hiển thị trơn content, nếu là người thường thì hiển thị 'Tên: nội dung'
+    ptag.innerText = (role === "s") ? content : `${sender}: ${content}`;
 
     let checkDiv = document.createElement("div");
     checkDiv.className = "check";
@@ -262,7 +253,7 @@ let renderMessageFromServer = function(sender, content, time, msgId = null, isPe
     spanTime.innerText = displayTime;
     checkDiv.appendChild(spanTime);
 
-    // Tích xanh hiển thị nếu đó là tin nhắn của Sơn và đã gửi xong
+    // Tích xanh hiển thị nếu đó là tin nhắn của Sơn ('s') và đã hoàn tất gửi lên Server
     if (role === "s" && !isPending) {
         let checkImg = document.createElement("img");
         checkImg.src = "/chat/img/check-2.png"; 
@@ -288,7 +279,6 @@ let scrollToBottom = function() {
 let postTextAction = function(event) {
     if (event) event.preventDefault();
 
-    // Chặn gửi tin nhắn nếu WebSocket chưa sẵn sàng kết nối
     if (!socket || socket.readyState !== WebSocket.OPEN) {
         console.warn("⚠️ Không thể gửi tin, WebSocket chưa được kết nối!");
         return;
@@ -299,8 +289,8 @@ let postTextAction = function(event) {
 
     let tempId = "temp-" + Date.now();
 
-    // Render tạm tin nhắn dạng "Đang gửi..." lên giao diện trước
-    renderMessageFromServer(MY_NAME, textValue, "Đang gửi...", tempId, true);
+    // 🟢 ĐÃ SỬA: Khi render tạm, truyền kèm MY_ROLE hiện tại của mình để vẽ đúng hướng trước
+    renderMessageFromServer(MY_NAME, textValue, "Đang gửi...", tempId, true, MY_ROLE);
     scrollToBottom();
 
     let msgPayload = {
@@ -332,5 +322,5 @@ window.addEventListener('offline', function() {
     if (socket) socket.close();
 });
 
-// KHỞI CHẠY HỆ THỐNG LẦN ĐẦU TIÊN
+// KHỔI CHẠY HỆ THỐNG LẦN ĐẦU TIÊN
 connectWebSocket();
