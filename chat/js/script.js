@@ -469,5 +469,23 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 
+// 10. Định danh thiết bị theo tài khảon
+// Giả sử đây là hàm xử lý khi chạy trang chat của bro
+function initChatApp() {
+    // 1. Lấy tên user đã lưu từ localStorage (hoặc từ response của API login trước đó)
+    const loggedInUser = localStorage.getItem("username") || "trunwson"; // Bro sửa theo biến thực tế của bro nhé
+
+    // 2. Gọi OneSignal để ghim định danh thiết bị này ngay lập tức
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    window.OneSignalDeferred.push(async function(OneSignal) {
+        // Lệnh chí mạng để đồng bộ máy tính/điện thoại này với Backend đây!
+        await OneSignal.login(loggedInUser); 
+        console.log("🟢 Đã định danh thiết bị này thuộc về user:", loggedInUser);
+    });
+}
+
+// Chạy hàm này khi trang web tải xong
+document.addEventListener("DOMContentLoaded", initChatApp);
+
 // KHỞI CHẠY HỆ THỐNG LẦN ĐẦU TIÊN
 connectWebSocket();
