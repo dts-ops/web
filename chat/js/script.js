@@ -377,16 +377,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const dropdownMenu = document.getElementById("dropdownMenu");
     const logoutBtn = document.getElementById("logoutBtn");
 
-    //  ĐỒNG BỘ ĐỊNH DANH AN TOÀN (GOM TỪ MỤC 10 LÊN - FIX LỖI 409 TRIỆT ĐỂ)
+    // ĐỒNG BỘ ĐỊNH DANH AN TOÀN (NƠI DUY NHẤT ĐƯỢC PHÉP LOGIN)
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     window.OneSignalDeferred.push(async function(OneSignal) {
         setTimeout(async () => {
             if (window.isOneSignalLoggingIn) return; // Chặn trùng lặp
             try {
                 const currentExternalId = await OneSignal.User.externalId;
+                // Sử dụng MY_NAME đã khai báo đồng bộ ở đầu file
                 if (currentExternalId !== MY_NAME) {
                     window.isOneSignalLoggingIn = true;
-                    await OneSignal.login(MY_NAME); // Đồng bộ chuẩn theo key hiển thị
+                    await OneSignal.login(MY_NAME); 
                     console.log("🟢 Đã định danh thiết bị này thuộc về user:", MY_NAME);
                 } else {
                     console.log("✅ Thiết bị đã được định danh chính xác trước đó:", MY_NAME);
@@ -396,7 +397,7 @@ document.addEventListener("DOMContentLoaded", () => {
             } finally {
                 window.isOneSignalLoggingIn = false;
             }
-        }, 1500); // Trì hoãn nhẹ tránh lỗi Qe thuở đầu khởi tạo app
+        }, 1500); // Trì hoãn 1.5 giây chờ SDK ổn định hoàn toàn
     });
 
     // Logic xử lý ẩn/hiện Dropdown Menu
