@@ -405,41 +405,31 @@ document.addEventListener("DOMContentLoaded", () => {
     const logoutBtn = document.getElementById("logoutBtn");
 
     // =========================================================================
-    // 🟢 1. ĐỊNH DANH THIẾT BỊ VỚI ONESIGNAL (BẢN SỬA LỖI AN TOÀN)
+    // 🟢 1. ĐỊNH DANH THIẾT BỊ VỚI ONESIGNAL
     // =========================================================================
     const loggedInUser = localStorage.getItem("username") || "trunwson"; 
 
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     window.OneSignalDeferred.push(async function(OneSignal) {
-        // Sử dụng sự kiện await hoặc kiểm tra trạng thái khởi tạo
-        // Đảm bảo OneSignal đã sẵn sàng trước khi thực hiện login
-        if (OneSignal.Components && OneSignal.Components.Storage) {
-            // Nếu đã init xong từ trước
-            thực_hiện_login(OneSignal, loggedInUser);
-        } else {
-            // Nếu chưa, đợi một chút hoặc dựa vào luồng xử lý chính để tránh xung đột
-            setTimeout(async () => {
-                try {
+        // Đợi 1.2 giây để đảm bảo SDK hoàn toàn ổn định rồi mới Login duy nhất 1 lần
+        setTimeout(async () => {
+            try {
+                // Kiểm tra nếu thiết bị đã được định danh đúng tên rồi thì bỏ qua
+                const currentExternalId = await OneSignal.User.externalId;
+                if (currentExternalId !== loggedInUser) {
                     await OneSignal.login(loggedInUser);
-                    console.log("🟢 Đã định danh thiết bị này thuộc về user (Safe):", loggedInUser);
-                } catch (error) {
-                    console.error("❌ Lỗi định danh OneSignal sau Delay:", error);
+                    console.log("🟢 Đã định danh thiết bị này thuộc về user:", loggedInUser);
+                } else {
+                    console.log("✅ Thiết bị đã được định danh chính xác trước đó:", loggedInUser);
                 }
-            }, 1000); // Trì hoãn 1 giây để SDK kịp init ngầm cấu hình
-        }
+            } catch (error) {
+                console.error("❌ Lỗi định danh OneSignal:", error);
+            }
+        }, 1200);
     });
-
-    async function thực_hiện_login(OneSignal, user) {
-        try {
-            await OneSignal.login(user);
-            console.log("🟢 Đã định danh thiết bị này thuộc về user:", user);
-        } catch (error) {
-            console.error("❌ Lỗi định danh OneSignal:", error);
-        }
-    }
     // =========================================================================
 
-    // Logic xử lý ẩn/hiện Dropdown Menu (Giữ nguyên của bro)
+    // Logic xử lý ẩn/hiện Dropdown Menu
     if (dropdownBtn && dropdownMenu) {
         dropdownBtn.addEventListener("click", (e) => {
             e.stopPropagation();
@@ -453,7 +443,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Xử lý sự kiện khi bấm nút Đăng xuất (Đã bổ sung xóa định danh OneSignal)
+    // Xử lý sự kiện khi bấm nút Đăng xuất
     if (logoutBtn) {
         logoutBtn.addEventListener("click", (e) => {
             e.preventDefault();
@@ -469,8 +459,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 } catch (error) {
                     console.error("❌ Lỗi gỡ định danh OneSignal:", error);
                 } finally {
-                    // Sau khi xử lý OneSignal xong (hoặc kể cả lỗi), tiến hành xóa bộ nhớ và chuyển trang
-                    localStorage.clear(); // Xóa sạch bộ nhớ bao gồm cả cache chat
+                    // Sau khi xử lý OneSignal xong, tiến hành xóa bộ nhớ và chuyển trang
+                    localStorage.clear(); 
                     console.log("🔒 Đã xóa sạch session đăng nhập.");
                     window.location.replace("/chat/login.html");
                 }
@@ -478,8 +468,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // =========================================================================
         });
     }
-});;
-
+}); // <-- Đã chuẩn 1 dấu đóng ngoặc và 1 dấu chấm phẩy chấm dứt sự kiện
 
 // 9. Thiết lập thông báo đẩy
 // --- LOGIC CẤU HÌNH VÀ BẬT THÔNG BÁO ONESIGNAL ---
