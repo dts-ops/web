@@ -1,5 +1,5 @@
 // ==========================================================================
-// 1. CẤU HÌNH BIẾN TOÀN CỤC & ĐỊNH DANH USER (LOCAL STORAGE CHUẨN)
+// 1. CẤU HÌNH BIẾN TOÀN CỤC & ĐỊNH DANH USER
 // ==========================================================================
 let chatBoxContainer = document.getElementById("chatBoxContainer");
 let inputPostText = document.getElementById("inputPostText");
@@ -12,10 +12,13 @@ let heartbeatInterval = null;
 let checkNetworkInterval = null;
 let missedHeartbeats = 0;
 let isCheckingNetwork = false;
-let isLoadingOldMessages = false; // Biến cờ (flag) chống việc gửi request liên tục khi đang tải tin cũ
+let isLoadingOldMessages = false; 
+
+// Cờ khóa toàn cục chống gọi trùng OneSignal.login liên tiếp
+window.isOneSignalLoggingIn = false;
 
 // Đồng bộ hóa thông tin lấy từ trang đăng nhập
-let MY_NAME = localStorage.getItem("chat_display_name") || "Ẩn danh";
+let MY_NAME = localStorage.getItem("chat_display_name") || "trunwson";
 let MY_ROLE = localStorage.getItem("chat_my_role") || "n";
 
 // Tự động cập nhật tên đối phương lên Header dựa theo vai trò thực tế
@@ -113,7 +116,6 @@ function connectWebSocket() {
         
         let cachedMessages = JSON.parse(localStorage.getItem("chat_history_cache")) || [];
         
-        // CƠ CHẾ TỰ ĐỘNG ĐỒNG BỘ: Mở app tự phân tích để gửi tham số thích hợp
         if (cachedMessages.length > 0) {
             let maxId = Math.max(...cachedMessages.map(msg => msg.id || 0));
             console.log(`🔄 [ĐỒNG BỘ MỚI] Yêu cầu các tin nhắn mới phát sinh sau ID: ${maxId}`);
@@ -145,7 +147,6 @@ function connectWebSocket() {
 
             if (data.type === "pong") { missedHeartbeats = 0; return; }
 
-            // 🟢 XỬ LÝ LỊCH SỬ CHAT TỪ SERVER (CHIA LÀM 2 NHÁNH: LOAD CŨ VÀ SYNC MỚI)
             if (data.type === "history") {
                 let loadScreen = document.getElementById("first-load-screen");
                 if (loadScreen) loadScreen.remove();
@@ -153,34 +154,26 @@ function connectWebSocket() {
                 let incomingMessages = data.messages || [];
                 let cachedMessages = JSON.parse(localStorage.getItem("chat_history_cache")) || [];
 
-                // NHÁNH 1: ĐÁP ỨNG YÊU CẦU VUỐT LÊN - TẢI TIN NHẮN CŨ (load_old)
                 if (data.sync_type === "load_old") {
                     if (incomingMessages.length > 0) {
                         console.log(`🔼 [TẢI CŨ] Nhận thêm ${incomingMessages.length} tin nhắn cũ về quá khứ.`);
-                        
-                        // Khóa chiều cao khung chat hiện tại lại trước khi render để chống giật
                         let previousScrollHeight = chatBoxContainer.scrollHeight;
 
-                        // Lọc trùng và gộp dữ liệu cũ vào ĐẦU mảng cache
                         let filteredOld = incomingMessages.filter(m => !cachedMessages.some(c => c.id === m.id));
                         cachedMessages = [...filteredOld, ...cachedMessages];
                         localStorage.setItem("chat_history_cache", JSON.stringify(cachedMessages));
 
-                        // Render ngược (chèn vào đầu khung chat)
-                        // Vì server mảng trả về sắp xếp tăng dần, ta lật ngược lại để chèn prepend chuẩn thứ tự
                         incomingMessages.reverse().forEach(function(msg) {
                             renderMessageFromServer(msg.sender, msg.content, msg.timestamp, msg.id, false, msg.role, true);
                         });
 
-                        // 🧠 TÍNH TOÁN LẠI VỊ TRÍ CUỘN: Giữ nguyên khung hình, không để màn hình bị cuộn vọt lên đỉnh
                         let newScrollHeight = chatBoxContainer.scrollHeight;
                         chatBoxContainer.scrollTop = newScrollHeight - previousScrollHeight;
                     } else {
                         console.log("📥 [HỆ THỐNG] Đã tải hết lịch sử trong database, không còn tin nào cũ hơn.");
                     }
-                    isLoadingOldMessages = false; // Mở khóa trạng thái loading cũ
+                    isLoadingOldMessages = false; 
                 } 
-                // NHÁNH 2: ĐỒNG BỘ TIN MỚI HOẶC VÀO APP LẦN ĐẦU (sync_new)
                 else {
                     if (incomingMessages.length > 0) {
                         console.log(`📥 [ĐỒNG BỘ] Nhận thêm ${incomingMessages.length} tin mới.`);
@@ -188,11 +181,9 @@ function connectWebSocket() {
                         cachedMessages = [...cachedMessages, ...filteredNew];
                     }
 
-                    // Sắp xếp mảng theo thứ tự ID tăng dần tổng thể
                     cachedMessages.sort((a, b) => a.id - b.id);
                     localStorage.setItem("chat_history_cache", JSON.stringify(cachedMessages));
 
-                    // Xóa trắng và đổ lại toàn bộ giao diện từ cache
                     chatBoxContainer.innerHTML = ""; 
                     cachedMessages.forEach(function(msg) {
                         renderMessageFromServer(msg.sender, msg.content, msg.timestamp, msg.id, false, msg.role, false);
@@ -200,14 +191,11 @@ function connectWebSocket() {
                     scrollToBottom();
                 }
             } 
-            
-            // 🟢 NHẬN TIN NHẮN THỜI GIAN THỰC (REALTIME BUỒNG CHAT CHẠY ĐANG HOẠT ĐỘNG)
             else if (data.type === "message") {
                 let pendingBubble = document.getElementById(data.tempId);
                 let exactTimestamp = data.timestamp || new Date().toISOString();
 
                 if (pendingBubble && data.sender === MY_NAME) {
-                    // Cập nhật tin nhắn đang ở trạng thái chờ gửi của chính mình
                     let spanTime = pendingBubble.querySelector(".check span");
                     if (spanTime) {
                         let dateObj = new Date(exactTimestamp);
@@ -218,18 +206,15 @@ function connectWebSocket() {
                     let checkDiv = pendingBubble.querySelector(".check");
                     if (checkDiv && !checkDiv.querySelector("img")) {
                         let checkImg = document.createElement("img");
-                        checkImg.src = "/chat/img/check-2.png";
+                        checkImg.src = "/chat/img/check-2.png"; 
                         checkDiv.appendChild(checkImg);
                     }
-                    // Gán ID thật từ Server trả về vào DOM để đồng bộ chuẩn xác sau này
                     if (data.id) pendingBubble.id = data.id;
                 } else {
-                    // Tin nhắn từ đối phương gửi tới, render mới tinh xuống cuối
                     renderMessageFromServer(data.sender, data.content, exactTimestamp, data.id, false, data.role, false);
                     scrollToBottom();
                 }
 
-                // Cập nhật bản ghi tin nhắn Realtime này vào Cache LocalStorage tức thì
                 let cachedMessages = JSON.parse(localStorage.getItem("chat_history_cache")) || [];
                 if (data.id && !cachedMessages.some(msg => msg.id === data.id)) {
                     cachedMessages.push({
@@ -250,11 +235,9 @@ function connectWebSocket() {
 }
 
 // ==========================================================================
-// 5. HÀM ĐỔ TIN NHẮN LÊN GIAO DIỆN (HỖ TRỢ CHÈN CUỐI HOẶC CHÈN ĐẦU KHUNG CHAT)
+// 5. HÀM ĐỔ TIN NHẮN LÊN GIAO DIỆN
 // ==========================================================================
 let renderMessageFromServer = function(sender, content, time, msgId = null, isPending = false, role = "n", prependToTop = false) {
-    
-    // Nếu tin nhắn có ID thật đã hiển thị sẵn trên màn hình (tránh render lặp khi sync_new)
     if (msgId && document.getElementById(msgId) && !prependToTop) {
         return;
     }
@@ -274,7 +257,6 @@ let renderMessageFromServer = function(sender, content, time, msgId = null, isPe
     let checkDiv = document.createElement("div");
     checkDiv.className = "check";
     
-    // Xử lý chuyển đổi chuỗi Timestamp ISO quốc tế về định dạng Giờ:Phút của máy cục bộ
     let displayTime = time;
     if (time && time !== "Đang gửi..." && (time.includes("T") || !isNaN(Date.parse(time)))) {
         let dateObj = new Date(time);
@@ -297,12 +279,9 @@ let renderMessageFromServer = function(sender, content, time, msgId = null, isPe
     messDiv.appendChild(checkDiv);
     chatDiv.appendChild(messDiv);
     
-    // RẼ NHÁNH PHƯƠNG THỨC CHÈN PHẦN TỬ HTML
     if (prependToTop) {
-        // Nếu load tin nhắn cũ, chèn đẩy lên trên đầu hộp chat
         chatBoxContainer.prepend(chatDiv);
     } else {
-        // Tin mới, đẩy xuống cuối cùng
         chatBoxContainer.appendChild(chatDiv);
     }
 };
@@ -314,27 +293,23 @@ let scrollToBottom = function() {
 };
 
 // ==========================================================================
-// 6. CƠ CHẾ THEO DÕI SỰ KIỆN CUỘN LÊN ĐỈNH ĐỂ TẢI THÊM TIN NHẮN CŨ (50 TIN/LẦN)
+// 6. CƠ CHẾ THEO DÕI SỰ KIỆN CUỘN LÊN ĐỈNH ĐỂ TẢI THÊM TIN CŨ
 // ==========================================================================
 if (chatBoxContainer) {
     chatBoxContainer.addEventListener("scroll", function() {
-        // Khi người dùng vuốt chạm lên sát đỉnh khung chat (scrollTop === 0 hoặc rất nhỏ gần đỉnh)
         if (chatBoxContainer.scrollTop <= 5 && !isLoadingOldMessages) {
             let cachedMessages = JSON.parse(localStorage.getItem("chat_history_cache")) || [];
             
             if (cachedMessages.length > 0) {
-                isLoadingOldMessages = true; // Khóa đầu, chặn gửi trùng lặp nhiều request cùng lúc
-                
-                // Tìm ID nhỏ nhất (cũ nhất) hiện tại đang có trong bộ nhớ cache
+                isLoadingOldMessages = true; 
                 let minId = Math.min(...cachedMessages.map(msg => msg.id || Infinity));
                 
                 if (minId !== Infinity && minId > 1) {
                     console.log(`🔼 [YÊU CẦU] Người dùng vuốt lên đỉnh, yêu cầu tải 50 tin nhắn cũ trước ID: ${minId}`);
-                    
                     if (socket && socket.readyState === WebSocket.OPEN) {
                         socket.send(JSON.stringify({
                             type: "request_history",
-                            id_start: minId // Gửi id_start lên để Server biết đường quét ngược
+                            id_start: minId 
                         }));
                     } else {
                         isLoadingOldMessages = false;
@@ -363,7 +338,6 @@ let postTextAction = function(event) {
 
     let tempId = "temp-" + Date.now();
 
-    // Render tạm tin dạng "Đang gửi..." hướng về phía tay phải (theo vai trò của mình)
     renderMessageFromServer(MY_NAME, textValue, "Đang gửi...", tempId, true, MY_ROLE, false);
     scrollToBottom();
 
@@ -389,7 +363,6 @@ if (inputPostText) {
     });
 }
 
-// Lắng nghe sự kiện mất mạng của trình duyệt để đổi trạng thái lập tức
 window.addEventListener('offline', function() {
     console.log("🌐 Trình duyệt phát hiện ngắt mạng Internet.");
     setDisconnected();
@@ -397,37 +370,34 @@ window.addEventListener('offline', function() {
 });
 
 // ==========================================================================
-// 8. LOGIC BANNER DROPDOWN & LOGOUT MENU
+// 8. LOGIC BANNER DROPDOWN & LOGOUT MENU + ĐỊNH DANH AN TOÀN
 // ==========================================================================
 document.addEventListener("DOMContentLoaded", () => {
     const dropdownBtn = document.getElementById("dropdownBtn");
     const dropdownMenu = document.getElementById("dropdownMenu");
     const logoutBtn = document.getElementById("logoutBtn");
 
-    // =========================================================================
-    // 🟢 1. ĐỊNH DANH THIẾT BỊ VỚI ONESIGNAL
-    // =========================================================================
-    const loggedInUser = localStorage.getItem("username") || "trunwson"; 
-
+    //  ĐỒNG BỘ ĐỊNH DANH AN TOÀN (GOM TỪ MỤC 10 LÊN - FIX LỖI 409 TRIỆT ĐỂ)
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     window.OneSignalDeferred.push(async function(OneSignal) {
-        // Đợi 1.2 giây để đảm bảo SDK hoàn toàn ổn định rồi mới Login duy nhất 1 lần
         setTimeout(async () => {
+            if (window.isOneSignalLoggingIn) return; // Chặn trùng lặp
             try {
-                // Kiểm tra nếu thiết bị đã được định danh đúng tên rồi thì bỏ qua
                 const currentExternalId = await OneSignal.User.externalId;
-                if (currentExternalId !== loggedInUser) {
-                    await OneSignal.login(loggedInUser);
-                    console.log("🟢 Đã định danh thiết bị này thuộc về user:", loggedInUser);
+                if (currentExternalId !== MY_NAME) {
+                    window.isOneSignalLoggingIn = true;
+                    await OneSignal.login(MY_NAME); // Đồng bộ chuẩn theo key hiển thị
+                    console.log("🟢 Đã định danh thiết bị này thuộc về user:", MY_NAME);
                 } else {
-                    console.log("✅ Thiết bị đã được định danh chính xác trước đó:", loggedInUser);
+                    console.log("✅ Thiết bị đã được định danh chính xác trước đó:", MY_NAME);
                 }
             } catch (error) {
                 console.error("❌ Lỗi định danh OneSignal:", error);
+            } finally {
+                window.isOneSignalLoggingIn = false;
             }
-        }, 1200);
+        }, 1500); // Trì hoãn nhẹ tránh lỗi Qe thuở đầu khởi tạo app
     });
-    // =========================================================================
 
     // Logic xử lý ẩn/hiện Dropdown Menu
     if (dropdownBtn && dropdownMenu) {
@@ -448,9 +418,6 @@ document.addEventListener("DOMContentLoaded", () => {
         logoutBtn.addEventListener("click", (e) => {
             e.preventDefault();
             
-            // =========================================================================
-            // 🔴 2. XÓA ĐỊNH DANH ONESIGNAL KHI USER ĐĂNG XUẤT
-            // =========================================================================
             window.OneSignalDeferred = window.OneSignalDeferred || [];
             window.OneSignalDeferred.push(async function(OneSignal) {
                 try {
@@ -459,50 +426,39 @@ document.addEventListener("DOMContentLoaded", () => {
                 } catch (error) {
                     console.error("❌ Lỗi gỡ định danh OneSignal:", error);
                 } finally {
-                    // Sau khi xử lý OneSignal xong, tiến hành xóa bộ nhớ và chuyển trang
                     localStorage.clear(); 
                     console.log("🔒 Đã xóa sạch session đăng nhập.");
                     window.location.replace("/chat/login.html");
                 }
             });
-            // =========================================================================
         });
     }
-}); // <-- Đã chuẩn 1 dấu đóng ngoặc và 1 dấu chấm phẩy chấm dứt sự kiện
+}); 
 
-// 9. Thiết lập thông báo đẩy
-// --- LOGIC CẤU HÌNH VÀ BẬT THÔNG BÁO ONESIGNAL ---
-
-// 9.1 Khởi tạo cấu hình ngầm (Ẩn quả chuông mặc định)
+// ==========================================================================
+// 9. THIẾT LẬP CẤU HÌNH BAN ĐẦU ONESIGNAL
+// ==========================================================================
 window.OneSignalDeferred = window.OneSignalDeferred || [];
 OneSignalDeferred.push(async function(OneSignal) {
     await OneSignal.init({
         appId: "3bf4b621-fd87-4e03-87a6-fe336bd3d73a",
         safari_web_id: "web.onesignal.auto.313afc18-65a3-4cb5-bd8a-eabd69c6e4d8",
         notifyButton: {
-            enable: false, // Tắt quả chuông trướng mắt
+            enable: false, 
         },
     });
-
-    // Nếu bro đã có tên User đăng nhập, có thể gọi luôn ở đây để đồng bộ:
-    // await OneSignal.login("Tên_User_Của_Bro");
 });
 
-// 9.2. Lắng nghe sự kiện bấm nút "Bật thông báo đẩy" trong menu ba chấm
+// Xử lý sự kiện nút "Bật thông báo đẩy" trong menu dropdown
 document.addEventListener("DOMContentLoaded", function() {
     const pushNotifyBtn = document.getElementById('pushNotifyBtn');
-    
     if (pushNotifyBtn) {
         pushNotifyBtn.addEventListener('click', function(e) {
-            e.preventDefault(); // Chặn cuộn trang
-            
+            e.preventDefault(); 
             window.OneSignalDeferred = window.OneSignalDeferred || [];
             OneSignalDeferred.push(function(OneSignal) {
-                // Gọi hộp thoại xin quyền từ trình duyệt
                 OneSignal.Notifications.requestPermission().then(function() {
                     console.log("🔔 Đã xử lý yêu cầu cấp quyền từ Dropdown!");
-                    
-                    // Ẩn menu dropdown sau khi bấm
                     const dropdownMenu = document.getElementById('dropdownMenu');
                     if (dropdownMenu) dropdownMenu.classList.remove('show');
                 });
@@ -510,24 +466,6 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 });
-
-// 10. Định danh thiết bị theo tài khảon
-// Giả sử đây là hàm xử lý khi chạy trang chat của bro
-function initChatApp() {
-    // 1. Lấy tên user đã lưu từ localStorage (hoặc từ response của API login trước đó)
-    const loggedInUser = localStorage.getItem("username") || "trunwson"; // Bro sửa theo biến thực tế của bro nhé
-
-    // 2. Gọi OneSignal để ghim định danh thiết bị này ngay lập tức
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    window.OneSignalDeferred.push(async function(OneSignal) {
-        // Lệnh chí mạng để đồng bộ máy tính/điện thoại này với Backend đây!
-        await OneSignal.login(loggedInUser); 
-        console.log("🟢 Đã định danh thiết bị này thuộc về user:", loggedInUser);
-    });
-}
-
-// Chạy hàm này khi trang web tải xong
-document.addEventListener("DOMContentLoaded", initChatApp);
 
 // KHỞI CHẠY HỆ THỐNG LẦN ĐẦU TIÊN
 connectWebSocket();
