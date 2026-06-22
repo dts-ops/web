@@ -404,6 +404,25 @@ document.addEventListener("DOMContentLoaded", () => {
     const dropdownMenu = document.getElementById("dropdownMenu");
     const logoutBtn = document.getElementById("logoutBtn");
 
+    // =========================================================================
+    // 🟢 1. ĐỊNH DANH THIẾT BỊ VỚI ONESIGNAL NGAY KHI VÀO TRANG CHAT
+    // =========================================================================
+    // Lấy tên user đã lưu từ localStorage khi đăng nhập thành công. 
+    // Nếu chưa có, mặc định test tạm với "trunwson" (bro thay bằng biến thực tế của bro nhé)
+    const loggedInUser = localStorage.getItem("username") || "trunwson"; 
+
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    window.OneSignalDeferred.push(async function(OneSignal) {
+        try {
+            await OneSignal.login(loggedInUser); 
+            console.log("🟢 Đã định danh thiết bị này thuộc về user:", loggedInUser);
+        } catch (error) {
+            console.error("❌ Lỗi định danh OneSignal:", error);
+        }
+    });
+    // =========================================================================
+
+    // Logic xử lý ẩn/hiện Dropdown Menu (Giữ nguyên của bro)
     if (dropdownBtn && dropdownMenu) {
         dropdownBtn.addEventListener("click", (e) => {
             e.stopPropagation();
@@ -417,15 +436,32 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // Xử lý sự kiện khi bấm nút Đăng xuất (Đã bổ sung xóa định danh OneSignal)
     if (logoutBtn) {
         logoutBtn.addEventListener("click", (e) => {
             e.preventDefault();
-            localStorage.clear(); // Xóa sạch bộ nhớ bao gồm cả cache chat
-            console.log("🔒 Đã xóa sạch session đăng nhập.");
-            window.location.replace("login.html");
+            
+            // =========================================================================
+            // 🔴 2. XÓA ĐỊNH DANH ONESIGNAL KHI USER ĐĂNG XUẤT
+            // =========================================================================
+            window.OneSignalDeferred = window.OneSignalDeferred || [];
+            window.OneSignalDeferred.push(async function(OneSignal) {
+                try {
+                    await OneSignal.logout();
+                    console.log("🔴 Đã xóa định danh OneSignal của thiết bị này!");
+                } catch (error) {
+                    console.error("❌ Lỗi gỡ định danh OneSignal:", error);
+                } finally {
+                    // Sau khi xử lý OneSignal xong (hoặc kể cả lỗi), tiến hành xóa bộ nhớ và chuyển trang
+                    localStorage.clear(); // Xóa sạch bộ nhớ bao gồm cả cache chat
+                    console.log("🔒 Đã xóa sạch session đăng nhập.");
+                    window.location.replace("login.html");
+                }
+            });
+            // =========================================================================
         });
     }
-});
+});;
 
 
 // 9. Thiết lập thông báo đẩy
