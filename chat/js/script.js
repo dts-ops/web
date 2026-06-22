@@ -405,21 +405,38 @@ document.addEventListener("DOMContentLoaded", () => {
     const logoutBtn = document.getElementById("logoutBtn");
 
     // =========================================================================
-    // 🟢 1. ĐỊNH DANH THIẾT BỊ VỚI ONESIGNAL NGAY KHI VÀO TRANG CHAT
+    // 🟢 1. ĐỊNH DANH THIẾT BỊ VỚI ONESIGNAL (BẢN SỬA LỖI AN TOÀN)
     // =========================================================================
-    // Lấy tên user đã lưu từ localStorage khi đăng nhập thành công. 
-    // Nếu chưa có, mặc định test tạm với "trunwson" (bro thay bằng biến thực tế của bro nhé)
     const loggedInUser = localStorage.getItem("username") || "trunwson"; 
 
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     window.OneSignalDeferred.push(async function(OneSignal) {
+        // Sử dụng sự kiện await hoặc kiểm tra trạng thái khởi tạo
+        // Đảm bảo OneSignal đã sẵn sàng trước khi thực hiện login
+        if (OneSignal.Components && OneSignal.Components.Storage) {
+            // Nếu đã init xong từ trước
+            thực_hiện_login(OneSignal, loggedInUser);
+        } else {
+            // Nếu chưa, đợi một chút hoặc dựa vào luồng xử lý chính để tránh xung đột
+            setTimeout(async () => {
+                try {
+                    await OneSignal.login(loggedInUser);
+                    console.log("🟢 Đã định danh thiết bị này thuộc về user (Safe):", loggedInUser);
+                } catch (error) {
+                    console.error("❌ Lỗi định danh OneSignal sau Delay:", error);
+                }
+            }, 1000); // Trì hoãn 1 giây để SDK kịp init ngầm cấu hình
+        }
+    });
+
+    async function thực_hiện_login(OneSignal, user) {
         try {
-            await OneSignal.login(loggedInUser); 
-            console.log("🟢 Đã định danh thiết bị này thuộc về user:", loggedInUser);
+            await OneSignal.login(user);
+            console.log("🟢 Đã định danh thiết bị này thuộc về user:", user);
         } catch (error) {
             console.error("❌ Lỗi định danh OneSignal:", error);
         }
-    });
+    }
     // =========================================================================
 
     // Logic xử lý ẩn/hiện Dropdown Menu (Giữ nguyên của bro)
@@ -455,7 +472,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     // Sau khi xử lý OneSignal xong (hoặc kể cả lỗi), tiến hành xóa bộ nhớ và chuyển trang
                     localStorage.clear(); // Xóa sạch bộ nhớ bao gồm cả cache chat
                     console.log("🔒 Đã xóa sạch session đăng nhập.");
-                    window.location.replace("login.html");
+                    window.location.replace("/chat/login.html");
                 }
             });
             // =========================================================================
