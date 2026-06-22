@@ -140,24 +140,9 @@ function connectWebSocket() {
         try {
             let data = JSON.parse(event.data);
 
-            // A. Phản hồi Pong giữ nhịp tim từ Server
-            if (data.type === "pong") {
-                missedHeartbeats = 0;
-                return;
-            }
+            if (data.type === "pong") { missedHeartbeats = 0; return; }
 
-            // B. Nhận số lượng người kết nối online từ Server gửi về
-            if (data.type === "online_count") {
-                const onlineTextElem = document.getElementById("online-text");
-                if (onlineTextElem) {
-                    onlineTextElem.innerText = `🟢 Đang online: ${data.count} người`;
-                }
-                return;
-            }
-
-            // C. Trường hợp tải lịch sử chat cũ từ Supabase
-            // Đoạn xử lý data.type === "history" trong socket.onmessage sửa lại:
-
+            // LÀM MỚI/BỔ SUNG LỊCH SỬ TỪ SERVER
             if (data.type === "history") {
                 let loadScreen = document.getElementById("first-load-screen");
                 if (loadScreen) loadScreen.remove();
@@ -166,60 +151,77 @@ function connectWebSocket() {
                 let cachedMessages = JSON.parse(localStorage.getItem("chat_history_cache")) || [];
 
                 if (newMessages.length > 0) {
-                    console.log(`📥 Nhận thêm ${newMessages.length} tin nhắn mới từ server.`);
+                    console.log(`📥 [ĐỒNG BỘ] Nhận thêm ${newMessages.length} tin mới.`);
                     
-                    // Bổ sung các tin nhắn mới vào mảng cũ
                     newMessages.forEach(msg => {
-                        // Chặn trùng lặp chắc cú bằng cách kiểm tra ID
                         if (!cachedMessages.some(c => c.id === msg.id)) {
                             cachedMessages.push({
                                 id: msg.id,
                                 sender: msg.sender,
                                 content: msg.content,
-                                timestamp: msg.timestamp,
+                                timestamp: msg.timestamp, // 🟢 LƯU TIMESTAMP GỐC TỪ SERVER
                                 role: msg.role || "n"
                             });
                         }
                     });
 
-                    // Lưu mảng đã được cập nhật đầy đủ lại vào LocalStorage
+                    // Sắp xếp mảng theo thứ tự ID tăng dần để tránh lộn xộn giờ giấc
+                    cachedMessages.sort((a, b) => a.id - b.id);
                     localStorage.setItem("chat_history_cache", JSON.stringify(cachedMessages));
                 }
 
-                // Vẽ lại toàn bộ giao diện từ mảng cache mới nhất sau khi đã đồng bộ ổn định
+                // Render sạch giao diện từ mảng đã có đầy đủ timestamp
                 chatBoxContainer.innerHTML = ""; 
                 cachedMessages.forEach(function(msg) {
                     renderMessageFromServer(msg.sender, msg.content, msg.timestamp, msg.id, false, msg.role);
                 });
                 scrollToBottom();
-            }
-            // D. Trường hợp nhận tin nhắn Realtime mới
+            } 
+            
+            // NHẬN TIN NHẮN THỜI GIAN THỰC (REALTIME)
             else if (data.type === "message") {
                 let pendingBubble = document.getElementById(data.tempId);
 
+                // Xác định timestamp thực tế từ server cấp (nếu server chưa cấp kịp thì lấy thời gian hiện tại)
+                let exactTimestamp = data.timestamp || new Date().toISOString();
+
                 if (pendingBubble && data.sender === MY_NAME) {
-                    // Cập nhật thời gian chuẩn từ Server cấp
+                    // Cập nhật giao diện tin nhắn của chính mình vừa gửi thành công
                     let spanTime = pendingBubble.querySelector(".check span");
-                    if (spanTime && data.timestamp) {
-                        let dateObj = new Date(data.timestamp);
+                    if (spanTime) {
+                        let dateObj = new Date(exactTimestamp);
                         let hours = dateObj.getHours().toString().padStart(2, '0');
                         let minutes = dateObj.getMinutes().toString().padStart(2, '0');
                         spanTime.innerText = `${hours}:${minutes}`;
                     }
-
-                    // Chèn thêm ảnh tích xanh double-check công nhận tin nhắn đã lên DB
                     let checkDiv = pendingBubble.querySelector(".check");
                     if (checkDiv && !checkDiv.querySelector("img")) {
                         let checkImg = document.createElement("img");
                         checkImg.src = "/chat/img/check-2.png";
                         checkDiv.appendChild(checkImg);
                     }
-                    
                     pendingBubble.removeAttribute("id"); 
                 } else {
-                    // 🟢 ĐÃ SỬA: Render tin nhắn mới với thuộc tính data.role thực tế của người gửi
-                    renderMessageFromServer(data.sender, data.content, data.timestamp, null, false, data.role);
+                    // Tin nhắn của đối phương gửi tới
+                    renderMessageFromServer(data.sender, data.content, exactTimestamp, data.id, false, data.role);
                 }
+
+                // 🟢 BỔ SUNG VÀO CACHE: Lưu trữ đầy đủ id, content và timestamp
+                let cachedMessages = JSON.parse(localStorage.getItem("chat_history_cache")) || [];
+                let isExist = cachedMessages.some(msg => msg.id === data.id);
+                
+                if (!isExist && data.id) {
+                    cachedMessages.push({
+                        id: data.id,
+                        sender: data.sender,
+                        content: data.content,
+                        timestamp: exactTimestamp, // 🟢 ĐƯA TIMESTAMP VÀO LOCAL STORAGE
+                        role: data.role || "n"
+                    });
+                    cachedMessages.sort((a, b) => a.id - b.id);
+                    localStorage.setItem("chat_history_cache", JSON.stringify(cachedMessages));
+                }
+
                 scrollToBottom();
             }
         } catch (e) {
@@ -233,7 +235,7 @@ function connectWebSocket() {
 // ==========================================================================
 let renderMessageFromServer = function(sender, content, time, msgId = null, isPending = false, role = "n") {
     
-    // 1. KIỂM TRA XEM TIN NHẮN ĐÃ TỒN TẠI TRÊN MÀN HÌNH CHƯA (Xử lý tích xanh cập nhật)
+    // 1. KIỂM TRA TIN NHẮN ĐÃ TỒN TẠI (Cập nhật tích xanh cho tin đang gửi)
     if (msgId) {
         let existingBubble = document.getElementById(msgId);
         
@@ -260,30 +262,25 @@ let renderMessageFromServer = function(sender, content, time, msgId = null, isPe
         }
     }
 
-    // 2. NẾU TIN NHẮN CHƯA CÓ TRÊN MÀN HÌNH -> TIẾN HÀNH TẠO MỚI
+    // 2. TẠO MỚI TIN NHẮN TRÊN MÀN HÌNH
     let chatDiv = document.createElement("div");
-    
-    // 🟢 ĐÃ SỬA: Nếu NGƯỜI GỬI (sender) trùng với TÊN CỦA BẠN (MY_NAME) -> Nằm bên PHẢI (chat-r), ngược lại nằm bên TRÁI (chat-l)
     let isMyOwnMessage = (sender === MY_NAME);
     chatDiv.className = isMyOwnMessage ? "chat-r" : "chat-l";
     
-    if (msgId) {
-        chatDiv.id = msgId;
-    }
+    if (msgId) { chatDiv.id = msgId; }
 
     let messDiv = document.createElement("div");
-    // 🟢 ĐÃ SỬA: Khung tin nhắn của chính mình sẽ là 'mess mess-r', của người khác là 'mess'
     messDiv.className = isMyOwnMessage ? "mess mess-r" : "mess";
 
     let ptag = document.createElement("p");
-    // Nếu là tin nhắn của mình thì hiện trơn text, tin nhắn của người khác thì hiện thêm 'Tên: nội dung'
-    ptag.innerText = isMyOwnMessage ? content : content;
+    ptag.innerText = content;
 
     let checkDiv = document.createElement("div");
     checkDiv.className = "check";
     
+    // Xử lý định dạng hiển thị Giờ:Phút từ timestamp
     let displayTime = time;
-    if (time && time !== "Đang gửi..." && time.includes("T")) {
+    if (time && time !== "Đang gửi..." && (time.includes("T") || !isNaN(Date.parse(time)))) {
         let dateObj = new Date(time);
         let hours = dateObj.getHours().toString().padStart(2, '0');
         let minutes = dateObj.getMinutes().toString().padStart(2, '0');
@@ -294,7 +291,6 @@ let renderMessageFromServer = function(sender, content, time, msgId = null, isPe
     spanTime.innerText = displayTime;
     checkDiv.appendChild(spanTime);
 
-    // Tích xanh hiển thị nếu đó là tin nhắn do chính bạn gửi và đã hoàn tất lên Server
     if (isMyOwnMessage && !isPending) {
         let checkImg = document.createElement("img");
         checkImg.src = "/chat/img/check-2.png"; 
