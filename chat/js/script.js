@@ -427,5 +427,47 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+
+// 9. Thiết lập thông báo đẩy
+// --- LOGIC CẤU HÌNH VÀ BẬT THÔNG BÁO ONESIGNAL ---
+
+// 9.1 Khởi tạo cấu hình ngầm (Ẩn quả chuông mặc định)
+window.OneSignalDeferred = window.OneSignalDeferred || [];
+OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+        appId: "3bf4b621-fd87-4e03-87a6-fe336bd3d73a",
+        safari_web_id: "web.onesignal.auto.313afc18-65a3-4cb5-bd8a-eabd69c6e4d8",
+        notifyButton: {
+            enable: false, // Tắt quả chuông trướng mắt
+        },
+    });
+
+    // Nếu bro đã có tên User đăng nhập, có thể gọi luôn ở đây để đồng bộ:
+    // await OneSignal.login("Tên_User_Của_Bro");
+});
+
+// 9.2. Lắng nghe sự kiện bấm nút "Bật thông báo đẩy" trong menu ba chấm
+document.addEventListener("DOMContentLoaded", function() {
+    const pushNotifyBtn = document.getElementById('pushNotifyBtn');
+    
+    if (pushNotifyBtn) {
+        pushNotifyBtn.addEventListener('click', function(e) {
+            e.preventDefault(); // Chặn cuộn trang
+            
+            window.OneSignalDeferred = window.OneSignalDeferred || [];
+            OneSignalDeferred.push(function(OneSignal) {
+                // Gọi hộp thoại xin quyền từ trình duyệt
+                OneSignal.Notifications.requestPermission().then(function() {
+                    console.log("🔔 Đã xử lý yêu cầu cấp quyền từ Dropdown!");
+                    
+                    // Ẩn menu dropdown sau khi bấm
+                    const dropdownMenu = document.getElementById('dropdownMenu');
+                    if (dropdownMenu) dropdownMenu.classList.remove('show');
+                });
+            });
+        });
+    }
+});
+
 // KHỞI CHẠY HỆ THỐNG LẦN ĐẦU TIÊN
 connectWebSocket();
