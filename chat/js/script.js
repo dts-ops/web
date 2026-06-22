@@ -468,5 +468,60 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 
+// 10. Server đang bảo trì
+// Cập nhật lại hàm thông báo Mất kết nối
+function setDisconnected() {
+    if (statusSpan) {
+        statusSpan.innerText = "Mất kết nối";
+        statusSpan.className = "status-disconnected";
+    }
+    if (heartbeatInterval) {
+        clearInterval(heartbeatInterval);
+        heartbeatInterval = null;
+    }
+    
+    // Khi rớt kết nối hoặc ping quá 3 lần không phản hồi, kích hoạt kiểm tra ngầm lập tức
+    startCheckingNetworkNgam();
+}
+
+// Cập nhật lại cơ chế quét mạng ngầm thông minh
+function startCheckingNetworkNgam() {
+    if (isCheckingNetwork) return;
+    isCheckingNetwork = true;
+
+    console.log("🔄 Đang chạy ngầm kiểm tra trạng thái mạng...");
+    const maintenanceScreen = document.getElementById("maintenance-screen");
+
+    checkNetworkInterval = setInterval(async () => {
+        try {
+            // Ping thử tới endpoint HTTP của Server
+            const response = await fetch("https://konkoo-server-chat.hf.space/", { method: "GET", cache: "no-store" });
+            
+            if (response.status >= 200 && response.status < 500) {
+                console.log("🎉 Server trực tuyến! Ẩn bảo trì và kết nối lại...");
+                
+                // Server sống lại -> Ẩn màn hình bảo trì đi
+                if (maintenanceScreen) maintenanceScreen.style.setProperty("display", "none", "important");
+                
+                clearInterval(checkNetworkInterval);
+                checkNetworkInterval = null;
+                connectWebSocket();
+            } else {
+                // Server trả về lỗi 502, 503... -> Hiện bảo trì
+                if (maintenanceScreen) maintenanceScreen.style.setProperty("display", "flex", "important");
+            }
+        } catch (error) {
+            // Lỗi sập nguồn hoàn toàn (Fetch lỗi, Server ngủ đông, rớt mạng mạng cục bộ)
+            console.log("⏳ Chưa kết nối được tới server, bật giao diện bảo trì...");
+            if (statusSpan) {
+                statusSpan.innerText = "Đang kết nối lại...";
+                statusSpan.className = "status-disconnected";
+            }
+            
+            // Hiện màn hình bảo trì chặn user bấm bậy
+            if (maintenanceScreen) maintenanceScreen.style.setProperty("display", "flex", "important");
+        }
+    }, 3000); // 3 giây ping 1 lần
+}
 // KHỞI CHẠY HỆ THỐNG LẦN ĐẦU TIÊN
 connectWebSocket();
