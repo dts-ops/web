@@ -109,7 +109,22 @@ function connectWebSocket() {
         console.log("🟢 Đã kết nối thành công tới server Hugging Face!");
         setConnected();
         startHeartbeat();
-    };
+        let cachedMessages = JSON.parse(localStorage.getItem("chat_history_cache")) || [];
+            let lastId = 0;
+
+            if (cachedMessages.length > 0) {
+                // Tìm ID lớn nhất trong mảng (Giả định ID tăng dần theo số thứ tự 1, 2, 3...)
+                lastId = Math.max(...cachedMessages.map(msg => msg.id || 0));
+            }
+
+            console.log(`🔄 [ĐỒNG BỘ] Gửi yêu cầu lấy tin nhắn mới từ sau ID: ${lastId}`);
+            
+            // Gửi gói tin yêu cầu đồng bộ lên Server
+            socket.send(JSON.stringify({
+                type: "request_history",
+                last_id: lastId
+            }));
+        };
 
     socket.onclose = function() {
         console.log("🔴 Kết nối WebSocket đã bị đóng.");
@@ -141,18 +156,43 @@ function connectWebSocket() {
             }
 
             // C. Trường hợp tải lịch sử chat cũ từ Supabase
+            // Đoạn xử lý data.type === "history" trong socket.onmessage sửa lại:
+
             if (data.type === "history") {
                 let loadScreen = document.getElementById("first-load-screen");
                 if (loadScreen) loadScreen.remove();
 
+                let newMessages = data.messages || [];
+                let cachedMessages = JSON.parse(localStorage.getItem("chat_history_cache")) || [];
+
+                if (newMessages.length > 0) {
+                    console.log(`📥 Nhận thêm ${newMessages.length} tin nhắn mới từ server.`);
+                    
+                    // Bổ sung các tin nhắn mới vào mảng cũ
+                    newMessages.forEach(msg => {
+                        // Chặn trùng lặp chắc cú bằng cách kiểm tra ID
+                        if (!cachedMessages.some(c => c.id === msg.id)) {
+                            cachedMessages.push({
+                                id: msg.id,
+                                sender: msg.sender,
+                                content: msg.content,
+                                timestamp: msg.timestamp,
+                                role: msg.role || "n"
+                            });
+                        }
+                    });
+
+                    // Lưu mảng đã được cập nhật đầy đủ lại vào LocalStorage
+                    localStorage.setItem("chat_history_cache", JSON.stringify(cachedMessages));
+                }
+
+                // Vẽ lại toàn bộ giao diện từ mảng cache mới nhất sau khi đã đồng bộ ổn định
                 chatBoxContainer.innerHTML = ""; 
-                let messages = data.messages || [];
-                messages.forEach(function(msg) {
-                    // 🟢 ĐÃ SỬA: Truyền kèm msg.role từ server để hiển thị đúng bên trái/phải
-                    renderMessageFromServer(msg.sender, msg.content, msg.timestamp, null, false, msg.role);
+                cachedMessages.forEach(function(msg) {
+                    renderMessageFromServer(msg.sender, msg.content, msg.timestamp, msg.id, false, msg.role);
                 });
                 scrollToBottom();
-            } 
+            }
             // D. Trường hợp nhận tin nhắn Realtime mới
             else if (data.type === "message") {
                 let pendingBubble = document.getElementById(data.tempId);
