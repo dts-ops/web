@@ -12,8 +12,9 @@ let heartbeatInterval = null;
 let checkNetworkInterval = null;
 let missedHeartbeats = 0;
 let isCheckingNetwork = false;
+let isLoadingOldMessages = false; // Biến cờ (flag) chống việc gửi request liên tục khi đang tải tin cũ
 
-// 🟢 ĐÃ SỬA: Đồng bộ hóa thông tin lấy từ trang đăng nhập
+// Đồng bộ hóa thông tin lấy từ trang đăng nhập
 let MY_NAME = localStorage.getItem("chat_display_name") || "Ẩn danh";
 let MY_ROLE = localStorage.getItem("chat_my_role") || "n";
 
@@ -109,22 +110,24 @@ function connectWebSocket() {
         console.log("🟢 Đã kết nối thành công tới server Hugging Face!");
         setConnected();
         startHeartbeat();
+        
         let cachedMessages = JSON.parse(localStorage.getItem("chat_history_cache")) || [];
-            let lastId = 0;
-
-            if (cachedMessages.length > 0) {
-                // Tìm ID lớn nhất trong mảng (Giả định ID tăng dần theo số thứ tự 1, 2, 3...)
-                lastId = Math.max(...cachedMessages.map(msg => msg.id || 0));
-            }
-
-            console.log(`🔄 [ĐỒNG BỘ] Gửi yêu cầu lấy tin nhắn mới từ sau ID: ${lastId}`);
-            
-            // Gửi gói tin yêu cầu đồng bộ lên Server
+        
+        // CƠ CHẾ TỰ ĐỘNG ĐỒNG BỘ: Mở app tự phân tích để gửi tham số thích hợp
+        if (cachedMessages.length > 0) {
+            let maxId = Math.max(...cachedMessages.map(msg => msg.id || 0));
+            console.log(`🔄 [ĐỒNG BỘ MỚI] Yêu cầu các tin nhắn mới phát sinh sau ID: ${maxId}`);
             socket.send(JSON.stringify({
                 type: "request_history",
-                last_id: lastId
+                id_end: maxId
             }));
-        };
+        } else {
+            console.log("🆕 [TẢI LẦN ĐẦU] Chưa có cache, yêu cầu server cấp 50 tin mới nhất làm gốc");
+            socket.send(JSON.stringify({
+                type: "request_history"
+            }));
+        }
+    };
 
     socket.onclose = function() {
         console.log("🔴 Kết nối WebSocket đã bị đóng.");
@@ -142,51 +145,69 @@ function connectWebSocket() {
 
             if (data.type === "pong") { missedHeartbeats = 0; return; }
 
-            // LÀM MỚI/BỔ SUNG LỊCH SỬ TỪ SERVER
+            // 🟢 XỬ LÝ LỊCH SỬ CHAT TỪ SERVER (CHIA LÀM 2 NHÁNH: LOAD CŨ VÀ SYNC MỚI)
             if (data.type === "history") {
                 let loadScreen = document.getElementById("first-load-screen");
                 if (loadScreen) loadScreen.remove();
 
-                let newMessages = data.messages || [];
+                let incomingMessages = data.messages || [];
                 let cachedMessages = JSON.parse(localStorage.getItem("chat_history_cache")) || [];
 
-                if (newMessages.length > 0) {
-                    console.log(`📥 [ĐỒNG BỘ] Nhận thêm ${newMessages.length} tin mới.`);
-                    
-                    newMessages.forEach(msg => {
-                        if (!cachedMessages.some(c => c.id === msg.id)) {
-                            cachedMessages.push({
-                                id: msg.id,
-                                sender: msg.sender,
-                                content: msg.content,
-                                timestamp: msg.timestamp, // 🟢 LƯU TIMESTAMP GỐC TỪ SERVER
-                                role: msg.role || "n"
-                            });
-                        }
-                    });
+                // NHÁNH 1: ĐÁP ỨNG YÊU CẦU VUỐT LÊN - TẢI TIN NHẮN CŨ (load_old)
+                if (data.sync_type === "load_old") {
+                    if (incomingMessages.length > 0) {
+                        console.log(`🔼 [TẢI CŨ] Nhận thêm ${incomingMessages.length} tin nhắn cũ về quá khứ.`);
+                        
+                        // Khóa chiều cao khung chat hiện tại lại trước khi render để chống giật
+                        let previousScrollHeight = chatBoxContainer.scrollHeight;
 
-                    // Sắp xếp mảng theo thứ tự ID tăng dần để tránh lộn xộn giờ giấc
+                        // Lọc trùng và gộp dữ liệu cũ vào ĐẦU mảng cache
+                        let filteredOld = incomingMessages.filter(m => !cachedMessages.some(c => c.id === m.id));
+                        cachedMessages = [...filteredOld, ...cachedMessages];
+                        localStorage.setItem("chat_history_cache", JSON.stringify(cachedMessages));
+
+                        // Render ngược (chèn vào đầu khung chat)
+                        // Vì server mảng trả về sắp xếp tăng dần, ta lật ngược lại để chèn prepend chuẩn thứ tự
+                        incomingMessages.reverse().forEach(function(msg) {
+                            renderMessageFromServer(msg.sender, msg.content, msg.timestamp, msg.id, false, msg.role, true);
+                        });
+
+                        // 🧠 TÍNH TOÁN LẠI VỊ TRÍ CUỘN: Giữ nguyên khung hình, không để màn hình bị cuộn vọt lên đỉnh
+                        let newScrollHeight = chatBoxContainer.scrollHeight;
+                        chatBoxContainer.scrollTop = newScrollHeight - previousScrollHeight;
+                    } else {
+                        console.log("📥 [HỆ THỐNG] Đã tải hết lịch sử trong database, không còn tin nào cũ hơn.");
+                    }
+                    isLoadingOldMessages = false; // Mở khóa trạng thái loading cũ
+                } 
+                // NHÁNH 2: ĐỒNG BỘ TIN MỚI HOẶC VÀO APP LẦN ĐẦU (sync_new)
+                else {
+                    if (incomingMessages.length > 0) {
+                        console.log(`📥 [ĐỒNG BỘ] Nhận thêm ${incomingMessages.length} tin mới.`);
+                        let filteredNew = incomingMessages.filter(m => !cachedMessages.some(c => c.id === m.id));
+                        cachedMessages = [...cachedMessages, ...filteredNew];
+                    }
+
+                    // Sắp xếp mảng theo thứ tự ID tăng dần tổng thể
                     cachedMessages.sort((a, b) => a.id - b.id);
                     localStorage.setItem("chat_history_cache", JSON.stringify(cachedMessages));
-                }
 
-                // Render sạch giao diện từ mảng đã có đầy đủ timestamp
-                chatBoxContainer.innerHTML = ""; 
-                cachedMessages.forEach(function(msg) {
-                    renderMessageFromServer(msg.sender, msg.content, msg.timestamp, msg.id, false, msg.role);
-                });
-                scrollToBottom();
+                    // Xóa trắng và đổ lại toàn bộ giao diện từ cache
+                    chatBoxContainer.innerHTML = ""; 
+                    cachedMessages.forEach(function(msg) {
+                        renderMessageFromServer(msg.sender, msg.content, msg.timestamp, msg.id, false, msg.role, false);
+                    });
+                    scrollToBottom();
+                }
             } 
             
-            // NHẬN TIN NHẮN THỜI GIAN THỰC (REALTIME)
+            // 🟢 NHẬN TIN NHẮN THỜI GIAN THỰC (REALTIME BUỒNG CHAT CHẠY ĐANG HOẠT ĐỘNG)
             else if (data.type === "message") {
                 let pendingBubble = document.getElementById(data.tempId);
-
-                // Xác định timestamp thực tế từ server cấp (nếu server chưa cấp kịp thì lấy thời gian hiện tại)
                 let exactTimestamp = data.timestamp || new Date().toISOString();
 
                 if (pendingBubble && data.sender === MY_NAME) {
-                    // Cập nhật giao diện tin nhắn của chính mình vừa gửi thành công
+                    // Cập nhật tin nhắn đang ở trạng thái chờ gửi của chính mình
                     let spanTime = pendingBubble.querySelector(".check span");
                     if (spanTime) {
                         let dateObj = new Date(exactTimestamp);
@@ -200,29 +221,27 @@ function connectWebSocket() {
                         checkImg.src = "/chat/img/check-2.png";
                         checkDiv.appendChild(checkImg);
                     }
-                    pendingBubble.removeAttribute("id"); 
+                    // Gán ID thật từ Server trả về vào DOM để đồng bộ chuẩn xác sau này
+                    if (data.id) pendingBubble.id = data.id;
                 } else {
-                    // Tin nhắn của đối phương gửi tới
-                    renderMessageFromServer(data.sender, data.content, exactTimestamp, data.id, false, data.role);
+                    // Tin nhắn từ đối phương gửi tới, render mới tinh xuống cuối
+                    renderMessageFromServer(data.sender, data.content, exactTimestamp, data.id, false, data.role, false);
+                    scrollToBottom();
                 }
 
-                // 🟢 BỔ SUNG VÀO CACHE: Lưu trữ đầy đủ id, content và timestamp
+                // Cập nhật bản ghi tin nhắn Realtime này vào Cache LocalStorage tức thì
                 let cachedMessages = JSON.parse(localStorage.getItem("chat_history_cache")) || [];
-                let isExist = cachedMessages.some(msg => msg.id === data.id);
-                
-                if (!isExist && data.id) {
+                if (data.id && !cachedMessages.some(msg => msg.id === data.id)) {
                     cachedMessages.push({
                         id: data.id,
                         sender: data.sender,
                         content: data.content,
-                        timestamp: exactTimestamp, // 🟢 ĐƯA TIMESTAMP VÀO LOCAL STORAGE
+                        timestamp: exactTimestamp,
                         role: data.role || "n"
                     });
                     cachedMessages.sort((a, b) => a.id - b.id);
                     localStorage.setItem("chat_history_cache", JSON.stringify(cachedMessages));
                 }
-
-                scrollToBottom();
             }
         } catch (e) {
             console.error("Lỗi xử lý dữ liệu nhận từ server:", e);
@@ -231,38 +250,15 @@ function connectWebSocket() {
 }
 
 // ==========================================================================
-// 5. HÀM ĐỔ TIN NHẮN LÊN GIAO DIỆN (HTML RENDERING THEO MÁY NGƯỜI DÙNG)
+// 5. HÀM ĐỔ TIN NHẮN LÊN GIAO DIỆN (HỖ TRỢ CHÈN CUỐI HOẶC CHÈN ĐẦU KHUNG CHAT)
 // ==========================================================================
-let renderMessageFromServer = function(sender, content, time, msgId = null, isPending = false, role = "n") {
+let renderMessageFromServer = function(sender, content, time, msgId = null, isPending = false, role = "n", prependToTop = false) {
     
-    // 1. KIỂM TRA TIN NHẮN ĐÃ TỒN TẠI (Cập nhật tích xanh cho tin đang gửi)
-    if (msgId) {
-        let existingBubble = document.getElementById(msgId);
-        
-        if (existingBubble) {
-            let spanTime = existingBubble.querySelector(".check span");
-            if (spanTime && time && time.includes("T")) {
-                let dateObj = new Date(time);
-                let hours = dateObj.getHours().toString().padStart(2, '0');
-                let minutes = dateObj.getMinutes().toString().padStart(2, '0');
-                spanTime.innerText = `${hours}:${minutes}`;
-            } else if (spanTime) {
-                spanTime.innerText = time;
-            }
-
-            let checkDiv = existingBubble.querySelector(".check");
-            if (checkDiv && !isPending && !checkDiv.querySelector("img")) {
-                let checkImg = document.createElement("img");
-                checkImg.src = "/chat/img/check-2.png"; 
-                checkDiv.appendChild(checkImg);
-            }
-
-            existingBubble.removeAttribute("id");
-            return; 
-        }
+    // Nếu tin nhắn có ID thật đã hiển thị sẵn trên màn hình (tránh render lặp khi sync_new)
+    if (msgId && document.getElementById(msgId) && !prependToTop) {
+        return;
     }
 
-    // 2. TẠO MỚI TIN NHẮN TRÊN MÀN HÌNH
     let chatDiv = document.createElement("div");
     let isMyOwnMessage = (sender === MY_NAME);
     chatDiv.className = isMyOwnMessage ? "chat-r" : "chat-l";
@@ -278,7 +274,7 @@ let renderMessageFromServer = function(sender, content, time, msgId = null, isPe
     let checkDiv = document.createElement("div");
     checkDiv.className = "check";
     
-    // Xử lý định dạng hiển thị Giờ:Phút từ timestamp
+    // Xử lý chuyển đổi chuỗi Timestamp ISO quốc tế về định dạng Giờ:Phút của máy cục bộ
     let displayTime = time;
     if (time && time !== "Đang gửi..." && (time.includes("T") || !isNaN(Date.parse(time)))) {
         let dateObj = new Date(time);
@@ -301,7 +297,14 @@ let renderMessageFromServer = function(sender, content, time, msgId = null, isPe
     messDiv.appendChild(checkDiv);
     chatDiv.appendChild(messDiv);
     
-    chatBoxContainer.appendChild(chatDiv);
+    // RẼ NHÁNH PHƯƠNG THỨC CHÈN PHẦN TỬ HTML
+    if (prependToTop) {
+        // Nếu load tin nhắn cũ, chèn đẩy lên trên đầu hộp chat
+        chatBoxContainer.prepend(chatDiv);
+    } else {
+        // Tin mới, đẩy xuống cuối cùng
+        chatBoxContainer.appendChild(chatDiv);
+    }
 };
 
 let scrollToBottom = function() {
@@ -311,7 +314,41 @@ let scrollToBottom = function() {
 };
 
 // ==========================================================================
-// 6. XỬ LÝ SỰ KIỆN GỬI TIN NHẮN (CLIENT TO SERVER)
+// 6. CƠ CHẾ THEO DÕI SỰ KIỆN CUỘN LÊN ĐỈNH ĐỂ TẢI THÊM TIN NHẮN CŨ (50 TIN/LẦN)
+// ==========================================================================
+if (chatBoxContainer) {
+    chatBoxContainer.addEventListener("scroll", function() {
+        // Khi người dùng vuốt chạm lên sát đỉnh khung chat (scrollTop === 0 hoặc rất nhỏ gần đỉnh)
+        if (chatBoxContainer.scrollTop <= 5 && !isLoadingOldMessages) {
+            let cachedMessages = JSON.parse(localStorage.getItem("chat_history_cache")) || [];
+            
+            if (cachedMessages.length > 0) {
+                isLoadingOldMessages = true; // Khóa đầu, chặn gửi trùng lặp nhiều request cùng lúc
+                
+                // Tìm ID nhỏ nhất (cũ nhất) hiện tại đang có trong bộ nhớ cache
+                let minId = Math.min(...cachedMessages.map(msg => msg.id || Infinity));
+                
+                if (minId !== Infinity && minId > 1) {
+                    console.log(`🔼 [YÊU CẦU] Người dùng vuốt lên đỉnh, yêu cầu tải 50 tin nhắn cũ trước ID: ${minId}`);
+                    
+                    if (socket && socket.readyState === WebSocket.OPEN) {
+                        socket.send(JSON.stringify({
+                            type: "request_history",
+                            id_start: minId // Gửi id_start lên để Server biết đường quét ngược
+                        }));
+                    } else {
+                        isLoadingOldMessages = false;
+                    }
+                } else {
+                    isLoadingOldMessages = false;
+                }
+            }
+        }
+    });
+}
+
+// ==========================================================================
+// 7. XỬ LÝ SỰ KIỆN GỬI TIN NHẮN (CLIENT TO SERVER)
 // ==========================================================================
 let postTextAction = function(event) {
     if (event) event.preventDefault();
@@ -326,8 +363,8 @@ let postTextAction = function(event) {
 
     let tempId = "temp-" + Date.now();
 
-    // 🟢 ĐÃ SỬA: Khi render tạm, truyền kèm MY_ROLE hiện tại của mình để vẽ đúng hướng trước
-    renderMessageFromServer(MY_NAME, textValue, "Đang gửi...", tempId, true, MY_ROLE);
+    // Render tạm tin dạng "Đang gửi..." hướng về phía tay phải (theo vai trò của mình)
+    renderMessageFromServer(MY_NAME, textValue, "Đang gửi...", tempId, true, MY_ROLE, false);
     scrollToBottom();
 
     let msgPayload = {
@@ -359,39 +396,36 @@ window.addEventListener('offline', function() {
     if (socket) socket.close();
 });
 
-// KHỔI CHẠY HỆ THỐNG LẦN ĐẦU TIÊN
-connectWebSocket();
-
+// ==========================================================================
+// 8. LOGIC BANNER DROPDOWN & LOGOUT MENU
+// ==========================================================================
 document.addEventListener("DOMContentLoaded", () => {
     const dropdownBtn = document.getElementById("dropdownBtn");
     const dropdownMenu = document.getElementById("dropdownMenu");
     const logoutBtn = document.getElementById("logoutBtn");
 
-    // 1. Bấm vào icon để Ẩn/Hiện menu
-    dropdownBtn.addEventListener("click", (e) => {
-        e.stopPropagation(); // Ngăn sự kiện nổi bọt lên window
-        dropdownMenu.classList.toggle("show");
-    });
+    if (dropdownBtn && dropdownMenu) {
+        dropdownBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            dropdownMenu.classList.toggle("show");
+        });
 
-    // 2. Tự động đóng menu nếu người dùng bấm ra ngoài khoảng trống
-    window.addEventListener("click", () => {
-        if (dropdownMenu.classList.contains("show")) {
-            dropdownMenu.classList.remove("show");
-        }
-    });
+        window.addEventListener("click", () => {
+            if (dropdownMenu.classList.contains("show")) {
+                dropdownMenu.classList.remove("show");
+            }
+        });
+    }
 
-    // 3. Xử lý sự kiện khi bấm nút Đăng xuất
     if (logoutBtn) {
         logoutBtn.addEventListener("click", (e) => {
-            e.preventDefault(); // Chặn hành vi nhảy link mặc định
-
-            // Xóa toàn bộ Token, Quyền, Tên đã lưu ở trang đăng nhập
-            localStorage.clear(); 
-            
+            e.preventDefault();
+            localStorage.clear(); // Xóa sạch bộ nhớ bao gồm cả cache chat
             console.log("🔒 Đã xóa sạch session đăng nhập.");
-            
-            // Chuyển hướng người dùng về trang đăng nhập login.html lập tức
             window.location.replace("login.html");
         });
     }
 });
+
+// KHỞI CHẠY HỆ THỐNG LẦN ĐẦU TIÊN
+connectWebSocket();
