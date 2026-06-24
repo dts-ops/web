@@ -541,7 +541,6 @@ const iceConfiguration = {
 };
 
 // --- 1. HÀM KÍCH HOẠT CUỘC GỌI (Khi người gọi bấm nút Call trên Header) ---
-// Tìm hàm startCall() cũ và thay thế khúc gọi quyền Cam/Mic bằng đoạn này:
 async function startCall() {
     document.getElementById("video-call-screen").style.display = "block";
     
@@ -567,6 +566,25 @@ async function startCall() {
     const offer = await peerConnection.createOffer();
     await peerConnection.setLocalDescription(offer);
     sendToSignalingServer({ type: "offer", sdp: offer });
+}
+
+// HÀM GỬI DỮ LIỆU CUỘC GỌI LÊN SERVER WEBSOCKET
+function sendToSignalingServer(payload) {
+    // Kiểm tra xem biến socket của bro có đang mở kết nối không
+    // LƯU Ý: Nếu biến WebSocket của bro đặt tên khác (ví dụ: ws, my_socket...), hãy đổi chữ "socket" thành tên đó nhé!
+    if (typeof socket !== 'undefined' && socket && socket.readyState === WebSocket.OPEN) {
+        
+        // Tự động ghim tên người gửi vào gói tin nếu chưa có
+        if (!payload.sender) {
+            payload.sender = window.currentUserName || localStorage.getItem("user_name") || "trunwson";
+        }
+        
+        // Bắn chuỗi JSON lên Server FastAPI bắc cầu
+        socket.send(JSON.stringify(payload));
+        console.log(`📤 Đã gửi gói tin WebRTC [${payload.type}] lên server.`);
+    } else {
+        console.error("❌ Không thể gửi gói tin WebRTC vì WebSocket chưa kết nối hoặc đã bị đóng!");
+    }
 }
 
 // --- 2. KHỞI TẠO ĐỐI TƯỢNG PEER CONNECTION TRÌNH DUYỆT ---
