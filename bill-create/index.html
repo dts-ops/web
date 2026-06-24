@@ -7,7 +7,7 @@
         /* Khai báo nhúng font chữ ngoài */
         @font-face {
             font-family: 'Americanus';
-            src: url('Americanus.ttf') format('truetype'); 
+            src: url('/bill-create/assets/Americanus.ttf') format('truetype'); 
             font-weight: normal;
             font-style: normal;
         }
@@ -202,9 +202,9 @@
         const imgBodyRow = new Image();
         const imgBottom = new Image();
 
-        imgHeader.src = 'header.jpg';
-        imgBodyRow.src = 'body.jpg';
-        imgBottom.src = 'bottom.jpg';
+        imgHeader.src = '/bill-create/assets/header.jpg';
+        imgBodyRow.src = '/bill-create/assets/body.jpg';
+        imgBottom.src = '/bill-create/assets/bottom.jpg';
 
         // Đợi toàn bộ ảnh gốc và font chữ tải xong hoàn toàn
         Promise.all([
