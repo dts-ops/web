@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Tính tiền đê e oi</title>
+    <style>
+        /* Khai báo nhúng font chữ ngoài */
+        @font-face {
+            font-family: 'Americanus';
+            src: url('Americanus.ttf') format('truetype'); 
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .ui-container { width: 850px; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        h2, h3 { color: #333; margin-top: 0; border-bottom: 2px solid #007bff; padding-bottom: 5px; }
+        
+        /* Form nhập liệu phần Header */
+        .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group.full-width { grid-column: span 2; }
+        label { font-weight: bold; font-size: 14px; margin-bottom: 5px; color: #555; }
+        input, textarea { padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+        .date-row { display: flex; gap: 10px; }
+
+        /* Bảng nhập liệu phần Body giống Excel */
+        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #007bff; color: white; font-size: 14px; }
+        .input-cell { width: 95%; border: none; outline: none; background: transparent; font-size: 14px; }
+        .center { text-align: center; }
+        .right { text-align: right; }
+        
+        /* Nút chức năng */
+        .btn-group { margin-bottom: 25px; display: flex; gap: 10px; }
+        button { padding: 10px 20px; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; transition: 0.2s; }
+        .btn-add { background-color: #28a745; color: white; }
+        .btn-add:hover { background-color: #218838; }
+        .btn-export { background-color: #007bff; color: white; width: 100%; font-size: 16px; padding: 12px; }
+        .btn-export:hover { background-color: #0056b3; }
+        .btn-delete { background-color: #dc3545; color: white; padding: 5px 10px; font-size: 12px; }
+
+        /* Form tính tiền phần Bottom */
+        .bottom-summary { width: 350px; margin-left: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="ui-container">
+    <h2>GIAO DIỆN NHẬP LIỆU HÓA ĐƠN</h2>
+
+    <h3>1. Thông tin chunga</h3>
+    <div class="grid-form">
+        <div class="form-group">
+            <label>Họ và tên khách hàng</label>
+            <input type="text" id="h_ten" value="">
+        </div>
+        <div class="form-group">
+            <label>Số điện thoại</label>
+            <input type="text" id="h_sdt" value="">
+        </div>
+        <div class="form-group">
+            <label>Địa chỉ</label>
+            <input type="text" id="h_diachi" value="">
+        </div>
+        <div class="form-group">
+            <label>Ngày / Tháng / Năm xuất phiếu</label>
+            <div class="date-row">
+                <input type="text" id="h_ngay" value="" style="width: 50px;" class="center">
+                <input type="text" id="h_thang" value="" style="width: 50px;" class="center">
+                <input type="text" id="h_nam" value="" style="width: 60px;" class="center">
+            </div>
+        </div>
+        <div class="form-group full-width">
+            <label>Ghi chú khách hàng</label>
+            <input type="text" id="h_ghichu" value="">
+        </div>
+    </div>
+
+    <h3>2. Danh sách sản phẩm</h3>
+    <div class="btn-group">
+        <button class="btn-add" onclick="themDongSanPham()">+ Thêm sản phẩm</button>
+    </div>
+    <table id="invoice-table">
+        <thead>
+            <tr>
+                <th style="width: 5%;">STT</th>
+                <th style="width: 40%;">Tên Sản phẩm</th>
+                <th style="width: 15%;">Chất liệu</th>
+                <th style="width: 10%;">Số lượng</th>
+                <th style="width: 15%;">Đơn giá</th>
+                <th style="width: 15%;">Thành tiền</th>
+                <th style="width: 5%;">Xóa</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="center row-stt">1</td>
+                <td><input type="text" class="input-cell sp-ten" value="MLEMMM"></td>
+                <td><input type="text" class="input-cell sp-chatlieu" value="MLEMMM"></td>
+                <td><input type="number" class="input-cell center sp-sl" value="0" oninput="tinhToanSoTien()"></td>
+                <td><input type="number" class="input-cell right sp-gia" value="0" oninput="tinhToanSoTien()"></td>
+                <td class="right sp-thanhtien">0</td>
+                <td class="center"><button class="btn-delete" onclick="xoaDong(this)">Xóa</button></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>3. Thanh toán & Ghi chú phụ</h3>
+    <div class="bottom-summary">
+        <label>Tạm tính:</label>
+        <input type="text" id="b_tamtinh" readonly class="right" value="0">
+        
+        <label>Giảm giá:</label>
+        <input type="number" id="b_giamgia" class="right" value="0" oninput="tinhToanSoTien()">
+        
+        <label style="color: red;">Tổng thanh toán:</label>
+        <input type="text" id="b_tongtien" readonly class="right" style="font-weight: bold; color: red;" value="0">
+    </div>
+    <div class="form-group" style="margin-bottom: 25px;">
+        <label>Số tiền bằng chữ</label>
+        <input type="text" id="b_bangchu" value="">
+    </div>
+
+    <button class="btn-export" onclick="xuLyGhopAnhVaXuatFile()">📸 XỬ LÝ VẼ & TẢI ẢNH HÓA ĐƠN</button>
+</div>
+
+<script>
+    // --- CÁC HÀM XỬ LÝ GIAO DIỆN UI ---
+    
+    function themDongSanPham() {
+        const tbody = document.getElementById("invoice-table").getElementsByTagName("tbody")[0];
+        const newRow = tbody.insertRow();
+        newRow.innerHTML = `
+            <td class="center row-stt"></td>
+            <td><input type="text" class="input-cell sp-ten" value="Sản phẩm mới"></td>
+            <td><input type="text" class="input-cell sp-chatlieu" value=""></td>
+            <td><input type="number" class="input-cell center sp-sl" value="1" oninput="tinhToanSoTien()"></td>
+            <td><input type="number" class="input-cell right sp-gia" value="0" oninput="tinhToanSoTien()"></td>
+            <td class="right sp-thanhtien">0</td>
+            <td class="center"><button class="btn-delete" onclick="xoaDong(this)">Xóa</button></td>
+        `;
+        tinhToanSoTien();
+    }
+
+    function xoaDong(button) {
+        const row = button.parentNode.parentNode;
+        row.parentNode.removeChild(row);
+        tinhToanSoTien();
+    }
+
+    function tinhToanSoTien() {
+        const rows = document.getElementById("invoice-table").getElementsByTagName("tbody")[0].rows;
+        let tamTinh = 0;
+
+        for (let i = 0; i < rows.length; i++) {
+            rows[i].querySelector(".row-stt").innerText = i + 1;
+            let sl = parseFloat(rows[i].querySelector(".sp-sl").value) || 0;
+            let gia = parseFloat(rows[i].querySelector(".sp-gia").value) || 0;
+            let thanhTien = sl * gia;
+            tamTinh += thanhTien;
+            rows[i].querySelector(".sp-thanhtien").innerText = thanhTien.toLocaleString('vi-VN');
+        }
+
+        let giamGia = parseFloat(document.getElementById("b_giamgia").value) || 0;
+        let tongThanhToan = tamTinh - giamGia;
+
+        document.getElementById("b_tamtinh").value = tamTinh.toLocaleString('vi-VN');
+        document.getElementById("b_tongtien").value = tongThanhToan.toLocaleString('vi-VN');
+    }
+
+
+    // --- HÀM THƯ VIỆN VẼ CANVAS (TỌA ĐỘ ĐÃ ĐƯỢC CHUẨN HÓA) ---
+
+    function veChu(ctx, text, x, y) {
+        ctx.textAlign = "left";
+        ctx.textBaseline = "top";
+        ctx.font = "17px 'Americanus', serif"; 
+        ctx.fillStyle = "#3D312A"; 
+        ctx.fillText(text, x, y);
+    }
+
+    function veO(ctx, text, xTam, yTam, maxWidth = null) {
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle"; 
+        ctx.font = "18px 'Americanus', serif"; 
+        ctx.fillStyle = "#3D312A"; 
+        if (maxWidth) {
+            ctx.fillText(text, xTam, yTam, maxWidth);
+        } else {
+            ctx.fillText(text, xTam, yTam);
+        }
+    }
+
+
+    // --- HÀM XỬ LÝ CHÍNH: GỘP 3 PHẦN ẢNH VÀ IN DỮ LIỆU ĐỘNG ---
+
+    function xuLyGhopAnhVaXuatFile() {
+        // Khởi tạo phôi ảnh gốc
+        const imgHeader = new Image();
+        const imgBodyRow = new Image();
+        const imgBottom = new Image();
+
+        imgHeader.src = 'header.jpg';
+        imgBodyRow.src = 'body.jpg';
+        imgBottom.src = 'bottom.jpg';
+
+        // Đợi toàn bộ ảnh gốc và font chữ tải xong hoàn toàn
+        Promise.all([
+            new Promise(resolve => imgHeader.onload = resolve),
+            new Promise(resolve => imgBodyRow.onload = resolve),
+            new Promise(resolve => imgBottom.onload = resolve),
+            document.fonts.ready 
+        ]).then(() => {
+            
+            const rows = document.getElementById("invoice-table").getElementsByTagName("tbody")[0].rows;
+            
+            // Tính toán kích thước tổng thể
+            const WIDTH = imgHeader.width; // Sử dụng chiều rộng ảnh làm chuẩn
+            const H_HEADER = imgHeader.height;
+            const H_ROW = imgBodyRow.height; // Chiều cao cố định của 1 phôi hàng trống
+            const H_BOTTOM = imgBottom.height;
+            
+            // Chiều cao tổng = Header + (Số lượng hàng nhân chiều cao phôi body) + Bottom
+            const TOTAL_HEIGHT = H_HEADER + (rows.length * H_ROW) + H_BOTTOM;
+
+            // Thiết lập Canvas tổng gộp ảnh
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = WIDTH;
+            canvas.height = TOTAL_HEIGHT;
+
+            // --- PHẦN 1: VẼ HEADER & ĐIỀN THÔNG TIN KHÁCH ---
+            ctx.drawImage(imgHeader, 0, 0);
+            
+            veChu(ctx, document.getElementById("h_ten").value, 157, 508);
+            veChu(ctx, document.getElementById("h_sdt").value, 602, 508);
+            veChu(ctx, document.getElementById("h_diachi").value, 140, 550);
+            veChu(ctx, document.getElementById("h_ghichu").value, 146, 592);
+            
+            // Điền ngày tháng năm (Căn giữa theo tọa độ ô bạn chỉ định)
+            veChu(ctx, document.getElementById("h_ngay").value, 812, 382, 382);
+            veChu(ctx, document.getElementById("h_thang").value, 870, 382, 382);
+            veChu(ctx, document.getElementById("h_nam").value, 926, 382, 382);
+
+            // --- PHẦN 2: VẼ LẶP LẠI BODY & ĐIỀN THÔNG TIN SẢN PHẨM ---
+            let currentY = H_HEADER; // Điểm đặt ảnh hàng đầu tiên bắt đầu ngay sau Header
+
+            for (let i = 0; i < rows.length; i++) {
+                // Xếp chồng một tấm phôi body.jpg mới vào vị trí tiếp theo
+                ctx.drawImage(imgBodyRow, 0, currentY);
+
+                // Lấy thông tin từ dòng hiện tại trên bảng UI
+                let stt = (i + 1).toString();
+                let ten = rows[i].querySelector(".sp-ten").value;
+                let chatLieu = rows[i].querySelector(".sp-chatlieu").value;
+                let sl = rows[i].querySelector(".sp-sl").value;
+                let gia = parseFloat(rows[i].querySelector(".sp-gia").value) || 0;
+                let thanhTien = parseFloat(rows[i].querySelector(".sp-sl").value) * gia || 0;
+
+                // Các hàm vẽ căn giữa ô theo mốc tọa độ tương đối nằm trên phôi body.jpg gốc của bạn
+                // Y-coordinate tâm của ô bằng: currentY (mốc bắt đầu hàng) + 22px (tọa độ trục Y trong ô)
+                veO(ctx, stt, 93, currentY + 22, 70);
+                veO(ctx, ten, 280, currentY + 22, 296);
+                veO(ctx, chatLieu, 499, currentY + 22, 138);
+                veO(ctx, sl, 614, currentY + 22, 84);
+                veO(ctx, gia.toLocaleString('vi-VN'), 725, currentY + 22, 134);
+                veO(ctx, thanhTien.toLocaleString('vi-VN'), 881, currentY + 22, 170);
+
+                // Sau khi vẽ xong 1 hàng, đẩy mốc Y xuống độ dài đúng bằng chiều cao ảnh hàng để chuẩn bị xếp tiếp
+                currentY += H_ROW; 
+            }
+
+            // --- PHẦN 3: VẼ BOTTOM & ĐIỀN THÔNG TIN TỔNG TIỀN ---
+            // Đặt ảnh bottom.jpg khớp nối ngay sau khi chạy xong tất cả các hàng body
+            ctx.drawImage(imgBottom, 0, currentY);
+
+            // Các tọa độ Y điền chữ ở bottom sẽ cộng tiến theo giá trị currentY hiện tại
+            veO(ctx, document.getElementById("b_tamtinh").value, 779, currentY + 13, 244);
+            veO(ctx, document.getElementById("b_giamgia").value, 779, currentY + 42, 244);
+            veO(ctx, document.getElementById("b_tongtien").value, 779, currentY + 78, 244); // (Sửa lại X=779 theo đúng form căn lề của các dòng trên)
+            veO(ctx, document.getElementById("b_bangchu").value, 558, currentY + 108, 782);
+
+            // --- XUẤT FILE VÀ TỰ ĐỘNG TẢI XUỐNG ---
+            const link = document.createElement('a');
+            link.href = canvas.toDataURL('image/png');
+            link.download = 'hoa_don.png';
+            link.click();
+
+        }).catch(err => {
+            alert("Lỗi tải tài nguyên.");
+            console.error(err);
+        });
+    }
+</script>
+
+</body>
+</html>
