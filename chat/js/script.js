@@ -523,5 +523,172 @@ function startCheckingNetworkNgam() {
         }
     }, 3000); // 3 giây ping 1 lần
 }
+
+// 11. Thực hiện cuojc gọi
+// ==========================================================================
+// WEBRTC VIDEO CALL MODULE 
+// ==========================================================================
+let localStream = null;
+let peerConnection = null;
+let callTimerInterval = null;
+let callStartTime = 0;
+
+const iceConfiguration = {
+    iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun2.l.google.com:19302' }
+    ]
+};
+
+// --- 1. HÀM KÍCH HOẠT CUỘC GỌI (Khi người gọi bấm nút Call trên Header) ---
+async function startCall() {
+    document.getElementById("video-call-screen").style.display = "block";
+    
+    // Lấy quyền Cam/Mic
+    try {
+        localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        document.getElementById("localVideo").srcObject = localStream;
+        
+        // Khởi tạo RTC
+        initPeerConnection();
+        
+        // Tạo Offer gửi đi báo cho bên kia biết để hiện nút "Tham gia"
+        const offer = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offer);
+        
+        sendToSignalingServer({ type: "offer", sdp: offer });
+    } catch (err) {
+        alert("Không thể truy cập Camera/Microphone!");
+        hangUpCall(false);
+    }
+}
+
+// --- 2. KHỞI TẠO ĐỐI TƯỢNG PEER CONNECTION TRÌNH DUYỆT ---
+function initPeerConnection() {
+    peerConnection = new RTCPeerConnection(iceConfiguration);
+    
+    // Đẩy track dữ liệu vào kết nối
+    localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+    
+    // Lắng nghe luồng video từ đối phương trả về
+    peerConnection.ontrack = (event) => {
+        document.getElementById("remoteVideo").srcObject = event.streams[0];
+        // Khi nhận được video của nhau tức là cuộc gọi chính thức bắt đầu -> Bật bộ đếm thời gian
+        startTimer();
+    };
+    
+    // Dò đường địa chỉ mạng mạng công cộng
+    peerConnection.onicecandidate = (event) => {
+        if (event.candidate) {
+            sendToSignalingServer({ type: "candidate", candidate: event.candidate });
+        }
+    };
+}
+
+// --- 3. PHÍA NGƯỜI NHẬN: XỬ LÝ KHI CÓ OFFER GỌI ĐẾN ---
+function handleReceivedOffer(sdp) {
+    // Không hiện màn hình camera ngay, chỉ hiện thanh thông báo xanh lá ở trên cùng
+    const notice = document.getElementById("incoming-call-notice");
+    notice.style.display = "flex";
+    
+    // Lưu tạm sdp vào bộ nhớ để khi bấm "Tham gia" thì xài
+    window.pendingOfferSdp = sdp;
+}
+
+// --- 4. PHÍA NGƯỜI NHẬN: BẤM NÚT "THAM GIA" ---
+async function acceptIncomingCall() {
+    document.getElementById("incoming-call-notice").style.display = "none";
+    document.getElementById("video-call-screen").style.display = "block";
+    
+    try {
+        localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        document.getElementById("localVideo").srcObject = localStream;
+        
+        initPeerConnection();
+        
+        // Nạp sdp của người gọi
+        await peerConnection.setRemoteDescription(new RTCSessionDescription(window.pendingOfferSdp));
+        
+        // Tạo Answer phản hồi lại
+        const answer = await peerConnection.createAnswer();
+        await peerConnection.setLocalDescription(answer);
+        
+        sendToSignalingServer({ type: "answer", sdp: answer });
+    } catch (err) {
+        alert("Lỗi tham gia cuộc gọi!");
+        hangUpCall(false);
+    }
+}
+
+// --- 5. PHÍA NGƯỜI GỌI: NHẬN ANSWER ĐỂ THÔNG MẠNG P2P ---
+async function handleReceivedAnswer(sdp) {
+    if (peerConnection) {
+        await peerConnection.setRemoteDescription(new RTCSessionDescription(sdp));
+    }
+}
+
+// --- 6. XỬ LÝ GÓI TIN ĐỊA CHỈ MẠNG ---
+function handleReceivedCandidate(candidate) {
+    if (peerConnection) {
+        peerConnection.addIceCandidate(new RTCIceCandidate(candidate)).catch(e => {});
+    }
+}
+
+// --- 7. BỘ ĐẾM THỜI GIAN CUỘC GỌI CHẠY ĐỒNG BỘ ---
+function startTimer() {
+    if (callTimerInterval) return;
+    callStartTime = Date.now();
+    callTimerInterval = setInterval(() => {
+        const totalSeconds = Math.floor((Date.now() - callStartTime) / 1000);
+        const mins = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+        const secs = String(totalSeconds % 60).padStart(2, '0');
+        document.getElementById("call-timer").innerText = `${mins}:${secs}`;
+    }, 1000);
+}
+
+// --- 8. CÚP MÁY VÀ DỌN DẸP BĂNG THÔNG ---
+function hangUpCall(isMusterNotify) {
+    // Tắt bộ đếm thời gian
+    clearInterval(callTimerInterval);
+    callTimerInterval = null;
+    document.getElementById("call-timer").innerText = "00:00";
+    
+    // Tắt camera/mic phần cứng thiết bị
+    if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
+        localStream = null;
+    }
+    
+    // Đóng kết nối ngang hàng RTC
+    if (peerConnection) {
+        peerConnection.close();
+        peerConnection = null;
+    }
+    
+    // Ẩn giao diện
+    document.getElementById("video-call-screen").style.display = "none";
+    document.getElementById("incoming-call-notice").style.display = "none";
+    
+    // Gửi tín hiệu báo cho đầu dây bên kia biết mình đã cúp để họ tự động tắt màn hình theo
+    if (isMusterNotify) {
+        sendToSignalingServer({ type: "hangup" });
+    }
+}
+
+// --- 9. BẬT/TẮT NHANH PHẦN CỨNG CAM VÀ MIC ---
+function toggleMic() {
+    const audioTrack = localStream.getAudioTracks()[0];
+    audioTrack.enabled = !audioTrack.enabled;
+    document.getElementById("btn-toggle-mic").innerText = audioTrack.enabled ? "🎙️" : "🔇";
+    document.getElementById("btn-toggle-mic").style.background = audioTrack.enabled ? "#3a3a55" : "#e74c3c";
+}
+
+function toggleCam() {
+    const videoTrack = localStream.getVideoTracks()[0];
+    videoTrack.enabled = !videoTrack.enabled;
+    document.getElementById("btn-toggle-cam").innerText = videoTrack.enabled ? "📷" : "❌";
+    document.getElementById("btn-toggle-cam").style.background = videoTrack.enabled ? "#3a3a55" : "#e74c3c";
+}
+
 // KHỞI CHẠY HỆ THỐNG LẦN ĐẦU TIÊN
 connectWebSocket();
