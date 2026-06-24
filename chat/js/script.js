@@ -541,26 +541,32 @@ const iceConfiguration = {
 };
 
 // --- 1. HÀM KÍCH HOẠT CUỘC GỌI (Khi người gọi bấm nút Call trên Header) ---
+// Tìm hàm startCall() cũ và thay thế khúc gọi quyền Cam/Mic bằng đoạn này:
 async function startCall() {
     document.getElementById("video-call-screen").style.display = "block";
     
-    // Lấy quyền Cam/Mic
     try {
+        // Bước 1: Thử gọi cả Cam và Mic như bình thường
         localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        document.getElementById("localVideo").srcObject = localStream;
-        
-        // Khởi tạo RTC
-        initPeerConnection();
-        
-        // Tạo Offer gửi đi báo cho bên kia biết để hiện nút "Tham gia"
-        const offer = await peerConnection.createOffer();
-        await peerConnection.setLocalDescription(offer);
-        
-        sendToSignalingServer({ type: "offer", sdp: offer });
     } catch (err) {
-        alert("Không thể truy cập Camera/Microphone!");
-        hangUpCall(false);
+        try {
+            console.log("⚠️ Không tìm thấy Microphone, hạ cấp xuống chỉ gọi Camera...");
+            // Bước 2: Nếu lỗi (do thiếu mic), thử gọi lại nhưng tắt audio đi (audio: false)
+            localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        } catch (err2) {
+            // Bước 3: Nếu vẫn lỗi tiếp thì mới chịu thua
+            alert("Lỗi phần cứng: Không thể truy cập Camera/Microphone! " + err2.message);
+            hangUpCall(false);
+            return;
+        }
     }
+
+    // Khúc code bên dưới của hàm startCall() giữ nguyên...
+    document.getElementById("localVideo").srcObject = localStream;
+    initPeerConnection();
+    const offer = await peerConnection.createOffer();
+    await peerConnection.setLocalDescription(offer);
+    sendToSignalingServer({ type: "offer", sdp: offer });
 }
 
 // --- 2. KHỞI TẠO ĐỐI TƯỢNG PEER CONNECTION TRÌNH DUYỆT ---
