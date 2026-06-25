@@ -486,14 +486,15 @@ document.addEventListener("DOMContentLoaded", function() {
     // ==========================================================================
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     OneSignalDeferred.push(async function(OneSignal) {
-        // Kiểm tra xem user đã cấp quyền và ĐANG BẬT nhận thông báo hay chưa
-        const isPermissionGranted = OneSignal.Notifications.permission; // true nếu đã cấp quyền trình duyệt
-        const isPushEnabled = OneSignal.User.PushSubscription.optedIn; // true nếu chưa bấm hủy nhận tin từ app
-
         if (pushNotifyCheckbox) {
-            // Nếu cả 2 điều kiện đều thỏa mãn -> Tự động tích chọn checkbox
+            // Lấy quyền thông báo hiện tại của trình duyệt (granted, denied, hoặc default)
+            const isPermissionGranted = OneSignal.Notifications.permission;
+            // Kiểm tra xem user có đang bật nhận tin từ app OneSignal không
+            const isPushEnabled = OneSignal.User.PushSubscription.optedIn;
+
+            // Nếu trình duyệt đã cấp quyền VÀ app đang bật nhận tin -> Tích chọn checkbox
             pushNotifyCheckbox.checked = (isPermissionGranted && isPushEnabled);
-            console.log("🔄 Đồng bộ ban đầu: Trạng thái thông báo đang là", pushNotifyCheckbox.checked ? "BẬT" : "TẮT");
+            console.log("🔄 Trạng thái thông báo khi mới truy cập:", pushNotifyCheckbox.checked ? "ĐÃ BẬT" : "ĐANG TẮT");
         }
     });
 
