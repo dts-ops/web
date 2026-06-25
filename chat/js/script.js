@@ -2,9 +2,7 @@
 // 1. CẤU HÌNH BIẾN TOÀN CỤC & ĐỊNH DANH USER
 // ==========================================================================
 let chatBoxContainer = document.getElementById("chatBoxContainer");
-let inputPostText = document.getElementById("inputPostText");
 let micPost = document.getElementById("micPost");
-let textSubmit = document.getElementById("textSubmit");
 let statusSpan = document.getElementById("connection-status");
 
 let socket = null;
@@ -13,6 +11,9 @@ let checkNetworkInterval = null;
 let missedHeartbeats = 0;
 let isCheckingNetwork = false;
 let isLoadingOldMessages = false; 
+
+const inputPostText = document.getElementById('input-text');
+const textSubmit = document.querySelector('label[for="input-text"]');
 
 // Cờ khóa toàn cục chống gọi trùng OneSignal.login liên tiếp
 window.isOneSignalLoggingIn = false;
@@ -373,7 +374,9 @@ window.addEventListener('offline', function() {
 // 8. LOGIC BANNER DROPDOWN & LOGOUT MENU + ĐỊNH DANH AN TOÀN
 // ==========================================================================
 document.addEventListener("DOMContentLoaded", () => {
-    const dropdownBtn = document.getElementById("dropdownBtn");
+    const hamburgerLabel = document.querySelector(".hamburger");
+    const pushNotifyCheckbox = document.getElementById('cbx2');
+    const dropdownCheckbox = document.getElementById("dropdownBtn"); 
     const dropdownMenu = document.getElementById("dropdownMenu");
     const logoutBtn = document.getElementById("logoutBtn");
 
@@ -399,25 +402,44 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }, 1500); // Trì hoãn 1.5 giây chờ SDK ổn định hoàn toàn
     });
-
-    // Logic xử lý ẩn/hiện Dropdown Menu
-    if (dropdownBtn && dropdownMenu) {
-        dropdownBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            dropdownMenu.classList.toggle("show");
+    
+    if (hamburgerLabel && dropdownCheckbox && dropdownMenu) {
+        
+        // 1. Lắng nghe sự kiện khi ô checkbox thay đổi trạng thái (Tích chọn hoặc Bỏ chọn)
+        hamburgerLabel.addEventListener("click", (e) => {
+            // Ngăn sự kiện click lan ra ngoài window gây đóng menu lập tức
+            e.stopPropagation(); 
+            
+            if (dropdownCheckbox.checked) {
+                dropdownMenu.classList.add("show"); // Nếu checkbox ĐƯỢC TÍCH -> Hiện menu
+            } else {
+                dropdownMenu.classList.remove("show"); // Nếu checkbox BỎ TÍCH -> Ẩn menu
+            }
+        });
+        dropdownMenu.addEventListener("click", (e) => {
+            e.stopPropagation(); // Giữ sự kiện click nằm im trong menu, không báo lên window
         });
 
-        window.addEventListener("click", () => {
+        // 2. Khi click ra bất kỳ đâu ngoài màn hình -> Tự động bỏ tích checkbox và ẩn menu
+        window.addEventListener("click", (e) => {
+            // Kiểm tra xem menu có đang mở hay không
             if (dropdownMenu.classList.contains("show")) {
-                dropdownMenu.classList.remove("show");
+                dropdownCheckbox.checked = false; // Đưa ô checkbox về trạng thái hủy tích chọn
+                dropdownMenu.classList.remove("show"); // Ẩn menu đi
             }
         });
     }
 
-    // Xử lý sự kiện khi bấm nút Đăng xuất
+// Xử lý sự kiện khi bấm nút Đăng xuất
     if (logoutBtn) {
         logoutBtn.addEventListener("click", (e) => {
             e.preventDefault();
+            
+            // 🟢 CHỈ ĐỔI CHỮ THÀNH "Deleting..." (Không thêm class hiệu ứng, không chặn e.stopPropagation)
+            const textElement = logoutBtn.querySelector(".text");
+            if (textElement) {
+                textElement.innerText = "Deleting...";
+            }
             
             window.OneSignalDeferred = window.OneSignalDeferred || [];
             window.OneSignalDeferred.push(async function(OneSignal) {
@@ -427,14 +449,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 } catch (error) {
                     console.error("❌ Lỗi gỡ định danh OneSignal:", error);
                 } finally {
+                    // Xóa sạch dữ liệu và chuyển hướng ngay lập tức
                     localStorage.clear(); 
+                    sessionStorage.clear();
                     console.log("🔒 Đã xóa sạch session đăng nhập.");
                     window.location.replace("/chat/login.html");
                 }
             });
         });
     }
-}); 
+});
+
 
 // ==========================================================================
 // 9. THIẾT LẬP CẤU HÌNH BAN ĐẦU ONESIGNAL
@@ -450,19 +475,69 @@ OneSignalDeferred.push(async function(OneSignal) {
     });
 });
 
-// Xử lý sự kiện nút "Bật thông báo đẩy" trong menu dropdown
+// Xử lý sự kiện nút "Bật thông báo đẩy" bằng công tắc Checkbox SVG mới
 document.addEventListener("DOMContentLoaded", function() {
-    const pushNotifyBtn = document.getElementById('pushNotifyBtn');
-    if (pushNotifyBtn) {
-        pushNotifyBtn.addEventListener('click', function(e) {
-            e.preventDefault(); 
-            window.OneSignalDeferred = window.OneSignalDeferred || [];
-            OneSignalDeferred.push(function(OneSignal) {
-                OneSignal.Notifications.requestPermission().then(function() {
-                    console.log("🔔 Đã xử lý yêu cầu cấp quyền từ Dropdown!");
-                    const dropdownMenu = document.getElementById('dropdownMenu');
+    const pushNotifyCheckbox = document.getElementById('cbx2');
+    const dropdownCheckbox = document.getElementById('dropdownBtn'); // Nút Hamburger đóng/mở menu
+    const dropdownMenu = document.getElementById('dropdownMenu');
+
+    // ==========================================================================
+    // 🟢 BƯỚC 1: ĐỒNG BỘ TRẠNG THÁI CHECKBOX KHI VỪA TẢI TRANG
+    // ==========================================================================
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+        // Kiểm tra xem user đã cấp quyền và ĐANG BẬT nhận thông báo hay chưa
+        const isPermissionGranted = OneSignal.Notifications.permission; // true nếu đã cấp quyền trình duyệt
+        const isPushEnabled = OneSignal.User.PushSubscription.optedIn; // true nếu chưa bấm hủy nhận tin từ app
+
+        if (pushNotifyCheckbox) {
+            // Nếu cả 2 điều kiện đều thỏa mãn -> Tự động tích chọn checkbox
+            pushNotifyCheckbox.checked = (isPermissionGranted && isPushEnabled);
+            console.log("🔄 Đồng bộ ban đầu: Trạng thái thông báo đang là", pushNotifyCheckbox.checked ? "BẬT" : "TẮT");
+        }
+    });
+
+    // ==========================================================================
+    // 🔵 BƯỚC 2: XỬ LÝ BẬT / TẮT KHI USER NHẤN VÀO CHECKBOX
+    // ==========================================================================
+    if (pushNotifyCheckbox) {
+        pushNotifyCheckbox.addEventListener('change', function(e) {
+            // Chặn tuyệt đối lan truyền sự kiện để menu không bị sập bất ngờ
+            e.stopPropagation(); 
+
+            OneSignalDeferred.push(async function(OneSignal) {
+                if (pushNotifyCheckbox.checked) {
+                    // 🔔 TRƯỜNG HỢP 1: USER TICK BẬT
+                    console.log("🔔 Đang yêu cầu cấp quyền bật thông báo...");
+                    try {
+                        // Gọi hộp thoại xin quyền của trình duyệt
+                        await OneSignal.Notifications.requestPermission();
+                        // Đồng thời bật subscribe lại trên OneSignal phòng trường hợp trước đó bị tắt ngầm
+                        await OneSignal.User.PushSubscription.optIn();
+                        console.log("✅ Đã bật thông báo thành công!");
+                    } catch (err) {
+                        console.error("❌ Lỗi khi bật thông báo:", err);
+                        pushNotifyCheckbox.checked = false; // Trả nút về trạng thái tắt nếu lỗi
+                    }
+                } else {
+                    // 🔕 TRƯỜNG HỢP 2: USER BỎ TICK ĐỂ TẮT
+                    console.log("🔕 Đang tắt nhận thông báo từ hệ thống...");
+                    try {
+                        // Gọi lệnh hủy nhận tin (Opt-out) của OneSignal SDK
+                        await OneSignal.User.PushSubscription.optOut();
+                        console.log("✅ Đã tắt nhận thông báo thành công!");
+                    } catch (err) {
+                        console.error("❌ Lỗi khi tắt thông báo:", err);
+                        pushNotifyCheckbox.checked = true; // Trả nút về trạng thái bật nếu lỗi
+                    }
+                }
+
+                // ĐỒNG BỘ GIAO DIỆN: Tùy chọn đóng menu sau khi user thao tác xong
+                // (Bro có thể xóa khối dưới đây nếu muốn user bấm bật/tắt xong menu vẫn giữ nguyên mở rộng)
+                setTimeout(() => {
                     if (dropdownMenu) dropdownMenu.classList.remove('show');
-                });
+                    if (dropdownCheckbox) dropdownCheckbox.checked = false; 
+                }, 500); // Trì hoãn 0.5 giây cho mượt mắt
             });
         });
     }
