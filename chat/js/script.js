@@ -502,42 +502,35 @@ document.addEventListener("DOMContentLoaded", function() {
     // ==========================================================================
     if (pushNotifyCheckbox) {
         pushNotifyCheckbox.addEventListener('change', function(e) {
-            // Chặn tuyệt đối lan truyền sự kiện để menu không bị sập bất ngờ
-            e.stopPropagation(); 
+            e.stopPropagation(); // Chặn tuyệt đối lan truyền sự kiện để menu không bị sập bất ngờ
 
             OneSignalDeferred.push(async function(OneSignal) {
                 if (pushNotifyCheckbox.checked) {
-                    // 🔔 TRƯỜNG HỢP 1: USER TICK BẬT
                     console.log("🔔 Đang yêu cầu cấp quyền bật thông báo...");
                     try {
-                        // Gọi hộp thoại xin quyền của trình duyệt
                         await OneSignal.Notifications.requestPermission();
-                        // Đồng thời bật subscribe lại trên OneSignal phòng trường hợp trước đó bị tắt ngầm
                         await OneSignal.User.PushSubscription.optIn();
                         console.log("✅ Đã bật thông báo thành công!");
                     } catch (err) {
                         console.error("❌ Lỗi khi bật thông báo:", err);
-                        pushNotifyCheckbox.checked = false; // Trả nút về trạng thái tắt nếu lỗi
+                        pushNotifyCheckbox.checked = false; 
                     }
                 } else {
-                    // 🔕 TRƯỜNG HỢP 2: USER BỎ TICK ĐỂ TẮT
                     console.log("🔕 Đang tắt nhận thông báo từ hệ thống...");
                     try {
-                        // Gọi lệnh hủy nhận tin (Opt-out) của OneSignal SDK
                         await OneSignal.User.PushSubscription.optOut();
                         console.log("✅ Đã tắt nhận thông báo thành công!");
                     } catch (err) {
                         console.error("❌ Lỗi khi tắt thông báo:", err);
-                        pushNotifyCheckbox.checked = true; // Trả nút về trạng thái bật nếu lỗi
+                        pushNotifyCheckbox.checked = true; 
                     }
                 }
 
-                // ĐỒNG BỘ GIAO DIỆN: Tùy chọn đóng menu sau khi user thao tác xong
-                // (Bro có thể xóa khối dưới đây nếu muốn user bấm bật/tắt xong menu vẫn giữ nguyên mở rộng)
+                // Tự động đóng menu sau khi thao tác xong thông báo
                 setTimeout(() => {
                     if (dropdownMenu) dropdownMenu.classList.remove('show');
                     if (dropdownCheckbox) dropdownCheckbox.checked = false; 
-                }, 500); // Trì hoãn 0.5 giây cho mượt mắt
+                }, 500);
             });
         });
     }
