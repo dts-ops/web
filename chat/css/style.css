@@ -814,16 +814,6 @@ body, html {
     color: #e74c3c !important; /* Màu đỏ hoặc xám tùy bạn */
 }
 
-/* Khung bọc toàn bộ dòng Thông báo đẩy */
-.dropdown-item-switch {
-    display: flex;
-    align-items: center;       /* 👈 QUAN TRỌNG: Buộc chữ và nút tròn thẳng hàng vertical-center */
-    justify-content: flex-start; /* Sắp xếp các phần tử từ trái qua phải */
-    gap: 12px;                 /* Khoảng cách giữa nút tròn và chữ */
-    padding: 10px 15px;        /* Khoảng cách đệm bên trong hàng cho đẹp */
-    cursor: pointer;
-}
-
 
 /* Khung chứa bao bọc */
 .dropdown {
@@ -906,7 +896,7 @@ body, html {
 }
 
 /* Sửa lại phần label/check của thông báo */
-.dropdown-item .check {
+.dropdown-item .noti-check {
     display: flex;
     align-items: center;
     justify-content: flex-start;
@@ -922,10 +912,6 @@ body, html {
     color: #333;
 }
 
-.menu-icon {
-    width: 16px;
-    height: 16px;
-}
 
 /* Hiệu ứng xuất hiện mượt */
 @keyframes fadeIn {
@@ -936,7 +922,7 @@ body, html {
 /* Variation of work by @mrhyddenn for Radios */
 
 
-.check {
+.noti-check {
   cursor: pointer;
   position: relative;
   margin: auto;
@@ -946,7 +932,7 @@ body, html {
   transform: translate3d(0, 0, 0);
 }
 
-.check:before {
+.noti-check:before {
   content: "";
   position: absolute;
   top: -15px;
@@ -959,7 +945,7 @@ body, html {
   transition: opacity 0.2s ease;
 }
 
-.check svg {
+.noti-check svg {
   position: relative;
   z-index: 1;
   fill: none;
@@ -971,23 +957,23 @@ body, html {
   transition: all 0.2s ease;
 }
 
-.check svg path {
+.noti-check svg path {
   stroke-dasharray: 60;
   stroke-dashoffset: 0;
 }
 
-.check svg polyline {
+.noti-check svg polyline {
   stroke-dasharray: 22;
   stroke-dashoffset: 66;
 }
 
 
 
-#cbx2:checked + .check svg {
+#cbx2:checked + .noti-check svg {
   stroke: var(--accent-color, #a3e583);
 }
 
-#cbx2:checked + .check svg path {
+#cbx2:checked + .noti-check svg path {
   stroke-dashoffset: 60;
   transition: all 0.3s linear;
 }
