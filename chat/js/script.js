@@ -480,23 +480,25 @@ document.addEventListener("DOMContentLoaded", function() {
     const pushNotifyCheckbox = document.getElementById('cbx2');
     const dropdownCheckbox = document.getElementById('dropdownBtn'); // Nút Hamburger đóng/mở menu
     const dropdownMenu = document.getElementById('dropdownMenu');
+    const logoutBtn = document.getElementById("logoutBtn"); // Gom luôn logic nút đăng xuất của bro vào đây
 
     // ==========================================================================
-    // 🟢 BƯỚC 1: ĐỒNG BỘ TRẠNG THÁI CHECKBOX KHI VỪA TẢI TRANG
+    // 🟢 BƯỚC 1: ĐỒNG BỘ TRẠNG THÁI CHECKBOX TRỰC TIẾP VỚI MÁY TÍNH KHI VỪA TẢI TRANG
     // ==========================================================================
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(async function(OneSignal) {
-        if (pushNotifyCheckbox) {
-            // Lấy quyền thông báo hiện tại của trình duyệt (granted, denied, hoặc default)
-            const isPermissionGranted = OneSignal.Notifications.permission;
-            // Kiểm tra xem user có đang bật nhận tin từ app OneSignal không
-            const isPushEnabled = OneSignal.User.PushSubscription.optedIn;
+    if (pushNotifyCheckbox) {
+        // Đọc trực tiếp quyền thông báo từ API gốc của Trình duyệt (Không phụ thuộc SDK)
+        const currentPermission = Notification.permission;
 
-            // Nếu trình duyệt đã cấp quyền VÀ app đang bật nhận tin -> Tích chọn checkbox
-            pushNotifyCheckbox.checked = (isPermissionGranted && isPushEnabled);
-            console.log("🔄 Trạng thái thông báo khi mới truy cập:", pushNotifyCheckbox.checked ? "ĐÃ BẬT" : "ĐANG TẮT");
+        if (currentPermission === "granted") {
+            // Máy tính hiển thị "Cho phép" -> Tự động tích chọn checkbox
+            pushNotifyCheckbox.checked = true;
+            console.log("🔄 Đồng bộ Trình duyệt: Thiết bị ĐÃ BẬT thông báo hệ thống.");
+        } else {
+            // Máy tính chưa bật (default) hoặc đã chặn (denied) -> Bỏ tích chọn
+            pushNotifyCheckbox.checked = false;
+            console.log(`🔄 Đồng bộ Trình duyệt: Thiết bị ĐANG TẮT thông báo (Quyền: ${currentPermission})`);
         }
-    });
+    }
 
     // ==========================================================================
     // 🔵 BƯỚC 2: XỬ LÝ BẬT / TẮT KHI USER NHẤN VÀO CHECKBOX
@@ -505,13 +507,14 @@ document.addEventListener("DOMContentLoaded", function() {
         pushNotifyCheckbox.addEventListener('change', function(e) {
             e.stopPropagation(); // Chặn tuyệt đối lan truyền sự kiện để menu không bị sập bất ngờ
 
+            window.OneSignalDeferred = window.OneSignalDeferred || [];
             OneSignalDeferred.push(async function(OneSignal) {
                 if (pushNotifyCheckbox.checked) {
                     console.log("🔔 Đang yêu cầu cấp quyền bật thông báo...");
                     try {
                         await OneSignal.Notifications.requestPermission();
                         await OneSignal.User.PushSubscription.optIn();
-                        console.log("✅ Đã bật thông báo thành công!");
+                        console.log("✅ Đã kích hoạt API thông báo phía Client!");
                     } catch (err) {
                         console.error("❌ Lỗi khi bật thông báo:", err);
                         pushNotifyCheckbox.checked = false; 
@@ -520,7 +523,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     console.log("🔕 Đang tắt nhận thông báo từ hệ thống...");
                     try {
                         await OneSignal.User.PushSubscription.optOut();
-                        console.log("✅ Đã tắt nhận thông báo thành công!");
+                        console.log("✅ Đã hủy kích hoạt API thông báo phía Client!");
                     } catch (err) {
                         console.error("❌ Lỗi khi tắt thông báo:", err);
                         pushNotifyCheckbox.checked = true; 
@@ -532,6 +535,37 @@ document.addEventListener("DOMContentLoaded", function() {
                     if (dropdownMenu) dropdownMenu.classList.remove('show');
                     if (dropdownCheckbox) dropdownCheckbox.checked = false; 
                 }, 500);
+            });
+        });
+    }
+
+    // ==========================================================================
+    // 🔴 BƯỚC 3: LOGIC ĐĂNG XUẤT (CHỈ ĐỔI CHỮ THÀNH DELETING..., TỰ SẬP MENU)
+    // ==========================================================================
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            
+            // Chỉ đổi chữ Đăng xuất thành Deleting... để tạo cảm giác xử lý ngầm nhanh gọn
+            const textElement = logoutBtn.querySelector(".text");
+            if (textElement) {
+                textElement.innerText = "Deleting...";
+            }
+            
+            window.OneSignalDeferred = window.OneSignalDeferred || [];
+            window.OneSignalDeferred.push(async function(OneSignal) {
+                try {
+                    await OneSignal.logout();
+                    console.log("🔴 Đã xóa định danh OneSignal trên thiết bị!");
+                } catch (error) {
+                    console.error("❌ Lỗi gỡ định danh OneSignal:", error);
+                } finally {
+                    // Xóa sạch bộ nhớ máy con và đá sang trang login
+                    localStorage.clear(); 
+                    sessionStorage.clear();
+                    console.log("🔒 Đã xóa sạch session đăng nhập.");
+                    window.location.replace("/chat/login.html");
+                }
             });
         });
     }
