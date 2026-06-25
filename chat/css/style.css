@@ -978,7 +978,7 @@ body, html {
   transition: all 0.3s linear;
 }
 
-#cbx2:checked + .check svg polyline {
+#cbx2:checked + .noti-check svg polyline {
   stroke-dashoffset: 42;
   transition: all 0.2s linear;
   transition-delay: 0.15s;
@@ -999,7 +999,7 @@ body, html {
   
   /* 🟢 ĐỔI ĐỘ RỘNG CỐ ĐỊNH: Để luôn hiện cả icon và chữ */
   width: 125px; 
-  height: 45px;
+  height: auto;
   border: none;
   border-radius: 5px;
   cursor: pointer;
