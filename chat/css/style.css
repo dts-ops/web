@@ -1046,3 +1046,8 @@ body, html {
 .Btn:active {
   transform: translate(2px ,2px);
 }
+
+.uploadfiles-button {
+  display: inline-contents; /* Trình duyệt sẽ bỏ qua kích thước của label, chỉ tính kích thước của SVG bên trong */
+  cursor: pointer; 
+}

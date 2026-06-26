@@ -482,6 +482,32 @@ document.addEventListener("DOMContentLoaded", function() {
     const dropdownMenu = document.getElementById('dropdownMenu');
     const logoutBtn = document.getElementById("logoutBtn"); // Gom luôn logic nút đăng xuất của bro vào đây
 
+    const cameraInput = document.getElementById('open-camera');
+    const imageUploadInput = document.getElementById('imageUpload');
+
+    // Lắng nghe nút Chụp ảnh
+    if (cameraInput) {
+        cameraInput.addEventListener('change', async function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                console.log("📸 Đã nhận ảnh chụp từ Camera");
+                await processAndLocalRenderMedia(file, "image");
+                cameraInput.value = ""; // Reset để có thể chụp tiếp tấm khác
+            }
+        });
+    }
+
+    // Lắng nghe nút Chọn ảnh từ máy
+    if (imageUploadInput) {
+        imageUploadInput.addEventListener('change', async function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                console.log("📂 Đã chọn ảnh từ thiết bị");
+                await processAndLocalRenderMedia(file, "image");
+                imageUploadInput.value = ""; // Reset input
+            }
+        });
+    }
     // ==========================================================================
     // 🟢 BƯỚC 1: ĐỒNG BỘ TRẠNG THÁI CHECKBOX TRỰC TIẾP VỚI MÁY TÍNH KHI VỪA TẢI TRANG
     // ==========================================================================
@@ -815,6 +841,88 @@ function toggleCam() {
     videoTrack.enabled = !videoTrack.enabled;
     document.getElementById("btn-toggle-cam").innerText = videoTrack.enabled ? "📷" : "❌";
     document.getElementById("btn-toggle-cam").style.background = videoTrack.enabled ? "#3a3a55" : "#e74c3c";
+}
+
+// 10. Xử lí ảnh
+// --- CẤU HÌNH BAN ĐẦU ---
+localforage.config({
+    name: "ChatMediaCache",
+    storeName: "media_files"
+});
+
+let xxhashInstance = null;
+async function initXXHash() {
+    if (!xxhashInstance) xxhashInstance = await xxhashWasm();
+    return xxhashInstance;
+}
+
+// Hàm tính mã băm xxHash64 từ ArrayBuffer của file
+async function calculateFileXXHash(arrayBuffer) {
+    const hasher = await initXXHash();
+    const uint8Array = new Uint8Array(arrayBuffer);
+    return hasher.h64Raw(uint8Array).toString(16).padStart(16, '0');
+}
+
+// --- HÀM XỬ LÝ CHÍNH KHI CHỌN FILE ---
+async function processAndLocalRenderMedia(file, type) {
+    let tempId = "temp-" + Date.now();
+    
+    // Hiển thị trạng thái xử lý ban đầu
+    renderMessageFromServer(MY_NAME, "Đang xử lý ảnh...", "Đang gửi...", tempId, true, MY_ROLE, false, type);
+    scrollToBottom();
+
+    try {
+        let finalFile = file;
+
+        // 1. Nếu là ảnh, tiến hành giảm độ phân giải / nén dung lượng trước
+        if (type === "image") {
+            const compressOptions = {
+                maxSizeMB: 1,             // Dung lượng tối đa sau nén (1MB)
+                maxWidthOrHeight: 1200,   // Chiều rộng hoặc cao tối đa (Giảm độ phân giải xuống khoảng HD/FullHD)
+                useWebWorker: true
+            };
+            console.log("📸 Đang nén và giảm độ phân giải ảnh gốc...");
+            finalFile = await imageCompression(file, compressOptions);
+            console.log(`✅ Nén thành công! Kích thước mới: ${(finalFile.size / 1024).toFixed(2)} KB`);
+        }
+
+        // 2. Chuyển file đã nén thành ArrayBuffer để tiến hành băm
+        const arrayBuffer = await finalFile.arrayBuffer();
+
+        // 3. Tiến hành băm bằng thuật toán xxHash
+        const hashHex = await calculateFileXXHash(arrayBuffer);
+        const fileKey = `${type}:${hashHex}`; // Định dạng chuỗi: "image:b512c3f8a0e2d19b"
+        
+        // 👉 IN MÃ BĂM RA CONSOLE theo yêu cầu của bạn
+        console.log(`🔑 Mã băm xxHash thu được: ${fileKey}`);
+
+        // 4. Lưu trực tiếp file đã nén vào IndexedDB thông qua localForage (Key là mã băm)
+        await localforage.setItem(fileKey, finalFile);
+        console.log("💾 Đã lưu bản sao file vào IndexedDB (localForage).");
+
+        // 5. Cập nhật / Đẩy lên giao diện chat bằng cách gọi hàm render
+        // Tạo URL cục bộ từ chính file trong bộ nhớ để hiển thị ngay tức thì
+        let localPreviewUrl = URL.createObjectURL(finalFile);
+        
+        // Xóa dòng trạng thái "Đang xử lý..." cũ bằng cách ghi đè lên tempId
+        let oldTempDiv = document.getElementById(tempId);
+        if (oldTempDiv) oldTempDiv.remove();
+
+        // Tiến hành render ảnh thật lên khung chat công khai
+        // (Lưu ý: Truyền fileKey làm tham số content để đồng bộ cấu trúc lưu trữ)
+        renderMessageFromServer(MY_NAME, fileKey, "Đang gửi...", tempId, true, MY_ROLE, false, type);
+        scrollToBottom();
+
+        // 6. [BƯỚC TIẾP THEO]: Gửi tín hiệu lên server Hugging Face của bạn
+        // Bạn sẽ viết tiếp logic fetch API /upload-check và gửi socket.send(JSON.stringify(...)) ở đây giống như các bước trước đó.
+
+    } catch (error) {
+        console.error("❌ Lỗi trong quá trình xử lý file:", error);
+        let tempDiv = document.getElementById(tempId);
+        if (tempDiv) {
+            tempDiv.querySelector('.mess p, .mess img').innerText = "Lỗi xử lý file!";
+        }
+    }
 }
 
 // KHỞI CHẠY HỆ THỐNG LẦN ĐẦU TIÊN
