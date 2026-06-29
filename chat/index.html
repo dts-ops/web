@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Private Chat</title>
     <link rel="stylesheet" href="/chat/css/style.css" />
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/browser-image-compression/2.0.2/browser-image-compression.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/xxhash-wasm/1.0.2/umd/xxhash-wasm.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
+	  <script src="./js/browser-image-compression.min.js"></script>
+    <script src="./js/localforage.min.js"></script>
+    <!-- <script src="./js/imagesloaded.pkgd.min.js"></script> -->
     <script>
       (function () {
         // 1. Lấy token từ bộ nhớ LocalStorage ra xem có không
@@ -53,8 +53,8 @@
             <div class="left">
               <img src="/chat/img/pp.png" class="pp" alt="" />
               <div class="left-text">
-                <h2>Users</h2>
-                <span id="connection-status" class="status-e2ee"></span>
+                <!-- <h2>Users</h2> -->
+                <span id="connection-status"></span>
               </div>
             </div>
 
@@ -104,12 +104,27 @@
         </div>
 
         <div class="chat-box" id="chatBoxContainer">
-          <div id="first-load-screen">
+
+        <!-- <div class="chat-r">
+            <div class="mess mess-r img-mess">
+                <img src="img/post2.jpg" class="img-chat">
+
+                <div class="check">
+                    <span>4:00 PM</span>
+                    <img src="img/check-2.png">
+                </div>
+            </div>
+        </div> -->
+          <!-- <div id="first-load-screen">
             <div class="main-spinner"></div>
             <p>Đang tải tin nhắn...</p>
-          </div>
+          </div>-->
         </div>
+        <!-- <div id="previewContainer" class="preview-container" hidden>
+            <img id="previewImage">
 
+            <button id="removePreview">✕</button>
+        </div> -->
         <div class="chat-footer">
           <!-- From Uiverse.io by Cobp -->
           <div class="container-ia-chat">
