@@ -84,6 +84,32 @@ body, html {
 	cursor: pointer;
 }
 
+.preview-container {
+    position: relative;
+    width: fit-content;
+    margin: 10px;
+}
+
+#previewImage {
+    max-width: 50px;
+    max-height: 50px;
+    border-radius: 8px;
+    display: block;
+}
+
+#removePreview {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(0,0,0,.6);
+    color: white;
+    cursor: pointer;
+}
+
 /* --- FIX CHAT BOX HIỂN THỊ --- */
 .chat-box {
 	background: url('/chat/img/bg.jpeg');
@@ -96,11 +122,13 @@ body, html {
 	gap: 5px;
 }
 
-.chat-box .img_chat {
+.chat-box .img-chat {
 	width: 100%;
 	max-width: 280px;
-	border-radius: 6px;
-	margin-bottom: 4px;
+  max-height: 350px;   /* cao tối đa */
+  margin-bottom: 4px;
+  object-fit: cover;   /* cắt bớt nếu quá dài */
+  border-radius: 8px;
 }
 
 .chat-r {
@@ -146,6 +174,26 @@ body, html {
 	width: 20px;
 	vertical-align: middle;
 	display: inline-block;
+}
+
+.chat-box .img-mess{
+    padding:2px;
+    overflow:hidden;
+}
+
+.chat-box .img-mess .img-chat{
+    display:block;
+    width:100%;
+    border-radius:6px 6px 0 0;
+    margin:0;
+}
+
+.chat-box .img-mess .check{
+    display:flex;
+    justify-content:flex-end;
+    align-items:center;
+    gap:4px;
+    padding:4px 8px 6px;
 }
 
 /* Căn chỉnh cụm thời gian bám góc dưới bên phải tin nhắn */
@@ -1045,4 +1093,9 @@ body, html {
 /* Hiệu ứng click bấm nút thông thường */
 .Btn:active {
   transform: translate(2px ,2px);
+}
+
+.uploadfiles-button {
+  display: inline-contents; /* Trình duyệt sẽ bỏ qua kích thước của label, chỉ tính kích thước của SVG bên trong */
+  cursor: pointer; 
 }
